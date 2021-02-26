@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--    <color name="colorAccent">#117BFF</color>-->
+    <color name="colorAccent">#007AFF</color>
+    <color name="statusBar">@color/colorDark</color>
+    <color name="toolbar">@color/colorDark</color>
+    <color name="actionModeBg">@color/colorDark</color>
+
+    <color name="action">#EEEEEE</color>
+
+    <!--<color name="colorAccent">#232323</color>-->
+    // 背景色
+    <color name="colorBg">@color/material_grey_850</color>
+    <color name="colorLight">#505050</color>
+    <color name="colorSelect">@color/mmaterial_grey_800</color>
+    <color name="colorDecoration">#FF565656</color>
+
+    <!--    <color name="colorGrey400">#BDBDBD</color>-->
+    <!--    <color name="colorGrey500">#9E9E9E</color>-->
+    <!--    <color name="colorGrey700">#616161</color>-->
+    <!--    <color name="toolbar">#212121</color>-->
+
+    <color name="tag">@color/colorDark</color>
+    <color name="tagBgLight">#EEEEEE</color>
+
+
+    <color name="iconDisable">#646464</color>
+    <color name="iconBg">#4A4A4A</color>
+    <!--    <color name="pathBg">#5F5F5F</color>-->
+    <color name="pathBg">#4A4A4A</color>
+    <!--    <color name="error">#FF3749</color>-->
+    <color name="error">#FF3B30</color>
+
+    <color name="dialogBg">@color/material_grey_850</color>
+
+    <!--    <color name="text">#d0d0d0</color>-->
+    <color name="text_title">#EEEEEE</color>
+    <color name="text">#E0E0E0</color>
+    <color name="text_dialog">#d0d0d0</color>
+    <color name="text_dialog_msg">#E2E2E2</color>
+    <color name="text_subtitle">#7E7E7E</color>
+    <color name="text_time">@color/text_subtitle</color>
+    <color name="text_active">#FFFFFF</color>
+    <color name="disable">@color/text_subtitle</color>
+
+    <color name="colorRipple">#808080</color>
+
+
+<!--    <color name="colorDark">#0C0C0C</color>-->
+    <!--    <color name="txt">#42cb83</color>-->
+    <!--    <color name="transparent">#17FF7B</color>-->
+    <!--  <color name="colorBgd">#737373</color>-->
+</resources>

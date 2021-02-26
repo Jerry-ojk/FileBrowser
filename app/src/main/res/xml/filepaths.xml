@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <external-path
+        name="external_path"
+        path="." />
+    <!--    /data/data/com.xxx.app/files-->
+    <files-path
+        name="files_path"
+        path="." />
+
+    <!--    /storage/emulated/0/Android/data/com.xxx.app/files-->
+    <external-files-path
+        name="external-files-path"
+        path="." />
+</paths>

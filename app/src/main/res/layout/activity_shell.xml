@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".shell.ShellActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_shell"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/toolbar"
+        android:elevation="4dp"
+        app:contentInsetStartWithNavigation="0px"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:title="Shell"
+        app:titleTextColor="@color/text_title" />
+
+    <jerry.filebrowser.view.BottomScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fadeScrollbars="false"
+        app:layout_constraintBottom_toTopOf="@+id/editText"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_shell">
+
+        <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fillViewport="true">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                android:typeface="monospace" />
+        </HorizontalScrollView>
+    </jerry.filebrowser.view.BottomScrollView>
+
+    <jerry.filebrowser.shell.TerminalView
+        android:id="@+id/editText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        app:layout_constraintBottom_toTopOf="@+id/bu_ctrl_c"
+        app:layout_constraintEnd_toStartOf="@+id/bu_send"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/bu_send"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        android:enabled="false"
+        android:text="发送"
+        android:textColor="#000000"
+        app:layout_constraintBaseline_toBaselineOf="@+id/editText"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/bu_tab"
+        android:layout_width="50dp"
+        android:layout_height="40dp"
+        android:text="Tab"
+        android:textAllCaps="false"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/bu_ctrl_c"
+        android:layout_width="68dp"
+        android:layout_height="40dp"
+        android:text="Ctrl+c"
+        android:textAllCaps="false"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/bu_tab" />
+
+    <!--    <Button-->
+    <!--        android:id="@+id/bu_up"-->
+    <!--        android:layout_width="40dp"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:text="↑"-->
+    <!--        android:textAllCaps="false"-->
+    <!--        android:textColor="#000000"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintStart_toEndOf="@+id/bu_ctrl_c" />-->
+
+    <!--    <Button-->
+    <!--        android:id="@+id/bu_down"-->
+    <!--        android:layout_width="40dp"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:text="↓"-->
+    <!--        android:textAllCaps="false"-->
+    <!--        android:textColor="#000000"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintStart_toEndOf="@+id/bu_up" />-->
+
+    <CheckBox
+        android:id="@+id/cb_enter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="自动输入回车"
+        android:textColor="@color/text"
+        app:layout_constraintBottom_toBottomOf="@+id/bu_ctrl_c"
+        app:layout_constraintStart_toEndOf="@+id/bu_ctrl_c"
+        app:layout_constraintTop_toTopOf="@+id/bu_ctrl_c" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

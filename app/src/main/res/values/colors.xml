@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--    <color name="colorAccent">#117BFF</color>-->
+    <color name="colorAccent">#007AFF</color>
+    <color name="statusBar">@color/mmaterial_grey_600</color>
+    <color name="toolbar">@color/colorBg</color>
+    <color name="actionModeBg">@color/toolbar</color>
+    <color name="action">#0E0E0E</color>
+
+    <!--<color name="colorAccent">#232323</color>-->
+    <!--背景色-->
+    <color name="colorBg">#EEEEEE</color>
+    <!--突出颜色-->
+    <color name="colorLight">#C1C1C1</color>
+    <color name="colorSelect">@color/mmaterial_grey_500</color>
+    <color name="colorDecoration">@color/mmaterial_grey_500</color>
+
+
+    <!--    <color name="colorGrey400">#BDBDBD</color>-->
+    <!--    <color name="colorGrey500">#9E9E9E</color>-->
+    <!--    <color name="colorGrey700">#616161</color>-->
+
+    <color name="tag">@color/colorDark</color>
+    <color name="tagBgLight">#EEEEEE</color>
+
+    <color name="iconBg">#EEEEEE</color>
+
+    <color name="iconDisable">#646464</color>
+    <!--    <color name="iconBg">#212121</color>-->
+
+    <!--    <color name="pathBg">#5F5F5F</color>-->
+    <color name="pathBg">#4A4A4A</color>
+    <!--    <color name="error">#FF3749</color>-->
+    <color name="error">#FF3B30</color>
+
+    <color name="dialogBg">@color/colorBg</color>
+
+    <!--    <color name="text">#d0d0d0</color>-->
+    <!--    <color name="text_title">#000000</color>-->
+    <color name="text_title">#0E0E0E</color>
+    <color name="text">#1E1E1E</color>
+    <color name="text_dialog">#1E1E1E</color>
+    <color name="text_dialog_msg">#1E1E1E</color>
+    <color name="text_subtitle">#7E7E7E</color>
+    <color name="text_active">#1E1E1E</color>
+    <color name="text_time">@color/text_subtitle</color>
+    <color name="disable">@color/text_subtitle</color>
+
+    <color name="colorDark">#0E0E0E</color>
+
+    <!--    <color name="colorRipple">#9E9E9E</color>-->
+    <!--    <color name="colorRipple">#FF0000</color>-->
+    <color name="colorRipple">#646464</color>
+    <color name="android">#3ddc84</color>
+
+    <color name="mmaterial_grey_100">#fff5f5f5</color>
+    <color name="mmaterial_grey_300">#ffe0e0e0</color>
+    <color name="mmaterial_grey_50">#fffafafa</color>
+    <color name="mmaterial_grey_400">#BDBDBD</color>
+    <color name="mmaterial_grey_500">#9E9E9E</color>
+    <color name="mmaterial_grey_600">#ff757575</color>
+    <color name="mmaterial_grey_700">#ff616161</color>
+    <color name="mmaterial_grey_800">#ff424242</color>
+    <color name="mmaterial_grey_850">#ff303030</color>
+    <color name="mmaterial_grey_900">#ff212121</color>
+
+    <!--    <color name="txt">#42cb83</color>-->
+    <!--    <color name="transparent">#17FF7B</color>-->
+    <!--  <color name="colorBgd">#737373</color>-->
+</resources>

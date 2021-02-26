@@ -1,0 +1,104 @@
+<resources>
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!--        <item name="colorPrimary">@color/toolbar</item>-->
+        <item name="colorPrimary">@color/colorRipple</item>
+        <item name="colorPrimaryDark">@color/statusBar</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="selectableItemBackgroundBorderless">@drawable/ripple_circle</item>
+        <!--        <item name="background">@color/mmaterial_grey_800</item>-->
+        <item name="android:colorBackground">@color/colorBg</item>
+        <!--<item name="overlapAnchor">false</item>-->
+        <item name="colorControlNormal">@color/action</item>
+        <!--        <item name="colorControlNormal">#FF0000</item>-->
+        <!--        <item name="android:windowActionModeOverlay">true</item>-->
+        <item name="windowActionModeOverlay">true</item>
+
+        <!--<item name="titleTextStyle">@style/ActionBar</item>-->
+        <item name="actionModeStyle">@style/ActionMode</item>
+        <item name="android:textColor">@color/text</item>
+        <!--        Toolbar 标题颜色-->
+        <item name="android:textColorPrimary">@color/text</item>
+        <!--        子标题颜色-->
+        <item name="android:textColorSecondary">@color/text_subtitle</item>
+        <!--        button ripple颜色-->
+        <item name="colorControlHighlight">@color/colorRipple</item>
+    </style>
+
+
+    <style name="ActionMode" parent="Widget.AppCompat.ActionMode">
+        <item name="background">@color/actionModeBg</item>
+        <item name="subtitleTextStyle">@style/SubTitleTextAppearance</item>
+        <item name="contentInsetStartWithNavigation">0dp</item>
+        <item name="closeItemLayout">@layout/action_mode_close_item_layout</item>
+    </style>
+
+    <!--    <style name="Dialog" parent="@style/ThemeOverlay.AppCompat.Dialog.Alert">-->
+    <!--        <item name="android:windowBackground">@drawable/abc_dialog_material_background</item>-->
+    <!--        <item name="android:colorBackground">@color/colorAccent</item>-->
+    <!--        &lt;!&ndash;<item name="android:colorBackgroundCacheHint">@null</item>&ndash;&gt;-->
+    <!--        &lt;!&ndash;<item name="android:colorBackground">?attr/colorBackgroundFloating</item>&ndash;&gt;-->
+
+    <!--        &lt;!&ndash;<item name="android:windowFrame">@null</item>&ndash;&gt;-->
+    <!--        &lt;!&ndash;<item name="android:windowTitleStyle">@style/RtlOverlay.DialogWindowTitle.AppCompat</item>&ndash;&gt;-->
+    <!--        &lt;!&ndash;<item name="android:windowTitleBackgroundStyle">&ndash;&gt;-->
+    <!--        &lt;!&ndash;@style/Base.DialogWindowTitleBackground.AppCompat&ndash;&gt;-->
+    <!--        &lt;!&ndash;</item>&ndash;&gt;-->
+    <!--        &lt;!&ndash;<item name="android:windowBackground">@drawable/abc_dialog_material_background</item>&ndash;&gt;-->
+    <!--        &lt;!&ndash;<item name="android:windowIsFloating">true</item>&ndash;&gt;-->
+    <!--        &lt;!&ndash;<item name="android:backgroundDimEnabled">true</item>&ndash;&gt;-->
+    <!--        &lt;!&ndash;<item name="android:windowContentOverlay">@null</item>&ndash;&gt;-->
+    <!--        &lt;!&ndash;<item name="android:windowAnimationStyle">@style/Animation.AppCompat.Dialog</item>&ndash;&gt;-->
+    <!--        &lt;!&ndash;<item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>&ndash;&gt;-->
+
+    <!--        &lt;!&ndash;<item name="windowActionBar">false</item>&ndash;&gt;-->
+    <!--        &lt;!&ndash;<item name="windowActionModeOverlay">true</item>&ndash;&gt;-->
+
+    <!--        &lt;!&ndash;<item name="listPreferredItemPaddingLeft">24dip</item>&ndash;&gt;-->
+    <!--        &lt;!&ndash;<item name="listPreferredItemPaddingRight">24dip</item>&ndash;&gt;-->
+
+    <!--        &lt;!&ndash;<item name="android:listDivider">@null</item>&ndash;&gt;-->
+
+    <!--        &lt;!&ndash;<item name="windowFixedWidthMajor">@null</item>&ndash;&gt;-->
+    <!--        &lt;!&ndash;<item name="windowFixedWidthMinor">@null</item>&ndash;&gt;-->
+    <!--        &lt;!&ndash;<item name="windowFixedHeightMajor">@null</item>&ndash;&gt;-->
+    <!--        &lt;!&ndash;<item name="windowFixedHeightMinor">@null</item>&ndash;&gt;-->
+    <!--        &lt;!&ndash;&ndash;&gt;-->
+    <!--        &lt;!&ndash;<item name="android:borderlessButtonStyle">@style/Widget.AppCompat.Button.Borderless</item>&ndash;&gt;-->
+    <!--        &lt;!&ndash;<item name="android:windowCloseOnTouchOutside">true</item>&ndash;&gt;-->
+    <!--    </style>-->
+
+    <style name="MyPopupMenuStyle" parent="@style/Widget.AppCompat.Light.PopupMenu">
+        <item name="android:popupBackground">@drawable/popup_bg</item>
+        <item name="overlapAnchor">true</item>
+        <!--        <item name="android:color">@color/text_dialog_msg</item>-->
+        <item name="android:color">#FF0000</item>
+    </style>
+
+    <style name="MyBottom" parent="Base.Widget.AppCompat.ButtonBar.AlertDialog">
+        <!--<item name="android:background">@drawable/abc_action_bar_item_background_material.xml</item>-->
+
+    </style>
+
+    <style name="SubTitleTextAppearance">
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">@color/text_subtitle</item>
+    </style>
+
+
+    <style name="PositiveStyle">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/text</item>
+        <item name="android:layout_marginEnd">12dp</item>
+        <item name="android:text">确定</item>
+        <item name="android:background">@drawable/bu_positive_bg</item>
+    </style>
+
+    <declare-styleable name="TagView">
+        <attr name="icon" format="reference" />
+        <attr name="iconBackground" format="reference" />
+        <attr name="title" format="string" />
+        <attr name="enableProcess" format="boolean" />
+        <attr name="message" format="string" />
+    </declare-styleable>
+</resources>

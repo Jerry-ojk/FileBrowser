@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:activity="jerry.filebrowser.activity.MainActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/toolbar"
+        android:elevation="0dp"
+        app:contentInsetStartWithNavigation="0dp"
+        app:subtitleTextAppearance="@style/SubTitleTextAppearance"
+        app:title="内部存储"
+        app:titleTextColor="@color/text_title" />
+
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:openDrawer="start">
+        <!--                tools:openDrawer="start"-->
+        <!--        >-->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recv_path"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:background="@color/toolbar"
+                android:elevation="@dimen/icon_height"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp">
+
+            </androidx.recyclerview.widget.RecyclerView>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recv_file"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="48dp"
+                android:scrollbarSize="4dp"
+                android:scrollbars="vertical"
+                app:layout_constraintBottom_toTopOf="@+id/ll_bottom"
+                app:layout_constraintTop_toBottomOf="@+id/dir_back" />
+
+            <LinearLayout
+                android:id="@+id/ll_bottom"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="-48dp"
+                android:background="@color/toolbar"
+                android:elevation="8dp"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <ImageView
+                    android:id="@+id/action_create"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:background="?android:selectableItemBackgroundBorderless"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_create_new_folder"
+                    app:layout_constraintEnd_toStartOf="@+id/action_next"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <ImageView
+                    android:id="@+id/action_paste"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:background="?android:selectableItemBackgroundBorderless"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_action_paste"
+                    app:layout_constraintEnd_toStartOf="@+id/action_create"
+                    app:layout_constraintStart_toEndOf="@+id/action_pre" />
+
+                <ImageView
+                    android:id="@+id/action_select"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:background="?android:selectableItemBackgroundBorderless"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_action_select"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/action_next" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="280dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:background="@color/colorBg"
+            android:clickable="true"
+            android:focusable="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_catalog"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginStart="2dp"
+                    android:background="@drawable/ripple"
+                    android:drawableEnd="@drawable/ic_action_pre"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="6dp"
+                    android:text="存储"
+                    android:textColor="@color/text_title"
+                    android:textSize="16sp" />
+
+                <jerry.filebrowser.view.ExpandView
+                    android:id="@+id/expand_catalog"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <!--                    <jerry.filebrowser.view.TagView-->
+                    <!--                        android:id="@+id/tag_root"-->
+                    <!--                        android:layout_width="match_parent"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        app:enableProcess="true"-->
+                    <!--                        app:icon="@drawable/ic_phone_dark"-->
+                    <!--                        app:message="正在计算"-->
+                    <!--                        app:title="根目录" />-->
+
+                    <jerry.filebrowser.view.TagView
+                        android:id="@+id/tag_sd"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:enableProcess="true"
+                        app:icon="@drawable/ic_sd_dark"
+                        app:message=""
+                        app:title="内部存储" />
+
+                </jerry.filebrowser.view.ExpandView>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_collection"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginStart="2dp"
+                    android:background="@drawable/ripple"
+                    android:drawableEnd="@drawable/ic_action_pre"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:maxLines="1"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="6dp"
+                    android:text="收藏"
+                    android:textColor="@color/text_title"
+                    android:textSize="16sp" />
+
+                <jerry.filebrowser.view.ExpandView
+                    android:id="@+id/expand_collection"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_remote"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginStart="2dp"
+                    android:background="@drawable/ripple"
+                    android:drawableEnd="@drawable/ic_action_pre"
+                    android:drawablePadding="8dp"
+                    android:elevation="2dp"
+                    android:gravity="center_vertical"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="6dp"
+                    android:text="远程"
+                    android:textColor="@color/text"
+                    android:textSize="16sp" />
+
+                <jerry.filebrowser.view.ExpandView
+                    android:id="@+id/expand_remote"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <!--<jerry.filebrowser.view.TagView-->
+                    <!--android:id="@+id/tag_gesture_manager"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--app:icon="@drawable/ic_settings_dark"-->
+                    <!--app:iconBackground="@drawable/tag_bg_light9"-->
+                    <!--app:message="添加或修改手势"-->
+                    <!--app:title="手势管理" />-->
+
+
+                    <jerry.filebrowser.view.TagView
+                        android:id="@+id/tag_shell"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:icon="@drawable/ic_terminal"
+                        app:message="使用SSH协议连接远程Shell"
+                        app:title="远程终端模拟" />
+
+                    <jerry.filebrowser.view.TagView
+                        android:id="@+id/tag_ftp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:icon="@drawable/ic_ftp"
+                        app:message="使用SFTP协议传输文件"
+                        app:title="SFTP客户端" />
+
+
+                    <!--                    <jerry.filebrowser.view.TagView-->
+                    <!--                        android:id="@+id/tag_ter"-->
+                    <!--                        android:layout_width="match_parent"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        app:icon="@drawable/ic_develop"-->
+                    <!--                        app:message="本地终端模拟器"-->
+                    <!--                        app:title="Terminal" />-->
+
+                </jerry.filebrowser.view.ExpandView>
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_tool"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginStart="2dp"
+                    android:background="@drawable/ripple"
+                    android:drawableEnd="@drawable/ic_action_pre"
+                    android:drawablePadding="8dp"
+                    android:elevation="2dp"
+                    android:gravity="center_vertical"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="6dp"
+                    android:text="工具"
+                    android:textColor="@color/text_title"
+                    android:textSize="16sp" />
+
+                <jerry.filebrowser.view.ExpandView
+                    android:id="@+id/expand_tool"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <jerry.filebrowser.view.TagView
+                        android:id="@+id/tag_clear_null"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:icon="@drawable/ic_delete_dark"
+                        app:message="删除当前目录中的空文件夹"
+                        app:title="清理空文件夹" />
+
+                    <jerry.filebrowser.view.TagView
+                        android:id="@+id/tag_dart_mode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:icon="@drawable/ic_delete_dark"
+                        app:message="切换为白天/暗黑模式主题"
+                        app:title="主题切换" />
+
+                    <!--<jerry.filebrowser.view.TagView-->
+                    <!--android:id="@+id/tag_gesture_manager"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--app:icon="@drawable/ic_settings_dark"-->
+                    <!--app:iconBackground="@drawable/tag_bg_light9"-->
+                    <!--app:message="添加或修改手势"-->
+                    <!--app:title="手势管理" />-->
+
+                    <!--                    <jerry.filebrowser.view.TagView-->
+                    <!--                        android:id="@+id/tag_ter"-->
+                    <!--                        android:layout_width="match_parent"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        app:icon="@drawable/ic_develop"-->
+                    <!--                        app:message="本地终端模拟器"-->
+                    <!--                        app:title="Terminal" />-->
+
+                </jerry.filebrowser.view.ExpandView>
+
+
+                <!--<TextView-->
+                <!--android:id="@+id/tv_gesture"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="52dp"-->
+                <!--android:layout_marginStart="2dp"-->
+                <!--android:background="@drawable/ripple"-->
+                <!--android:drawableStart="@drawable/header_gesture_bg"-->
+                <!--android:drawableEnd="@drawable/ic_action_pre"-->
+                <!--android:drawablePadding="8dp"-->
+                <!--android:gravity="center_vertical"-->
+                <!--android:padding="6dp"-->
+                <!--android:text="手势"-->
+                <!--android:textColor="#FFFFFF"-->
+                <!--android:textSize="18sp" />-->
+
+                <!--<jerry.filebrowser.view.ExpandView-->
+                <!--android:id="@+id/expand_gesture"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content" />-->
+
+            </LinearLayout>
+        </ScrollView>
+
+    </androidx.drawerlayout.widget.DrawerLayout>
+</LinearLayout>

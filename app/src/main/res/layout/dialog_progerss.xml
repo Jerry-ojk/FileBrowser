@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/dialogBg">
+
+    <TextView
+        android:id="@+id/dialog_title"
+        tools:text="复制"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="12dp"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_message"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="12dp"
+        android:ellipsize="middle"
+        android:singleLine="true"
+        android:textColor="#FF117BFF"
+        android:textSize="16sp"
+        app:autoSizeMaxTextSize="16sp"
+        tools:text="内部存储/music/七里香-周杰伦.mp3"
+        app:autoSizeMinTextSize="12sp"
+        app:autoSizeStepGranularity="2sp"
+        app:autoSizeTextType="none"
+        app:layout_constraintEnd_toStartOf="@+id/dialog_sub_message"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_title" />
+
+    <TextView
+        android:id="@+id/dialog_sub_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="12dp"
+        android:singleLine="true"
+        android:textColor="@color/text_dialog_msg"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_title"
+        tools:text="12/32" />
+
+    <jerry.filebrowser.view.LineProcess1
+        android:id="@+id/dialog_lp"
+        android:layout_width="0dp"
+        android:layout_height="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_message" />
+
+    <!--<Button-->
+    <!--android:id="@+id/dialog_negativeButton"-->
+    <!--style="?attr/buttonBarNegativeButtonStyle"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginStart="30dp"-->
+    <!--android:layout_marginTop="12dp"-->
+    <!--android:text="取消"-->
+    <!--app:layout_constraintEnd_toStartOf="@+id/dialog_positiveButton"-->
+    <!--app:layout_constraintHorizontal_bias="1.0"-->
+    <!--app:layout_constraintTop_toBottomOf="@+id/dialog_editText" />-->
+
+    <!--<Button-->
+    <!--android:id="@+id/dialog_positiveButton"-->
+    <!--style="?attr/buttonBarPositiveButtonStyle"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginTop="12dp"-->
+    <!--android:layout_marginEnd="4dp"-->
+    <!--android:text="确定"-->
+    <!--android:textColor="@color/colorAccent"-->
+    <!--app:layout_constraintEnd_toEndOf="parent"-->
+    <!--app:layout_constraintTop_toBottomOf="@+id/dialog_editText" />-->
+
+</androidx.constraintlayout.widget.ConstraintLayout>

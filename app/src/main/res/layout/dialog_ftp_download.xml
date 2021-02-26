@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorBg"
+    android:paddingStart="16dp"
+    android:paddingTop="16dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="16dp">
+
+    <TextView
+        android:id="@+id/dialog_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="下载"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_src"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:enabled="false"
+        android:focusable="false"
+        android:textColorHint="@color/text"
+        app:errorEnabled="false"
+        app:layout_constraintTop_toBottomOf="@id/dialog_title">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/ed_src"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:hint="目标文件"
+            android:text="/sd/666.txt"
+            tools:autoSizeMaxTextSize="18sp"
+            tools:autoSizeMinTextSize="14sp"
+            tools:autoSizePresetSizes="2sp"
+            tools:autoSizeTextType="uniform" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_dest"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColorHint="@color/text"
+        app:layout_constraintTop_toBottomOf="@id/til_src">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/ed_dest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="下载到"
+            tools:autoSizeMaxTextSize="18sp"
+            tools:autoSizeMinTextSize="14sp"
+            tools:autoSizePresetSizes="2sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColorHint="@color/text"
+        app:layout_constraintTop_toBottomOf="@id/til_dest">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/ed_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="文件名"
+            tools:autoSizeMaxTextSize="18sp"
+            tools:autoSizeMinTextSize="14sp"
+            tools:autoSizePresetSizes="2sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.appcompat.widget.AppCompatCheckBox
+        android:id="@+id/cb_cover"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="覆盖本地文件"
+        android:textColor="@color/text"
+        app:layout_constraintBottom_toBottomOf="@+id/bu_cancel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/bu_cancel" />
+
+    <Button
+        android:id="@+id/bu_cancel"
+        style="?attr/buttonBarNegativeButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="取消"
+        app:layout_constraintEnd_toStartOf="@+id/bu_sure"
+        app:layout_constraintTop_toBottomOf="@+id/til_name" />
+
+    <Button
+        android:id="@+id/bu_sure"
+        style="?attr/buttonBarPositiveButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="确定"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/til_name" />
+</androidx.constraintlayout.widget.ConstraintLayout>

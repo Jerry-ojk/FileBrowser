@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorBg"
+    android:paddingStart="16dp"
+    android:paddingTop="16dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="12dp">
+
+    <TextView
+        android:id="@+id/dialog_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="权限"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:id="@+id/tv_permission_read"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center_horizontal"
+        android:text="读"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@+id/tv_tv_permission_write"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/tv_group"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_title" />
+
+    <TextView
+        android:id="@+id/tv_tv_permission_write"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center_horizontal"
+        android:text="写"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@+id/tv_permission_execute"
+        app:layout_constraintStart_toEndOf="@+id/tv_permission_read"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_title" />
+
+    <TextView
+        android:id="@+id/tv_permission_execute"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center_horizontal"
+        android:text="执行"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@+id/tv_owner_mode"
+        app:layout_constraintStart_toEndOf="@+id/tv_tv_permission_write"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_title" />
+
+
+    <CheckBox
+        android:id="@+id/cb_owner_permission_read"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="@+id/tv_permission_read"
+        app:layout_constraintStart_toStartOf="@+id/tv_permission_read"
+        app:layout_constraintTop_toBottomOf="@+id/tv_permission_read" />
+
+    <CheckBox
+        android:id="@+id/cb_owner_permission_write"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="@+id/tv_tv_permission_write"
+        app:layout_constraintStart_toStartOf="@+id/tv_tv_permission_write"
+        app:layout_constraintTop_toBottomOf="@+id/tv_tv_permission_write" />
+
+
+    <CheckBox
+        android:id="@+id/cb_owner_permission_execute"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="@+id/tv_permission_execute"
+        app:layout_constraintStart_toStartOf="@+id/tv_permission_execute"
+        app:layout_constraintTop_toBottomOf="@+id/tv_permission_execute" />
+
+    <CheckBox
+        android:id="@+id/cb_group_permission_read"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        app:layout_constraintStart_toStartOf="@+id/cb_owner_permission_read"
+        app:layout_constraintTop_toBottomOf="@+id/cb_owner_permission_read" />
+
+
+    <CheckBox
+        android:id="@+id/cb_group_permission_write"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        app:layout_constraintStart_toStartOf="@+id/cb_owner_permission_write"
+        app:layout_constraintTop_toBottomOf="@+id/cb_owner_permission_write" />
+
+    <CheckBox
+        android:id="@+id/cb_group_permission_execute"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        app:layout_constraintStart_toStartOf="@+id/cb_owner_permission_execute"
+        app:layout_constraintTop_toBottomOf="@+id/cb_owner_permission_execute" />
+
+
+    <CheckBox
+        android:id="@+id/cb_other_permission_read"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        app:layout_constraintStart_toStartOf="@+id/cb_owner_permission_read"
+        app:layout_constraintTop_toBottomOf="@+id/cb_group_permission_read" />
+
+    <CheckBox
+        android:id="@+id/cb_other_permission_write"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        app:layout_constraintStart_toStartOf="@+id/cb_owner_permission_write"
+        app:layout_constraintTop_toBottomOf="@+id/cb_group_permission_write" />
+
+
+    <CheckBox
+        android:id="@+id/cb_other_permission_execute"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        app:layout_constraintStart_toStartOf="@+id/cb_owner_permission_execute"
+        app:layout_constraintTop_toBottomOf="@+id/cb_group_permission_execute" />
+
+
+    <TextView
+        android:id="@+id/tv_owner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="所有者"
+        app:layout_constraintBottom_toBottomOf="@+id/cb_owner_permission_read"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/cb_owner_permission_read" />
+
+    <TextView
+        android:id="@+id/tv_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="同组用户"
+        app:layout_constraintBottom_toBottomOf="@+id/cb_group_permission_read"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/cb_group_permission_read" />
+
+
+    <TextView
+        android:id="@+id/tv_other"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="其他用户"
+        app:layout_constraintBottom_toBottomOf="@+id/cb_other_permission_read"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/cb_other_permission_read" />
+
+
+    <TextView
+        android:id="@+id/tv_owner_mode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:text="7"
+        app:layout_constraintBottom_toBottomOf="@+id/cb_owner_permission_read"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/cb_owner_permission_read" />
+
+
+    <TextView
+        android:id="@+id/tv_group_mode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:text="6"
+        app:layout_constraintBottom_toBottomOf="@+id/cb_group_permission_read"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/cb_group_permission_read" />
+
+
+    <TextView
+        android:id="@+id/tv_other_mode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:text="1"
+        app:layout_constraintBottom_toBottomOf="@+id/cb_other_permission_read"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/cb_other_permission_read" />
+
+    <TextView
+        android:id="@+id/tv_mode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center_horizontal"
+        android:text="rwxr-xr--"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cb_other_permission_write" />
+
+    <CheckBox
+        android:id="@+id/cb_as_subfile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="应用到子文件"
+        android:textColor="@color/text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_mode" />
+
+    <CheckBox
+        android:id="@+id/cb_as_subdir"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="应用到子文件夹"
+        android:textColor="@color/text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cb_as_subfile" />
+
+
+    <Button
+        android:id="@+id/bu_cancel"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="5dp"
+        android:background="@drawable/bg_button_bar"
+        android:text="取消"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/bu_sure"
+        app:layout_constraintTop_toBottomOf="@+id/cb_as_subdir" />
+
+
+    <Button
+        android:id="@+id/bu_sure"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_button_bar"
+        android:text="确定"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cb_as_subdir" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
