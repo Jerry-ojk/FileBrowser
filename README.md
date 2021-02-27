@@ -3,6 +3,16 @@
 #### 介绍
 一款支持SSH和SFTP协议的Android文件浏览器。实现了SSH协议连接远程终端、SFTP协议与服务器传输文件。支持文件浏览、编辑、搜索、自定义排序、文件夹收藏、图片缩略图、白天/夜间主题切换等功能。文件权限设置与打开终端功能正在开发中。
 
+### 软件截图
+
+|暗黑主题|白天主题|
+|---|---|
+|![图1](https://gitee.com/jerry-ojk/file-browser/raw/master/Screenshots/Screenshot_2021-02-26-15-56-40-495_jerry.filebrowser.debug.jpg)|![图2](https://gitee.com/jerry-ojk/file-browser/raw/master/Screenshots/Screenshot_2021-02-26-15-57-44-949_jerry.filebrowser.debug.jpg)|
+|![图2](https://gitee.com/jerry-ojk/file-browser/raw/master/Screenshots/Screenshot_2021-02-26-15-55-45-575_jerry.filebrowser.debug.jpg)|![图3](https://gitee.com/jerry-ojk/file-browser/raw/master/Screenshots/Screenshot_2021-02-26-15-57-55-225_jerry.filebrowser.debug.jpg)|
+|![图4](https://gitee.com/jerry-ojk/file-browser/raw/master/Screenshots/Screenshot_2021-02-26-15-55-41-466_jerry.filebrowser.debug.jpg)|![图5](https://gitee.com/jerry-ojk/file-browser/raw/master/Screenshots/Screenshot_2021-02-26-15-58-10-526_jerry.filebrowser.debug.jpg)|
+|![图6](https://gitee.com/jerry-ojk/file-browser/raw/master/Screenshots/Screenshot_2021-02-27-16-18-22-846_jerry.filebrowser.debug.jpg)|![图7](https://gitee.com/jerry-ojk/file-browser/raw/master/Screenshots/Screenshot_2021-02-26-15-58-30-146_jerry.filebrowser.debug.jpg)|
+
+
 #### 软件架构
 软件架构说明
 
