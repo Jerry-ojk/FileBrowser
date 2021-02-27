@@ -8,9 +8,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StatFs;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,14 +27,15 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import jerry.filebrowser.BuildConfig;
 import jerry.filebrowser.R;
 import jerry.filebrowser.adapter.FileBrowserAdapter;
 import jerry.filebrowser.adapter.ItemDecoration;
@@ -110,8 +113,9 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
 //        }
         long a = System.currentTimeMillis();
         setContentView(R.layout.activity_main);
-        Log.i("666", "MainActivity布局耗时" + (System.currentTimeMillis() - a));
-
+        if (BuildConfig.DEBUG) {
+            Log.i("666", "MainActivity布局耗时" + (System.currentTimeMillis() - a));
+        }
         dialogManager = new DialogManager(this);
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
 
@@ -236,13 +240,20 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
         final IntentFilter filter = new IntentFilter(RefreshReceiver.ACTION_REFRESH);
         filter.addAction(RefreshReceiver.ACTION_NAVIGATION);
         registerReceiver(refreshReceiver, filter);
-
-        if (checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, android.os.Process.myPid(), android.os.Process.myUid()) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (!Environment.isExternalStorageManager()) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                startActivity(intent);
+                showToast("请授权允许所有文件管理");
+            }
         } else {
-            boolean success = SettingManager.read();
-            if (success) {
-                applyDrawerSettings(SETTING_DATA);
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+            } else {
+                boolean success = SettingManager.read();
+                if (success) {
+                    applyDrawerSettings(SETTING_DATA);
+                }
             }
         }
 
@@ -290,8 +301,9 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
                 ThemeHelper.setDarkMode(!ThemeHelper.isDarkMode);
             }
         });
-
-        Log.i("666", "MainActivity.onCreate()共耗时" + (System.currentTimeMillis() - b));
+        if (BuildConfig.DEBUG) {
+            Log.i("666", "MainActivity.onCreate()共耗时" + (System.currentTimeMillis() - b));
+        }
     }
 
 
@@ -365,7 +377,7 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
         if (requestCode == 0) {
             for (int code : grantResults) {
                 if (code != PackageManager.PERMISSION_GRANTED) {
-                    showToast("授权失败！");
+                    showToast("不授权文件读写权限软件无法工作！");
                     return;
                 }
             }

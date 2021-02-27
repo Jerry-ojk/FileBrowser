@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
+import jerry.filebrowser.BuildConfig;
 import jerry.filebrowser.R;
 import jerry.filebrowser.util.Util;
 import jerry.filebrowser.app.AppUtil;
@@ -50,7 +51,7 @@ public class EditActivity extends AppCompatActivity {
     private ContentResolver contentResolver;
     private boolean isChange = false;
 
-    private int maxLen = 1 * 1024 * 1024;//2MB
+    private final int maxLen = 1 * 1024 * 1024;//2MB
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +73,9 @@ public class EditActivity extends AppCompatActivity {
             return;
         }
         contentResolver = getContentResolver();
-        Log.i("666", uri.toString());
+        if (BuildConfig.DEBUG) {
+            Log.i("666", uri.toString());
+        }
 
         getInfoFromUri(uri);
         final String text = readTextFromUri(uri);
