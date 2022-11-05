@@ -29,7 +29,7 @@ public class ExpandView extends ViewGroup {
     public final static int STATE_ALPHA0ING = 4;
     public final static int STATE_ALPHA1ING = 5;
 
-    private RotatableDrawable arrow;
+    private final RotatableDrawable arrow;
 
     private int state = STATE_CLOSED;
     private int action = STATE_CLOSED;
@@ -42,7 +42,7 @@ public class ExpandView extends ViewGroup {
     private TextView textView;
 
     private ValueAnimator animator_expand;
-    private ValueAnimator.AnimatorUpdateListener listener;
+    private final ValueAnimator.AnimatorUpdateListener listener;
     //    private OnViewRemoveListener removeListener;
     private boolean isChange = true;
 
@@ -116,6 +116,7 @@ public class ExpandView extends ViewGroup {
     @Override
     public void onViewRemoved(View child) {
         isChange = true;
+        ((TagView) child).setOnClick(null, null);
         super.onViewRemoved(child);
     }
 

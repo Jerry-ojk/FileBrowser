@@ -183,7 +183,7 @@ public class EditDialog extends BaseDialog {
     public void showDeleteDialog(JerryFile file) {
         newDir.setVisibility(View.INVISIBLE);
         newFile.setVisibility(View.INVISIBLE);
-        ed_name.setVisibility(View.GONE);
+        til_name.setVisibility(View.GONE);
         title.setText("删除");
         String type = file.getTypeName();
         StringBuilder builder = new StringBuilder("确定要删除该").append(type).append("吗？");

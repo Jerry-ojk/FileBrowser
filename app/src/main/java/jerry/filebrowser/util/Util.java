@@ -18,16 +18,18 @@ public class Util {
 
 
     public static String size(long size) {
-        if (size < 0) return "未知：（" + size + ")";
+        if (size < 0L) return "未知：（" + size + ")";
         String result;
-        if (size < 0x400) {
+        if (size < 1024L) {
             result = size + "B";
-        } else if (size < 0x100000) {
-            result = decimalFormat.format(size / 1024d) + "KB";
-        } else if (size < 0x40000000) {
-            result = decimalFormat.format(size / 1048876d) + "MB";
+        } else if (size < 1024L * 1024) {
+            result = decimalFormat.format(size / (1024D)) + "KB";
+        } else if (size < 1024L * 1024 * 1024) {
+            result = decimalFormat.format(size / (1024D * 1024)) + "MB";
+        } else if (size < 1024L * 1024 * 1024 * 1024) {
+            result = decimalFormat.format(size / (1024D * 1024 * 1024)) + "GB";
         } else {
-            result = decimalFormat.format(size / 1073741824d) + "GB";
+            result = decimalFormat.format(size / (1024D * 1024 * 1024 * 1024)) + "TB";
         }
         return result;
     }

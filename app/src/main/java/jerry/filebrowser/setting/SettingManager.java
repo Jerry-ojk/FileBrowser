@@ -1,10 +1,10 @@
 package jerry.filebrowser.setting;
 
 import android.os.Environment;
-import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -14,19 +14,26 @@ import jerry.filebrowser.util.FileUtils;
 import jerry.filebrowser.view.ExpandView;
 
 public class SettingManager {
-    private static final String config_path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/jerry_config.txt";
-    private static final String SETTING_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/jerry_setting.json";
-    public static SettingData SETTING_DATA;
+    private static final String CONFIG_ROOT = Environment.getExternalStorageDirectory().getAbsolutePath() + "/jerry";
+    private static final String SETTING_PATH = CONFIG_ROOT + "/setting.json";
+    public static final String FTP_CONFIG_PATH = CONFIG_ROOT + "/config_ftp.json";
+    public static final String SHELL_CONFIG_PATH = CONFIG_ROOT + "/config_shell.json";
+    public static final String FTP_DOWNLOAD_DIR = CONFIG_ROOT + "/FTP";
 
-    public static final String FTP_DOWNLOAD_DIR = Environment.getExternalStorageDirectory().getAbsolutePath() + "/FTP";
-    public static final String FTP_CONFIG_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/jerry_config_ftp.json";
-    public static final String SHELL_CONFIG_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/jerry_config_shell.json";
+    public static SettingData SETTING_DATA;
     public static FTPSettingData FTP_SETTING_DATA;
     public static ShellSettingData SHELL_SETTING_DATA;
 
+    static {
+        File root = new File(CONFIG_ROOT);
+        if (!root.exists()) {
+            root.mkdirs();
+        }
+    }
+
     public static boolean read() {
         if (UnixFile.isExist(SETTING_PATH)) {
-            long a = System.currentTimeMillis();
+//            long a = System.currentTimeMillis();
             try {
                 String json = FileUtils.readFile(SETTING_PATH);
                 if (json != null) {
@@ -36,26 +43,25 @@ public class SettingManager {
                 e.printStackTrace();
             }
             long b = System.currentTimeMillis();
-            Log.i("666", "read json " + (b - a) + "ms");
+//            Log.i("666", "read json " + (b - a) + "ms");
         }
         if (SETTING_DATA == null) {
             SETTING_DATA = new SettingData();
             return false;
-        } else {
-            FileSetting.OPTION = SETTING_DATA.option;
-            return true;
         }
+        FileSetting.OPTION = SETTING_DATA.option;
+        return true;
     }
 
     public static void save(ArrayList<ExpandView> list) {
-        long a = System.currentTimeMillis();
+//        long a = System.currentTimeMillis();
         SETTING_DATA.option = FileSetting.OPTION;
         if (list != null) {
             SETTING_DATA.triggerList = getDrawerSettings(list);
         }
         saveJson(SETTING_PATH, SETTING_DATA);
-        long b = System.currentTimeMillis();
-        Log.i("666", "save json " + (b - a) + "ms");
+//        long b = System.currentTimeMillis();
+//        Log.i("666", "save json " + (b - a) + "ms");
     }
 
     public static ShellSettingData readShellConfig() {

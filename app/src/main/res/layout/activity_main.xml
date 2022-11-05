@@ -132,15 +132,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <!--                    <jerry.filebrowser.view.TagView-->
-                    <!--                        android:id="@+id/tag_root"-->
-                    <!--                        android:layout_width="match_parent"-->
-                    <!--                        android:layout_height="wrap_content"-->
-                    <!--                        app:enableProcess="true"-->
-                    <!--                        app:icon="@drawable/ic_phone_dark"-->
-                    <!--                        app:message="正在计算"-->
-                    <!--                        app:title="根目录" />-->
-
                     <jerry.filebrowser.view.TagView
                         android:id="@+id/tag_sd"
                         android:layout_width="match_parent"

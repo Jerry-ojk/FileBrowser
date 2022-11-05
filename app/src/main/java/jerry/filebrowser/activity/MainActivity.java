@@ -45,6 +45,7 @@ import jerry.filebrowser.dialog.FileClearDialog;
 import jerry.filebrowser.dialog.SearchDialog;
 import jerry.filebrowser.dialog.SortDialog;
 import jerry.filebrowser.file.Clipboard;
+import jerry.filebrowser.file.FileRoot;
 import jerry.filebrowser.file.UnixFile;
 import jerry.filebrowser.ftp.SFTPConfigListActivity;
 import jerry.filebrowser.image.ImageManager;
@@ -68,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
     private Toolbar toolbar;
     private RecyclerView recyclerView;
     private FileBrowserAdapter adapter;
-    private RefreshReceiver refreshReceiver;
 
     //private SharedPreferences preferences;
     private LinearLayout bottomNav;
@@ -90,6 +90,9 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
     private final StringBuilder builder = new StringBuilder();
 
     private View.OnClickListener PathItemListener;
+
+    private RefreshReceiver refreshReceiver;
+    private OTGReceiver otgReceiver;
 
     static {
         System.loadLibrary("file");
@@ -139,6 +142,8 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
         findViewById(R.id.action_create).setOnClickListener(v -> {
             dialogManager.showCreateDialog(FileSetting.getCurrentPath());
         });
+
+        registerReceivers();
 
         // 底部多选按钮
         iv_select = findViewById(R.id.action_select);
@@ -211,8 +216,10 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
             onQuitCopy();
         });
 
+        // 初始化侧边栏的功能分组
         expand_catalog = findViewById(R.id.expand_catalog);
         expand_catalog.bindTextView(findViewById(R.id.tv_catalog));
+        expand_catalog.setDrawer(drawer);
 
         expand_collect = findViewById(R.id.expand_collection);
         expand_collect.bindTextView(findViewById(R.id.tv_collection));
@@ -236,10 +243,8 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
         recyclerView = findViewById(R.id.recv_file);
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(new ItemDecoration(this));
-        refreshReceiver = new RefreshReceiver();
-        final IntentFilter filter = new IntentFilter(RefreshReceiver.ACTION_REFRESH);
-        filter.addAction(RefreshReceiver.ACTION_NAVIGATION);
-        registerReceiver(refreshReceiver, filter);
+
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (!Environment.isExternalStorageManager()) {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
@@ -249,12 +254,11 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
         } else {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
-            } else {
-                boolean success = SettingManager.read();
-                if (success) {
-                    applyDrawerSettings(SETTING_DATA);
-                }
             }
+        }
+
+        if (SettingManager.read()) {
+            applyDrawerSettings(SETTING_DATA);
         }
 
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
@@ -270,9 +274,8 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
 //            showToast("暂不支持浏览根目录");
 //        }, drawer);
         tag_sd = expand_catalog.findViewById(R.id.tag_sd);
-        tag_sd.setOnClick(v -> {
-            adapter.switchRoot(Environment.getExternalStorageDirectory().getAbsolutePath());
-        }, drawer);
+        tag_sd.setData(Environment.getExternalStorageDirectory().getAbsolutePath());
+        tag_sd.setOnClick(v -> adapter.switchRoot(Environment.getExternalStorageDirectory().getAbsolutePath()), drawer);
 
 //        TagView tag_ter = expand_tool.findViewById(R.id.tag_ter);
 //        tag_ter.setOnClick((v -> startActivity(new Intent(this, TerminalActivity.class))), drawer);
@@ -304,13 +307,17 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
         if (BuildConfig.DEBUG) {
             Log.i("666", "MainActivity.onCreate()共耗时" + (System.currentTimeMillis() - b));
         }
+
+        refreshFileRoot();
     }
 
 
     private void collectionPath(String path) {
-        final List<String> colList = SETTING_DATA.colList;
-        if (!colList.contains(path)) {
-            colList.add(path);
+        if (SETTING_DATA.colList == null) {
+            SETTING_DATA.colList = new ArrayList<>();
+        }
+        if (!SETTING_DATA.colList.contains(path)) {
+            SETTING_DATA.colList.add(path);
             TagView tagView = expand_collect.addTag(PathUtil.getPathName(path), FileSetting.tagPath(path), R.drawable.ic_type_folder, PathItemListener);
             tagView.setOnLongClickListener(v -> {
                 SETTING_DATA.colList.remove(FileSetting.innerPath(((TagView) v).getMessage()));
@@ -374,6 +381,7 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 0) {
             for (int code : grantResults) {
                 if (code != PackageManager.PERMISSION_GRANTED) {
@@ -431,23 +439,26 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
     }
 
     public void updateSpace() {
-        final StatFs statFs = new StatFs(Environment.getExternalStorageDirectory().getAbsolutePath());
-        final long t = statFs.getTotalBytes();
-        final long a = statFs.getAvailableBytes();
-        tag_sd.setProcess((int) ((t - a) * 100 / t));
-        tag_sd.setMessage("共" + Util.size(t)
-                + "，可用" + Util.size(a)
-                + "，自由" + Util.size(statFs.getFreeBytes()));
+        for (int i = 0; i < expand_catalog.getChildCount(); ++i) {
+            TagView tagView = (TagView) expand_catalog.getChildAt(i);
+            StatFs statFs = null;
+            try {
+                statFs = new StatFs(tagView.getData());
+            } catch (Exception e) {
+                tagView.setProcess(0);
+                tagView.setMessage("");
+                return;
+            }
+            long total = statFs.getTotalBytes();
+            long available = statFs.getAvailableBytes();
+            tagView.setProcess((int) ((total - available) * 100 / total));
+            tagView.setMessage("共" + Util.size(total)
+                    + "，可用" + Util.size(available)
+                    + "，自由" + Util.size(statFs.getFreeBytes()));
 
-
-//        statFs = new StatFs("/");
-//        final long t1 = statFs.getTotalBytes();
-//        final long a1 = statFs.getAvailableBytes();
-//        tag_root.setMessage("共" + Util.size(t1)
-//                + "，可用" + Util.size(a1)
-//                + "，自由" + Util.size(statFs.getFreeBytes()));
-//        tag_root.setProcess((int) ((t1 - a1) * 100 / t1));
+        }
     }
+
 
     @Override
     public void showToast(String text) {
@@ -457,7 +468,7 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
 
     @Override
     public void onLowMemory() {
-        showToast("内存不足，自动清空缓存");
+//        showToast("内存不足，自动清空缓存");
         if (dialogManager != null) dialogManager.onLowMemory();
         ImageManager.onLowMemory();
         super.onLowMemory();
@@ -503,6 +514,33 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
         return adapter;
     }
 
+    private void registerReceivers() {
+        refreshReceiver = new RefreshReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(RefreshReceiver.ACTION_REFRESH);
+        filter.addAction(RefreshReceiver.ACTION_NAVIGATION);
+        registerReceiver(refreshReceiver, filter);
+
+        otgReceiver = new OTGReceiver();
+        filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_MEDIA_MOUNTED);
+        filter.addAction(Intent.ACTION_MEDIA_REMOVED);
+        filter.addDataScheme("file");
+        registerReceiver(otgReceiver, filter, Manifest.permission.READ_EXTERNAL_STORAGE, null);
+    }
+
+    private void refreshFileRoot() {
+        expand_catalog.removeViews(1, expand_catalog.getChildCount() - 1);
+        ArrayList<FileRoot> otgPathList = PathUtil.getOTGPathList(this);
+        if (otgPathList == null) return;
+        for (FileRoot item : otgPathList) {
+            TagView view = expand_catalog.addTag(item.getName(), item.getPath(), R.drawable.ic_sd_dark,
+                    v -> adapter.loadDirectory(item.getPath(), FileBrowserAdapter.TYPE_JUMP));
+            view.setProcess(0);
+            view.setData(item.getPath());
+        }
+        updateSpace();
+    }
 
     private class RefreshReceiver extends BroadcastReceiver {
         public static final String ACTION_REFRESH = "JERRY.ACTION.REFRESH.MAIN_ACTIVITY";
@@ -534,5 +572,13 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
         final Intent intent = new Intent(RefreshReceiver.ACTION_NAVIGATION);
         if (path != null) intent.putExtra(RefreshReceiver.PARAM_PATH, path);
         context.sendBroadcast(intent);
+    }
+
+    private class OTGReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            showToast("U盘事件");
+            refreshFileRoot();
+        }
     }
 }

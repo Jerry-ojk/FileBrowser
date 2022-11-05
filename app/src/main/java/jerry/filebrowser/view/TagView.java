@@ -17,18 +17,19 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import jerry.filebrowser.R;
 
 public class TagView extends ViewGroup {
-    private ImageView iv_icon;
     private boolean enableProcess;
     private int process = 0;
-    private Paint paint;
-    private StringBuilder builder;
-    private float offset;
+    private final float offset;
+    private final int titleColor;
+    private final int subtitleColor;
+    private final float subtitleSize = DPUtils.DP10;
     private String title;
     private String message;
-    private int titleColor;
-    private int subtitleColor;
-    private final float titleSize = DPUtils.DP16;
-    private final float subtitleSize = DPUtils.DP10;
+    private final ImageView iv_icon;
+    private final Paint paint;
+    private final StringBuilder builder;
+    private String data;
+
 
     public TagView(Context context) {
         this(context, null, 0);
@@ -99,6 +100,7 @@ public class TagView extends ViewGroup {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        float titleSize = DPUtils.DP16;
         if (enableProcess) {
             paint.setColor(titleColor);
             paint.setTextSize(titleSize);
@@ -134,7 +136,10 @@ public class TagView extends ViewGroup {
     }
 
     public void setOnClick(@Nullable OnClickListener listener, DrawerLayout drawerLayout) {
-        if (listener == null) return;
+        if (listener == null) {
+            super.setOnClickListener(null);
+            return;
+        }
         super.setOnClickListener(v -> {
             drawerLayout.closeDrawer(Gravity.LEFT);
             postDelayed(() -> listener.onClick(TagView.this), 220);
@@ -148,6 +153,12 @@ public class TagView extends ViewGroup {
 
 
     public void setProcess(int process) {
+        if (process < 0) {
+            enableProcess = false;
+        } else {
+            enableProcess = true;
+        }
+
         if (this.process != process) {
             this.process = process;
             invalidate();
@@ -166,5 +177,13 @@ public class TagView extends ViewGroup {
 
     public String getMessage() {
         return message;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
     }
 }

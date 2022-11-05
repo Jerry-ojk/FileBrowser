@@ -361,7 +361,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
                 select.add(position);
                 notifyItemChanged(position, NOTIFY_SELECT_CHANGE);
             }
-            // 再次怕短是否在多选模式中
+            // 再次判断是否在多选模式中
             if (isMultipleSelectMode) actionMode.setSubtitle("选中数：" + select.getSelectCount());
         } else {
             final UnixFile file = fileList.get(position);
@@ -384,20 +384,22 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
 
     private void onFileClick(int position, UnixFile file) {
         final Uri uri = JerryFileProvider.getUriForFile(activity, BuildConfig.APPLICATION_ID + ".fileprovider", file.getAbsPath());
+
         final Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.putExtra(Intent.EXTRA_TITLE, file.name);
+
         final String mime = TypeUtil.getMimeType(file.name);
-        activity.showToast(mime);
+//        activity.showToast(mime);
         intent.setDataAndType(uri, mime);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
         if (file.name.endsWith(".json") || mime.startsWith("text/")) {
             intent.setClass(activity, EditActivity.class);
             activity.startActivity(intent);
             return;
         }
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
 //                int l = path.lastIndexOf('.');
 //                if (l < (path.length() - 6)) {
 //                    intent.setDataAndType(uri, "text/*");

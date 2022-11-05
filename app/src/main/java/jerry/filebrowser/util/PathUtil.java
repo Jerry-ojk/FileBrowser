@@ -1,5 +1,17 @@
 package jerry.filebrowser.util;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
+import android.os.storage.StorageManager;
+import android.util.Log;
+
+import java.io.File;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+
+import jerry.filebrowser.file.FileRoot;
 import jerry.filebrowser.setting.FileSetting;
 
 public class PathUtil {
@@ -90,4 +102,38 @@ public class PathUtil {
         }
         return absPath;
     }
+
+    // 获取OTG路径
+    @SuppressLint("PrivateApi")
+    public static ArrayList<FileRoot> getOTGPathList(Context context) {
+        ArrayList<FileRoot> res = new ArrayList<>();
+        StorageManager mStorageManager = (StorageManager) context.getSystemService(Activity.STORAGE_SERVICE);
+        try {
+            Method getVolumes = StorageManager.class.getMethod("getVolumes");
+            List<?> volumes = (List<?>) getVolumes.invoke(mStorageManager);
+            if (volumes.size() == 0) {
+                return null;
+            }
+
+            Class<?> volumeInfoClazz = Class.forName("android.os.storage.VolumeInfo");
+            Method isMountedReadable = volumeInfoClazz.getMethod("isMountedReadable");
+            Method getType = volumeInfoClazz.getMethod("getType");
+            Method getPath = volumeInfoClazz.getMethod("getPath");
+            Method getDescription = volumeInfoClazz.getMethod("getDescription");
+
+            for (Object vol : volumes) {
+                if (vol != null && (boolean) isMountedReadable.invoke(vol) && (int) getType.invoke(vol) == 0) {
+                    File root = (File) getPath.invoke(vol);
+                    if (root != null) {
+                        res.add(new FileRoot((String) getDescription.invoke(vol), root.getAbsolutePath()));
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            res.clear();
+        }
+        return res;
+    }
 }
+

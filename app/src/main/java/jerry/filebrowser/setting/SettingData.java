@@ -5,8 +5,8 @@ import java.util.List;
 
 public class SettingData {
     public int version;
-    public List<String> colList;
-    public List<Boolean> triggerList;
+    public ArrayList<String> colList;
+    public ArrayList<Boolean> triggerList;
     public int option;
 
     public SettingData() {
