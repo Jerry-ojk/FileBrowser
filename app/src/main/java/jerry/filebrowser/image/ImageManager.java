@@ -69,6 +69,7 @@ public class ImageManager {
     public static int calculateSampleRate(int width, int targetWidth) {
         if (targetWidth <= 0) return 1;
         int sampleSize = 1;
+        targetWidth = targetWidth << 1;
         while (width > targetWidth) {
             sampleSize = sampleSize << 1;
             width = width >> 1;

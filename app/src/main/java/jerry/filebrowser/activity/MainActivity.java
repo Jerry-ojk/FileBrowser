@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
                         {android.R.attr.state_enabled}},
                 new int[]{
                         getColor(R.color.disable),
-                        getColor(R.color.action)});
+                        getColor(R.color.colorAccent)});
 
         iv_paste.setImageTintList(colorStateList);
         iv_paste.setEnabled(false);

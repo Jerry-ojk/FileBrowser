@@ -104,6 +104,7 @@ public class TypeUtil {
         TYPE_ICON_MAP.put("raw", new FileType(FileType.TYPE_IMAGE, icon_image));
         TYPE_ICON_MAP.put("sh", new FileType(FileType.TYPE_TXT, icon_code));
         TYPE_ICON_MAP.put("so", new FileType(FileType.TYPE_UNKNOWN, icon_compress));
+        TYPE_ICON_MAP.put("ts", new FileType(FileType.TYPE_VIDEO, icon_video));
         TYPE_ICON_MAP.put("ttf", new FileType(FileType.TYPE_UNKNOWN, icon_ttf));
         TYPE_ICON_MAP.put("txt", new FileType(FileType.TYPE_TXT, icon_txt));
         TYPE_ICON_MAP.put("wmv", new FileType(FileType.TYPE_VIDEO, icon_video));
@@ -117,7 +118,7 @@ public class TypeUtil {
         if (dot != 0) {
             final int extensionLen = name.length() - dot;
             if (extensionLen > 0 && extensionLen <= 4) {
-                String extension = name.substring(dot);
+                String extension = name.substring(dot).toLowerCase();
                 FileType fileType = TYPE_ICON_MAP.get(extension);
                 if (fileType != null) {
                     imageView.setImageDrawable(fileType.icon);

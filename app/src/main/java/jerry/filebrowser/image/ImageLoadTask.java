@@ -9,6 +9,7 @@ import android.widget.ImageView;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 import jerry.filebrowser.file.FileType;
@@ -38,29 +39,42 @@ public class ImageLoadTask extends AsyncTask<Void, Void, Bitmap> {
 
         if (isCancelled()) return null;
 
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        options.inPreferredConfig = Bitmap.Config.RGB_565;
-
         Bitmap bitmap = null;
+        FileInputStream stream = null;
         try {
             if (type == FileType.TYPE_IMAGE) {
-                FileInputStream stream = new FileInputStream(file);
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = true;
+                options.inPreferredConfig = Bitmap.Config.RGB_565;
+
+                stream = new FileInputStream(file);
                 BitmapFactory.decodeStream(stream, null, options);
                 stream.close();
+
+
                 if (isCancelled()) return null;
+
                 options.inJustDecodeBounds = false;
-                options.inSampleSize = ImageManager.calculateSampleRate(options.outWidth, width * 2);
+                options.inSampleSize = ImageManager.calculateSampleRate(options.outWidth, width);
+
                 stream = new FileInputStream(file);
                 bitmap = BitmapFactory.decodeStream(stream, null, options);
                 stream.close();
+                stream = null;
             } else if (type == FileType.TYPE_VIDEO) {
-                bitmap = ThumbnailUtils.createVideoThumbnail(new File(path),
-                        new Size(width, height), null);
+                Size size = new Size(width, height);
+                bitmap = ThumbnailUtils.createVideoThumbnail(new File(path), size, null);
+                // Log.i("ImageLoadTask", "size: " + size + ", bitmap: " + bitmap.getWidth() + "x" + bitmap.getHeight());
             }
-
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            if (stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException ignored) {
+                }
+            }
         }
         if (!isCancelled()) return bitmap;
         return null;

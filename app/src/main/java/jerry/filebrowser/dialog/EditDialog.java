@@ -135,9 +135,9 @@ public class EditDialog extends BaseDialog {
             //manager.hideSoftInputFromWindow(editText.getWindowToken(), 0, null);
             dismiss();
         });
-
         show();
-        ed_name.post(() -> manager.showSoftInput(ed_name, 0, null));
+        ed_name.requestFocus();
+        ed_name.postDelayed(() -> manager.showSoftInput(ed_name, InputMethodManager.SHOW_IMPLICIT, null), 200);
     }
 
     public void showCreateDialog(String currentPath) {
@@ -145,7 +145,7 @@ public class EditDialog extends BaseDialog {
         newFile.setVisibility(View.VISIBLE);
         ed_name.setVisibility(View.VISIBLE);
         title.setText("新建");
-//        message.setText("请输入名称");
+        message.setVisibility(View.GONE);
         til_name.setHint("名称");
         positiveButton.setOnClickListener(v -> {
             String newName = ed_name.getText().toString();
@@ -177,7 +177,8 @@ public class EditDialog extends BaseDialog {
             dismiss();
         });
         show();
-        ed_name.post(() -> manager.showSoftInput(ed_name, 0, null));
+        ed_name.requestFocus();
+        ed_name.postDelayed(() -> manager.showSoftInput(ed_name, InputMethodManager.SHOW_IMPLICIT, null), 200);
     }
 
     public void showDeleteDialog(JerryFile file) {
