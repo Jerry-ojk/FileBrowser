@@ -8,17 +8,13 @@ import androidx.collection.LruCache;
 
 public class ImageManager {
     // 一张约3000-8000
-    private static final LruCache<String, Bitmap> thumbnailCache = new LruCache<String, Bitmap>(2 * 1024 * 1024) {
+    private static final LruCache<String, Bitmap> thumbnailCache = new LruCache<String, Bitmap>(4 * 1024 * 1024) {
         protected int sizeOf(@NonNull String key, Bitmap value) {
             return value.getAllocationByteCount();
         }
     };
-//
-//    public interface ImageLoadListener {
-//        void onFinish();
-//    }
 
-    public static void loadThumbnail(String path, ImageView imageView) {
+    public static void loadThumbnail(String path, int type, ImageView imageView) {
         Object object = imageView.getTag();
         if (object instanceof ImageLoadTask) {
             ImageLoadTask task = (ImageLoadTask) object;
@@ -30,7 +26,7 @@ public class ImageManager {
             imageView.setImageBitmap(bitmap);
         } else {
             //Log.i("666", "没有缓存");
-            loadLocalThumbnailAsync(path, imageView);
+            loadLocalThumbnailAsync(path, type, imageView);
         }
     }
 
@@ -70,7 +66,7 @@ public class ImageManager {
 //        }
 //    }
 
-    public static int calculateSampleSize(int width, int targetWidth) {
+    public static int calculateSampleRate(int width, int targetWidth) {
         if (targetWidth <= 0) return 1;
         int sampleSize = 1;
         while (width > targetWidth) {
@@ -79,6 +75,15 @@ public class ImageManager {
         }
         return sampleSize;
     }
+
+    // public static int calculateSampleSize(int width, int targetWidth) {
+    //     if (targetWidth <= 0) return 0;
+    //     int last = width;
+    //     while (width > targetWidth) {
+    //         width = width >> 1;
+    //     }
+    //     return last;
+    // }
 
 //
 //    private static Bitmap loadLocalImage(String path, ImageView imageView) {
@@ -100,8 +105,8 @@ public class ImageManager {
     }
 
 
-    private static void loadLocalThumbnailAsync(String path, ImageView imageView) {
-        ImageLoadTask task = new ImageLoadTask(path, imageView);
+    private static void loadLocalThumbnailAsync(String path, int type, ImageView imageView) {
+        ImageLoadTask task = new ImageLoadTask(path, type, imageView);
         imageView.setTag(task);
         task.execute();
     }

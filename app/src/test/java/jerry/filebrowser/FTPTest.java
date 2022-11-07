@@ -33,9 +33,9 @@ public class FTPTest {
             long a = System.currentTimeMillis();
             SFTPConfig config = new SFTPConfig();
             config.user = "root";
-            config.host = "39.96.114.136";
+            config.host = "39.96.114.000";
             config.port = 22;
-            config.pwd = "im123!im123!";
+            config.pwd = "xxxxxx";
             session = client.getSession(config);
             session.setConfig("StrictHostKeyChecking", "no");
             session.connect();

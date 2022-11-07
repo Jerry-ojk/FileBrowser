@@ -207,16 +207,15 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
             }
             return true;
         });
-        popupMenu.setOnDismissListener(
-                menu1 -> {
-                    if (!isMultipleSelectMode) {
-                        // 恢复锚点View的背景颜色
-                        final View view = popupMenu.getAnchorView();
-                        if (view == null) return;
-                        view.setSelected(false);
-                    }
-                    popupMenu.clear();
-                });
+        popupMenu.setOnDismissListener(menu1 -> {
+            if (!isMultipleSelectMode) {
+                // 恢复锚点View的背景颜色
+                final View view = popupMenu.getAnchorView();
+                if (view == null) return;
+                view.setSelected(false);
+            }
+            popupMenu.clear();
+        });
     }
 
     private void initActionMode() {
@@ -281,25 +280,18 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position,
-                                 @NonNull List<Object> payloads) {
-        this.onBindViewHolder(holder, position);
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull List<Object> payloads) {
+        // this.onBindViewHolder(holder, position);
         if (payloads.isEmpty()) {
             this.onBindViewHolder(holder, position);
         } else {
             Object object = payloads.get(0);
             if (object instanceof Integer) {
-                switch ((int) object) {
-                    case NOTIFY_SELECT_CHANGE:
-                        if (isMultipleSelectMode && select.isSelect(position)) {
-                            //holder.itemView.setBackground(selectedColor);
-                            holder.itemView.setSelected(true);
-                        } else {
-                            holder.itemView.setSelected(false);
-//                            holder.itemView.setBackground(drawable.mutate());
-                            //holder.itemView.setBackground(drawable);
-                        }
-                        break;
+                if ((int) object == NOTIFY_SELECT_CHANGE) {
+                    //holder.itemView.setBackground(selectedColor);
+                    // holder.itemView.setBackground(drawable.mutate());
+                    // holder.itemView.setBackground(drawable);
+                    holder.itemView.setSelected(isMultipleSelectMode && select.isSelect(position));
                 }
             }
         }
@@ -312,6 +304,9 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         holder.name.setText(item.name);
         // holder.itemView.setTag(position);
 
+        boolean isImgType = false;
+        ItemViewGroup itemView = (ItemViewGroup) (holder.itemView);
+
         if (item.type == UnixFile.TYPE_DIR) {
             holder.size.setText("");
 //            holder.size.setText(Util.size(item.length));
@@ -322,26 +317,26 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         } else {
             holder.size.setText(Util.size(item.length));
             final int type = typeUtil.fillIcon(holder.icon, item.name);
-            if (type == FileType.TYPE_IMAGE) {
-                ImageManager.loadThumbnail(item.getAbsPath(), holder.icon);
+            if (type == FileType.TYPE_IMAGE || type == FileType.TYPE_VIDEO) {
+                isImgType = true;
+                itemView.setIconPadding(0);
+                ImageManager.loadThumbnail(item.getAbsPath(), type, holder.icon);
             }
         }
-        if (isMultipleSelectMode && select.isSelect(position)) {
-            holder.itemView.setSelected(true);
-        } else {
-            holder.itemView.setSelected(false);
+        if (!isImgType) {
+            itemView.setIconPaddingToDefault();
         }
+        holder.itemView.setSelected(isMultipleSelectMode && select.isSelect(position));
     }
 
     @Override
     public void onViewRecycled(@NonNull ViewHolder holder) {
 //        Log.i("666", "onViewRecycled:" + holder.getAdapterPosition());
         Object object = holder.icon.getTag();
+        holder.icon.setTag(null);
         if (object instanceof ImageLoadTask) {
             ImageLoadTask task = (ImageLoadTask) object;
             task.cancel();
-        } else if (object != null) {
-            holder.icon.setTag(null);
         }
     }
 
@@ -477,13 +472,12 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         }
 
         isAnimator = true;
-        recyclerView.animate().alpha(0f).setDuration(DURING_ANIMATION_FADE).setInterpolator(new DecelerateInterpolator())
-                .withEndAction(() -> {
-                    isAnimator = false;
-                    if (loadResult != null) {
-                        onListResult(loadResult);
-                    }
-                }).start();
+        recyclerView.animate().alpha(0f).setDuration(DURING_ANIMATION_FADE).setInterpolator(new DecelerateInterpolator()).withEndAction(() -> {
+            isAnimator = false;
+            if (loadResult != null) {
+                onListResult(loadResult);
+            }
+        }).start();
         new FileListTask(this, type).execute(absolutePath);
     }
 

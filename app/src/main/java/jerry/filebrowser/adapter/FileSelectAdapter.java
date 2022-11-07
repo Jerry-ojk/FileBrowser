@@ -37,6 +37,7 @@ import jerry.filebrowser.task.FileListTask;
 import jerry.filebrowser.util.PathUtil;
 import jerry.filebrowser.util.TypeUtil;
 import jerry.filebrowser.util.Util;
+import jerry.filebrowser.view.ItemViewGroup;
 
 
 @SuppressLint("SetTextI18n")
@@ -324,6 +325,9 @@ public class FileSelectAdapter extends RecyclerView.Adapter<FileSelectAdapter.Vi
         holder.itemView.setOnClickListener(this::onItemClick);
         // holder.itemView.setTag(position);
 
+        boolean isImgType = false;
+        ItemViewGroup itemView = (ItemViewGroup) (holder.itemView);
+
         if (item.type == UnixFile.TYPE_DIR) {
             holder.length.setText("");
             holder.image.setImageDrawable(typeUtil.getFolderDrawable());
@@ -334,10 +338,15 @@ public class FileSelectAdapter extends RecyclerView.Adapter<FileSelectAdapter.Vi
         } else {
             holder.length.setText(Util.size(item.length));
             int type = typeUtil.fillIcon(holder.image, item.name);
-            if (type == FileType.TYPE_IMAGE) {
-                ImageManager.loadThumbnail(item.getAbsPath(), holder.image);
+            if (type == FileType.TYPE_IMAGE || type == FileType.TYPE_VIDEO) {
+                ImageManager.loadThumbnail(item.getAbsPath(), type, holder.image);
             }
         }
+
+        if (!isImgType) {
+            itemView.setIconPaddingToDefault();
+        }
+
         if (selectPosition == position) {
             holder.itemView.setBackground(selectedColor);
         }

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.os.storage.StorageManager;
-import android.util.Log;
 
 import java.io.File;
 import java.lang.reflect.Method;

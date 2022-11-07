@@ -20,9 +20,6 @@ public class ItemViewGroup extends ViewGroup {
     public AppCompatTextView tv_size;
     public final static Typeface typeface = Typeface.create("sans-serif-light", Typeface.NORMAL);
 
-//    static {
-//        typeface = Typeface.create("sans-serif-light", Typeface.NORMAL);
-//    }
 
     private final float density;
 
@@ -114,7 +111,19 @@ public class ItemViewGroup extends ViewGroup {
         tv_time.layout(tv_start, temp, tv_size_start, tv_size_bottom);
     }
 
-    public int dp2px(int dp) {
+    private int dp2px(int dp) {
         return (int) (density * dp + 0.5);
     }
+
+    public void setIconPadding(int dp) {
+        int padding = dp2px(dp);
+        iv_icon.setPadding(padding, padding, padding, padding);
+        iv_icon.setBackground(null);
+    }
+
+    public void setIconPaddingToDefault() {
+        setIconPadding(7);
+        iv_icon.setBackgroundResource(R.drawable.folder_bg_oval);
+    }
+
 }
