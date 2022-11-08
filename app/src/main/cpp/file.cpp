@@ -61,7 +61,6 @@ jboolean delete_dir(const char *path, struct stat64 *bu) {
         } else {
             __android_log_print(ANDROID_LOG_INFO, "delete_dir", "开始删除目录:%s", ptr->d_name);
             delete_dir(ptr->d_name, bu);
-
         }
     }
     closedir(dir);
@@ -175,7 +174,7 @@ getFileAttribute0(JNIEnv *env, jclass type, jstring path_) {
     }
 
 
-    jclass classType = env->FindClass("jerry/filebrowser/FileAttribute");
+    jclass classType = env->FindClass("jerry/filebrowser/file/FileAttribute");
     jmethodID conId = env->GetMethodID(classType, "<init>",
                                        "(Ljava/lang/String;JIIILjava/lang/String;Ljava/lang/String;JJJ)V");
     passwd *p = getpwuid(bu.st_uid);
@@ -370,17 +369,17 @@ JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
         __android_log_print(ANDROID_LOG_INFO, "linux-tool", "onLoad失败");
         return JNI_ERR;
     }
-    jclass UnixFile = env->FindClass("jerry/filebrowser/UnixFile");
+    jclass UnixFile = env->FindClass("jerry/filebrowser/file/UnixFile");
 
     JNINativeMethod methods[] = {
             {"isExist",          "(Ljava/lang/String;)Z",                                 reinterpret_cast<void *>(isExist0)},
-            {"listFiles",        "(Ljava/lang/String;)[Ljerry/filebrowser/UnixFile;",     reinterpret_cast<void *>(listFiles0)},
+            {"listFiles",        "(Ljava/lang/String;)[Ljerry/filebrowser/file/UnixFile;",reinterpret_cast<void *>(listFiles0)},
             {"rename",           "(Ljava/lang/String;Ljava/lang/String;)Z",               reinterpret_cast<void *>(rename0)},
             {"delete",           "(Ljava/lang/String;)Z",                                 reinterpret_cast<void *>(delete0)},
             {"createFile",       "(Ljava/lang/String;)Z",                                 reinterpret_cast<void *>(createFile0)},
             {"createDir",        "(Ljava/lang/String;)Z",                                 reinterpret_cast<void *>(createDirectory0)},
             {"getFileType",      "(Ljava/lang/String;)I",                                 reinterpret_cast<void *>(getFileType0)},
-            {"getFileAttribute", "(Ljava/lang/String;)Ljerry/filebrowser/FileAttribute;", reinterpret_cast<void *>(getFileAttribute0)},
+            {"getFileAttribute", "(Ljava/lang/String;)Ljerry/filebrowser/file/FileAttribute;", reinterpret_cast<void *>(getFileAttribute0)},
             {"getDisplay",       "()I",                                                   reinterpret_cast<void *>(getDisplay)}
     };
 
@@ -395,7 +394,7 @@ JNIEXPORT void JNI_OnUnload(JavaVM *vm, void *reserved) {
     JNIEnv *env = nullptr;
     if (vm->GetEnv((void **) &env, JNI_VERSION_1_6) == JNI_OK) {
         __android_log_print(ANDROID_LOG_INFO, "JNI_OnUnload", "unLoad成功");
-        jclass UnixFile = env->FindClass("jerry/filebrowser/UnixFile");
+        jclass UnixFile = env->FindClass("jerry/filebrowser/file/UnixFile");
         env->UnregisterNatives(UnixFile);
     } else {
         __android_log_print(ANDROID_LOG_INFO, "JNI_OnUnload", "unLoad失败");
