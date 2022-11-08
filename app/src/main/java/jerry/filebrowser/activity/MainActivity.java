@@ -58,7 +58,6 @@ import jerry.filebrowser.theme.ThemeHelper;
 import jerry.filebrowser.util.PathUtil;
 import jerry.filebrowser.util.Util;
 import jerry.filebrowser.view.ExpandView;
-import jerry.filebrowser.view.PathNavView;
 import jerry.filebrowser.view.TagView;
 
 import static jerry.filebrowser.setting.SettingManager.SETTING_DATA;
@@ -433,8 +432,11 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
         iv_paste.setEnabled(false);
     }
 
+    public void onStartLoadFileInfo() {
+        toolbar.setSubtitle(" ");
+    }
 
-    public void onFileInfo(int dirs, int files) {
+    public void onLoadedFileInfo(int dirs, int files) {
         builder.append(dirs).append("个文件夹，").append(files).append("个文件");
         toolbar.setSubtitle(builder.toString());
         builder.setLength(0);

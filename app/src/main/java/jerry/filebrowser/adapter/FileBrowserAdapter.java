@@ -92,6 +92,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
     private final TypeUtil typeUtil;
     private final StateListDrawable drawable;
 
+    private FileListResult lastSuccessLoadResult;
     private FileListResult loadResult;
     private final LruCache<String, Position> positionCache = new LruCache<>(100);
 
@@ -338,7 +339,6 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
 
     @Override
     public void onViewRecycled(@NonNull ViewHolder holder) {
-//        Log.i("666", "onViewRecycled:" + holder.getAdapterPosition());
         Object object = holder.icon.getTag();
         holder.icon.setTag(null);
         if (object instanceof ImageLoadTask) {
@@ -459,6 +459,9 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
     public void onNavDirectory(String absolutePath, int type) {
         if (!isAllow) return;
         isAllow = false;
+        if (loadResult != null && loadResult.list != null) {
+            lastSuccessLoadResult = loadResult;
+        }
         loadResult = null;
         if (isMultipleSelectMode) {
             quitMultipleSelectMode();
@@ -486,6 +489,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
             }
         }).start();
         new FileListTask(this, type).execute(absolutePath);
+        activity.onStartLoadFileInfo();
     }
 
 
@@ -502,16 +506,20 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         loadResult = null;
         if (result.list == null) {
             activity.showToast(PathUtil.getPathName(result.absolutePath) + " 打开失败");
+            activity.onLoadedFileInfo(lastSuccessLoadResult.dirs, lastSuccessLoadResult.files);
             recyclerView.setAlpha(1f);
             isAllow = true;
             return;
+        } else {
+            lastSuccessLoadResult = result;
         }
         FileSetting.setCurrentPath(result.absolutePath);
         fileList = result.list;
         pathNavView.updatePath(FileSetting.tagPath(result.absolutePath));
         notifyDataSetChanged();
-        activity.onFileInfo(result.dirs, result.files);
-        if (result.type != TYPE_REFRESH) {
+        activity.onLoadedFileInfo(result.dirs, result.files);
+
+        if (result.type != TYPE_REFRESH) { // 恢复浏览位置
             final Position position = positionCache.get(result.absolutePath);
             if (position != null) {
                 layoutManager.scrollToPositionWithOffset(position.position, position.offset);
@@ -519,6 +527,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
                 layoutManager.scrollToPositionWithOffset(0, 0);
             }
         }
+
         isAnimator = true;
         recyclerView.animate().alpha(1f).setDuration(DURING_ANIMATION_SHOW).setInterpolator(new AccelerateInterpolator(2f))
 //                .setUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -631,7 +640,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
                 files++;
             }
         }
-        activity.onFileInfo(dirs, files);
+        activity.onLoadedFileInfo(dirs, files);
     }
 
     public void notifyItemDelete(String name) {
