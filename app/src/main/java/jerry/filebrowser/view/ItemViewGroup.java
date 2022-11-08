@@ -5,6 +5,8 @@ import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.appcompat.widget.AppCompatImageView;
@@ -18,7 +20,7 @@ public class ItemViewGroup extends ViewGroup {
     public AppCompatTextView tv_name;
     public AppCompatTextView tv_time;
     public AppCompatTextView tv_size;
-    public final static Typeface typeface = Typeface.create("sans-serif-light", Typeface.NORMAL);
+    // public final static Typeface typeface = Typeface.create("sans-serif-light", Typeface.NORMAL);
 
 
     private final float density;
@@ -40,20 +42,20 @@ public class ItemViewGroup extends ViewGroup {
         iv_icon.setPadding(padding, padding, padding, padding);
         iv_icon.setElevation(dp2px(2));
         tv_name.setTextSize(16f);
-        tv_name.setSingleLine(true);
-        tv_name.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+        tv_name.setMaxLines(1);
+        tv_name.setGravity(Gravity.CENTER_VERTICAL);
+        tv_name.setEllipsize(TextUtils.TruncateAt.END);
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(tv_name,
-                12, 16,
-                2, TypedValue.COMPLEX_UNIT_SP);
-
+                8, 16,
+                1, TypedValue.COMPLEX_UNIT_SP);
 
         tv_time.setTextSize(12f);
         tv_time.setTextColor(context.getColor(R.color.text_time));
-        tv_time.setTypeface(typeface);
+        // tv_time.setTypeface(typeface);
 
         tv_size.setTextSize(12f);
         tv_size.setTextColor(context.getColor(R.color.text_time));
-        tv_size.setTypeface(typeface);
+        // tv_size.setTypeface(typeface);
 
         addView(iv_icon, new LayoutParams(dp2px(36), dp2px(36)));
         addView(tv_name, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
@@ -66,7 +68,7 @@ public class ItemViewGroup extends ViewGroup {
         int wantHeight = 0;
         final int paddingTop = dp2px(3);
         final int paddingStart = dp2px(8);
-        final int paddingEnd = dp2px(12);
+        final int paddingEnd = dp2px(8);
         final int paddingTv = dp2px(5);
 
         wantHeight += paddingTop;
@@ -92,7 +94,7 @@ public class ItemViewGroup extends ViewGroup {
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         final int paddingTop = dp2px(3);
-        final int paddingEnd = dp2px(12);
+        final int paddingEnd = dp2px(8);
         final int iv_start = dp2px(8);
         final int width = getWidth() - paddingEnd;
 

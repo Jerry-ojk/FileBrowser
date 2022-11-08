@@ -113,7 +113,8 @@ public class SFTPFileBrowserAdapter extends RecyclerView.Adapter<SFTPFileBrowser
         countView = backView.findViewById(R.id.tv_file_count);
         tv_selectCount = backView.findViewById(R.id.tv_select_count);
 
-        pathNavView = new PathNavView(activity, this);
+        pathNavView = new PathNavView(activity);
+        pathNavView.setPathNavInterface(this);
 
         typeUtil = new TypeUtil(activity);
 
@@ -261,7 +262,7 @@ public class SFTPFileBrowserAdapter extends RecyclerView.Adapter<SFTPFileBrowser
 
 
     @Override
-    public void loadDirectory(String absolutePath, int type) {
+    public void onNavDirectory(String absolutePath, int type) {
         if (!isAllow) return;
         a = System.currentTimeMillis();
         final ChannelSftp sftp = SSHConnectManager.getChannelSftp();
@@ -358,7 +359,7 @@ public class SFTPFileBrowserAdapter extends RecyclerView.Adapter<SFTPFileBrowser
         } else if (file instanceof SFTPLinkFile) {
             SFTPFile link = ((SFTPLinkFile) file).getLink();
             if (link.isDir()) {
-                loadDirectory(link.getAbsPath(), TYPE_JUMP);
+                onNavDirectory(link.getAbsPath(), TYPE_JUMP);
             } else {
                 onFileClick(pos, file);
             }
@@ -368,7 +369,7 @@ public class SFTPFileBrowserAdapter extends RecyclerView.Adapter<SFTPFileBrowser
     }
 
     private void onDirectoryClick(int position, SFTPFile file) {
-        loadDirectory(file.getAbsPath(), TYPE_TO_CHILD);
+        onNavDirectory(file.getAbsPath(), TYPE_TO_CHILD);
     }
 
 
@@ -396,7 +397,7 @@ public class SFTPFileBrowserAdapter extends RecyclerView.Adapter<SFTPFileBrowser
             activity.showToast("已到达根目录");
             return;
         }
-        loadDirectory(PathUtil.getPathParent(SFTPActivity.CURRENT_PATH), TYPE_TO_PARENT);
+        onNavDirectory(PathUtil.getPathParent(SFTPActivity.CURRENT_PATH), TYPE_TO_PARENT);
     }
 
     public boolean isMultipleSelectMode() {
@@ -458,7 +459,7 @@ public class SFTPFileBrowserAdapter extends RecyclerView.Adapter<SFTPFileBrowser
 
     public void refresh() {
         clear();
-        loadDirectory(SFTPActivity.CURRENT_PATH, TYPE_REFRESH);
+        onNavDirectory(SFTPActivity.CURRENT_PATH, TYPE_REFRESH);
     }
 
     public boolean isAllow() {
@@ -482,7 +483,7 @@ public class SFTPFileBrowserAdapter extends RecyclerView.Adapter<SFTPFileBrowser
     public void switchRoot(String path) {
 //        quitMultipleSelectMode();
         SFTPActivity.USER_ROOT = path;
-        loadDirectory(path, FileBrowserAdapter.TYPE_JUMP);
+        onNavDirectory(path, FileBrowserAdapter.TYPE_JUMP);
 
 //        fileArray = UnixFile.listFiles(path);
 //        if (fileArray == null) {

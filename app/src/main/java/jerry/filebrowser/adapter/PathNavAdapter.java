@@ -22,14 +22,15 @@ public class PathNavAdapter extends RecyclerView.Adapter<PathNavAdapter.ViewHold
     private final int color_active;
     private final int color_normal;
 
-    public PathNavAdapter(PathNavInterface pathNavInterface, RecyclerView recyclerView) {
-        this.pathNavInterface = pathNavInterface;
+    public PathNavAdapter(RecyclerView recyclerView) {
         this.recyclerView = recyclerView;
         Context context = recyclerView.getContext();
-//        color_active = context.getColor(R.color.colorAccent);
         color_active = context.getColor(R.color.text_active);
         color_normal = context.getColor(R.color.text_subtitle);
-//        color_normal = 0xFFFFFFFF;
+    }
+
+    public void setPathNavInterface(PathNavInterface pathNavInterface) {
+        this.pathNavInterface = pathNavInterface;
     }
 
     public void updatePath(String path) {
@@ -91,7 +92,9 @@ public class PathNavAdapter extends RecyclerView.Adapter<PathNavAdapter.ViewHold
             builder.append(pathList.get(i));
             i++;
         }
-        pathNavInterface.loadDirectory(builder.toString(), FileBrowserAdapter.TYPE_JUMP);
+        if (pathNavInterface != null) {
+            pathNavInterface.onNavDirectory(builder.toString(), FileBrowserAdapter.TYPE_JUMP);
+        }
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
@@ -102,6 +105,6 @@ public class PathNavAdapter extends RecyclerView.Adapter<PathNavAdapter.ViewHold
     }
 
     public static interface PathNavInterface {
-        public void loadDirectory(String absPath, int type);
+        public void onNavDirectory(String absPath, int type);
     }
 }

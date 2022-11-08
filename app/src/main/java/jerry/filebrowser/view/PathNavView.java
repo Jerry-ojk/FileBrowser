@@ -1,13 +1,14 @@
 package jerry.filebrowser.view;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,30 +16,41 @@ import androidx.recyclerview.widget.RecyclerView;
 import jerry.filebrowser.R;
 import jerry.filebrowser.adapter.PathNavAdapter;
 
-public class PathNavView {
-    private final RecyclerView recyclerView;
+public class PathNavView extends RecyclerView {
     private final PathNavAdapter adapter;
     private final Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            recyclerView.scrollToPosition(adapter.getItemCount() - 1);
+            scrollToPosition(adapter.getItemCount() - 1);
         }
     };
 
-    public PathNavView(Activity activity, PathNavAdapter.PathNavInterface pathNavInterface) {
-        recyclerView = activity.findViewById(R.id.recv_path);
-        recyclerView.setItemAnimator(null);
-        recyclerView.addItemDecoration(new ArrowItemDecoration(activity));
-        LinearLayoutManager layoutManager = new LinearLayoutManager(activity, RecyclerView.HORIZONTAL, false);
+    public PathNavView(@NonNull Context context) {
+        this(context, null, 0);
+    }
+
+    public PathNavView(@NonNull Context context, @Nullable AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
+    public PathNavView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        setItemAnimator(null);
+        addItemDecoration(new ArrowItemDecoration(context));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(context, RecyclerView.HORIZONTAL, false);
 //        layoutManager.setStackFromEnd(true);
-        recyclerView.setLayoutManager(layoutManager);
-        this.adapter = new PathNavAdapter(pathNavInterface, recyclerView);
-        recyclerView.setAdapter(this.adapter);
+        setLayoutManager(layoutManager);
+        this.adapter = new PathNavAdapter(this);
+        setAdapter(this.adapter);
+    }
+
+    public void setPathNavInterface(PathNavAdapter.PathNavInterface pathNavInterface) {
+        this.adapter.setPathNavInterface(pathNavInterface);
     }
 
     public void updatePath(String absolutePath) {
         adapter.updatePath(absolutePath);
-        recyclerView.post(runnable);
+        post(runnable);
     }
 
     public static class ArrowItemDecoration extends RecyclerView.ItemDecoration {

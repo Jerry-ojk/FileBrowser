@@ -178,7 +178,7 @@ public class FileSelectAdapter extends RecyclerView.Adapter<FileSelectAdapter.Vi
         final int position = recyclerView.getChildAdapterPosition(view);
         final UnixFile file = fileList.get(position);
         if (file.type == UnixFile.TYPE_DIR) {
-            loadDirectory(file.getAbsPath(), TYPE_TO_CHILD);
+            onNavDirectory(file.getAbsPath(), TYPE_TO_CHILD);
         } else {
             if (position == selectPosition) {
                 selectFile(-1);
@@ -371,7 +371,7 @@ public class FileSelectAdapter extends RecyclerView.Adapter<FileSelectAdapter.Vi
 
 
     @Override
-    public void loadDirectory(String absolutePath, int type) {
+    public void onNavDirectory(String absolutePath, int type) {
         if (type != TYPE_REFRESH && selectPosition != -1) {
             selectFile(-1);
         }
@@ -443,7 +443,7 @@ public class FileSelectAdapter extends RecyclerView.Adapter<FileSelectAdapter.Vi
             return;
         }
         String parent = PathUtil.getPathParent(currentPath);
-        loadDirectory(parent, TYPE_TO_PARENT);
+        onNavDirectory(parent, TYPE_TO_PARENT);
     }
 
 
@@ -473,7 +473,7 @@ public class FileSelectAdapter extends RecyclerView.Adapter<FileSelectAdapter.Vi
 
     public void refresh() {
         clear();
-        loadDirectory(currentPath, TYPE_REFRESH);
+        onNavDirectory(currentPath, TYPE_REFRESH);
     }
 
     public void clear() {

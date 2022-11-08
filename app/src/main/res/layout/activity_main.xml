@@ -32,14 +32,14 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <androidx.recyclerview.widget.RecyclerView
+            <jerry.filebrowser.view.PathNavView
                 android:id="@+id/recv_path"
                 android:layout_width="match_parent"
                 android:layout_height="32dp"
                 android:background="@color/toolbar"
                 android:elevation="@dimen/icon_height">
 
-            </androidx.recyclerview.widget.RecyclerView>
+            </jerry.filebrowser.view.PathNavView>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recv_file"

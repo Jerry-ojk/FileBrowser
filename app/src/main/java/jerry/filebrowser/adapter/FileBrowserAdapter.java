@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.view.ActionMode;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -74,7 +75,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
     //view
     private final RecyclerView recyclerView;
     private final LinearLayoutManager layoutManager;
-    private final PathNavView pathNavView;
+    private PathNavView pathNavView;
     private ActionMode actionMode;
     private DataPopupMenu<UnixFile> popupMenu;
 
@@ -101,25 +102,31 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
 
     private FileBrowserAdapter(MainActivity mainActivity, String root, RecyclerView recyclerView) {
         this.activity = mainActivity;
-        this.dialogManager = activity.getDialogManager();
         this.recyclerView = recyclerView;
+        this.dialogManager = activity.getDialogManager();
+
         layoutManager = new LinearLayoutManager(mainActivity, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
         drawable = new StateListDrawable();
-        drawable.addState(new int[]{-android.R.attr.state_selected}, activity.getDrawable(R.drawable.ripple));
+        drawable.addState(new int[]{-android.R.attr.state_selected}, ContextCompat.getDrawable(activity, R.drawable.ripple));
         drawable.addState(new int[]{android.R.attr.state_selected}, new ColorDrawable(activity.getColor(R.color.colorSelect)));
 
         typeUtil = new TypeUtil(activity);
 
-        pathNavView = new PathNavView(activity, this);
         initPopupMenu();
         initActionMode();
+
         FileSetting.setCurrentPath(root);
         isAllow = false;
         a = System.currentTimeMillis();
         recyclerView.setAlpha(0f);
         new FileListTask(this, FileBrowserAdapter.TYPE_JUMP).execute(root);
+    }
+
+    public void setPathNavView(PathNavView pathNavView) {
+        this.pathNavView = pathNavView;
+        this.pathNavView.setPathNavInterface(this);
     }
 
     private void initPopupMenu() {
@@ -374,7 +381,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
     }
 
     private void onDirectoryClick(int position, UnixFile file) {
-        loadDirectory(file.getAbsPath(), TYPE_TO_CHILD);
+        onNavDirectory(file.getAbsPath(), TYPE_TO_CHILD);
     }
 
     private void onFileClick(int position, UnixFile file) {
@@ -449,7 +456,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
     }
 
     @Override
-    public void loadDirectory(String absolutePath, int type) {
+    public void onNavDirectory(String absolutePath, int type) {
         if (!isAllow) return;
         isAllow = false;
         loadResult = null;
@@ -538,7 +545,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
             return;
         }
         String parent = PathUtil.getPathParent(currentPath);
-        loadDirectory(parent, TYPE_TO_PARENT);
+        onNavDirectory(parent, TYPE_TO_PARENT);
     }
 
 
@@ -572,7 +579,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
 
     public void refresh() {
         clear();
-        loadDirectory(FileSetting.getCurrentPath(), TYPE_REFRESH);
+        onNavDirectory(FileSetting.getCurrentPath(), TYPE_REFRESH);
     }
 
     public void clear() {
@@ -595,7 +602,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         quitMultipleSelectMode();
         FileSetting.setCurrentPath(path);
         FileSetting.USER_ROOT = path;
-        loadDirectory(path, TYPE_JUMP);
+        onNavDirectory(path, TYPE_JUMP);
     }
 
 

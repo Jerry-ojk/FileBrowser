@@ -58,6 +58,7 @@ import jerry.filebrowser.theme.ThemeHelper;
 import jerry.filebrowser.util.PathUtil;
 import jerry.filebrowser.util.Util;
 import jerry.filebrowser.view.ExpandView;
+import jerry.filebrowser.view.PathNavView;
 import jerry.filebrowser.view.TagView;
 
 import static jerry.filebrowser.setting.SettingManager.SETTING_DATA;
@@ -238,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
         expendViewList.add(expand_tool);
 
         PathItemListener = v -> {
-            adapter.loadDirectory(((TagView) v).getMessage(), FileBrowserAdapter.TYPE_JUMP);
+            adapter.onNavDirectory(((TagView) v).getMessage(), FileBrowserAdapter.TYPE_JUMP);
         };
         recyclerView = findViewById(R.id.recv_file);
         recyclerView.setHasFixedSize(true);
@@ -263,6 +264,7 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
 
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             adapter = new FileBrowserAdapter(this, recyclerView);
+            adapter.setPathNavView(findViewById(R.id.recv_path));
             recyclerView.setAdapter(adapter);
         } else {
             showToast("内部存储空间尚未准备好，请退出重试");
@@ -535,7 +537,7 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
         if (otgPathList == null) return;
         for (FileRoot item : otgPathList) {
             TagView view = expand_catalog.addTag(item.getName(), item.getPath(), R.drawable.ic_sd_dark,
-                    v -> adapter.loadDirectory(item.getPath(), FileBrowserAdapter.TYPE_JUMP));
+                    v -> adapter.onNavDirectory(item.getPath(), FileBrowserAdapter.TYPE_JUMP));
             view.setProcess(0);
             view.setData(item.getPath());
         }
@@ -556,7 +558,7 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
                     adapter.refresh();
             } else if (ACTION_NAVIGATION.equals(intent.getAction())) {
                 if (!FileSetting.getCurrentPath().equals(path)) {
-                    adapter.loadDirectory(path, FileBrowserAdapter.TYPE_JUMP);
+                    adapter.onNavDirectory(path, FileBrowserAdapter.TYPE_JUMP);
                 }
             }
         }

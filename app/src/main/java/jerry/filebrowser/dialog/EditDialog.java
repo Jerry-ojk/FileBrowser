@@ -93,6 +93,7 @@ public class EditDialog extends BaseDialog {
         ed_name.setVisibility(View.VISIBLE);
         ed_name.setText(file.name);
         til_name.setHint("名称");
+        til_name.setErrorEnabled(false);
         int end;
         if (file.isDir()) {
             end = file.name.length();

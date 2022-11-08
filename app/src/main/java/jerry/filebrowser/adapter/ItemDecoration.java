@@ -26,8 +26,8 @@ public class ItemDecoration extends RecyclerView.ItemDecoration {
 
     @Override
     public void onDraw(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
-        final int left = parent.getLeft() + 147;
-        final int right = parent.getRight() - DPUtils.DP12;
+        final int left = parent.getLeft() + DPUtils.DP44;
+        final int right = parent.getRight() - DPUtils.DP8;
         int i = parent.getChildCount() - 1;
         for (; i > 0; i--) {
             int y = parent.getChildAt(i - 1).getBottom() + 1;
