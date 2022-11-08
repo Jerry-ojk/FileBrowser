@@ -1,7 +1,7 @@
 # FileBrowser
 
 #### Description
-一款支持SSH和SFTP协议的Android文件浏览器。实现了SSH协议连接远程终端、SFTP协议与服务器传输文件。支持文件浏览、编辑、搜索、自定义排序、文件夹收藏、图片缩略图、白天/夜间主题切换等功能。文件权限设置与打开终端功能正在开发中。
+一款支持SSH和SFTP协议的Android文件浏览器。实现了SSH协议连接远程终端、SFTP协议与服务器传输文件。支持文件浏览、编辑、搜索、自定义排序、文件夹收藏、图片与视频缩略图、OTG设备读取、白天/夜间主题切换等功能。文件权限设置与打开终端功能正在开发中。
 
 #### Software Architecture
 Software architecture description
