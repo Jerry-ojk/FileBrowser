@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -15,9 +16,9 @@ import jerry.filebrowser.R;
 import jerry.filebrowser.adapter.PathNavAdapter;
 
 public class PathNavView {
-    private RecyclerView recyclerView;
-    private PathNavAdapter adapter;
-    private Runnable runnable = new Runnable() {
+    private final RecyclerView recyclerView;
+    private final PathNavAdapter adapter;
+    private final Runnable runnable = new Runnable() {
         @Override
         public void run() {
             recyclerView.scrollToPosition(adapter.getItemCount() - 1);
@@ -41,11 +42,11 @@ public class PathNavView {
     }
 
     public static class ArrowItemDecoration extends RecyclerView.ItemDecoration {
-        private Drawable arrow;
+        private final Drawable arrow;
         private final int width;
 
         public ArrowItemDecoration(Context context) {
-            this.arrow = context.getDrawable(R.drawable.ic_action_next);
+            this.arrow = ContextCompat.getDrawable(context, R.drawable.ic_action_next);
             this.arrow.setTint(context.getColor(R.color.text_subtitle));
             width = DPUtils.DP(24);
         }
@@ -62,7 +63,7 @@ public class PathNavView {
         }
 
         @Override
-        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+        public void getItemOffsets(Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
             outRect.set(0, 0, DPUtils.DP(24 - 8), 0);
         }
     }

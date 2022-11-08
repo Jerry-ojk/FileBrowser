@@ -37,9 +37,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="32dp"
                 android:background="@color/toolbar"
-                android:elevation="@dimen/icon_height"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp">
+                android:elevation="@dimen/icon_height">
 
             </androidx.recyclerview.widget.RecyclerView>
 

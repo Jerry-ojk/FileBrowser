@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Locale;
 
 import jerry.filebrowser.R;
+import jerry.filebrowser.container.Trie;
 import jerry.filebrowser.file.FileType;
 
 public class TypeUtil {
@@ -44,11 +45,10 @@ public class TypeUtil {
                 return mime;
             }
         }
-        // return MIME_TYPE_UNKNOWN;
         return MIME_TYPE_UNKNOWN;
     }
 
-    private final HashMap<String, FileType> TYPE_ICON_MAP = new HashMap<>();
+    private final Trie<FileType> TYPE_TRIE = new Trie<>();
 
     private Drawable icon_file;
     private Drawable icon_folder;
@@ -72,45 +72,47 @@ public class TypeUtil {
 
 //        icon_compress.mutate();
 //        icon_compress.setTint(0xFF82F386);
-        TYPE_ICON_MAP.put("aac", new FileType(FileType.TYPE_UNKNOWN, icon_music));
-        TYPE_ICON_MAP.put("apk", new FileType(FileType.TYPE_UNKNOWN, icon_apk));
-        TYPE_ICON_MAP.put("avi", new FileType(FileType.TYPE_VIDEO, icon_video));
+        // 存入后缀名
+        TYPE_TRIE.put("aac", new FileType(FileType.TYPE_UNKNOWN, icon_music));
+        TYPE_TRIE.put("apk", new FileType(FileType.TYPE_UNKNOWN, icon_apk));
+        TYPE_TRIE.put("avi", new FileType(FileType.TYPE_VIDEO, icon_video));
 //        TYPE_MAP.put("bat", new FileType(FileType.TYPE_TXT, icon_code));
-//        TYPE_ICON_MAP.put("bin", new FileType(FileType.TYPE_TXT, icon_code));
-        TYPE_ICON_MAP.put("bmp", new FileType(FileType.TYPE_IMAGE, icon_image));
-        TYPE_ICON_MAP.put("c", new FileType(FileType.TYPE_TXT, icon_code));
-        TYPE_ICON_MAP.put("cpp", new FileType(FileType.TYPE_TXT, icon_code));
-        TYPE_ICON_MAP.put("css", new FileType(FileType.TYPE_TXT, icon_code));
-        TYPE_ICON_MAP.put("csv", new FileType(FileType.TYPE_TXT, icon_code));
-        TYPE_ICON_MAP.put("flac", new FileType(FileType.TYPE_UNKNOWN, icon_music));
-        TYPE_ICON_MAP.put("flv", new FileType(FileType.TYPE_VIDEO, icon_video));
-        TYPE_ICON_MAP.put("gif", new FileType(FileType.TYPE_IMAGE, icon_image));
-        TYPE_ICON_MAP.put("gz", new FileType(FileType.TYPE_UNKNOWN, icon_compress));
-        TYPE_ICON_MAP.put("html", new FileType(FileType.TYPE_TXT, icon_code));
-        TYPE_ICON_MAP.put("ini", new FileType(FileType.TYPE_TXT, icon_txt));
-        TYPE_ICON_MAP.put("ios", new FileType(FileType.TYPE_UNKNOWN, icon_compress));
-        TYPE_ICON_MAP.put("jpeg", new FileType(FileType.TYPE_IMAGE, icon_image));
-        TYPE_ICON_MAP.put("jpg", new FileType(FileType.TYPE_IMAGE, icon_image));
-        TYPE_ICON_MAP.put("js", new FileType(FileType.TYPE_TXT, icon_code));
-        TYPE_ICON_MAP.put("json", new FileType(FileType.TYPE_TXT, icon_code));
-        TYPE_ICON_MAP.put("log", new FileType(FileType.TYPE_TXT, icon_txt));
-        TYPE_ICON_MAP.put("mkv", new FileType(FileType.TYPE_VIDEO, icon_video));
-        TYPE_ICON_MAP.put("mp3", new FileType(FileType.TYPE_UNKNOWN, icon_music));
-        TYPE_ICON_MAP.put("mp4", new FileType(FileType.TYPE_VIDEO, icon_video));
-        TYPE_ICON_MAP.put("otf", new FileType(FileType.TYPE_UNKNOWN, icon_ttf));
-        TYPE_ICON_MAP.put("pdf", new FileType(FileType.TYPE_UNKNOWN, icon_pdf));
-        TYPE_ICON_MAP.put("png", new FileType(FileType.TYPE_IMAGE, icon_image));
-        TYPE_ICON_MAP.put("rar", new FileType(FileType.TYPE_UNKNOWN, icon_compress));
-        TYPE_ICON_MAP.put("raw", new FileType(FileType.TYPE_IMAGE, icon_image));
-        TYPE_ICON_MAP.put("sh", new FileType(FileType.TYPE_TXT, icon_code));
-        TYPE_ICON_MAP.put("so", new FileType(FileType.TYPE_UNKNOWN, icon_compress));
-        TYPE_ICON_MAP.put("ts", new FileType(FileType.TYPE_VIDEO, icon_video));
-        TYPE_ICON_MAP.put("ttf", new FileType(FileType.TYPE_UNKNOWN, icon_ttf));
-        TYPE_ICON_MAP.put("txt", new FileType(FileType.TYPE_TXT, icon_txt));
-        TYPE_ICON_MAP.put("wmv", new FileType(FileType.TYPE_VIDEO, icon_video));
-        TYPE_ICON_MAP.put("xml", new FileType(FileType.TYPE_TXT, icon_code));
-        TYPE_ICON_MAP.put("zip", new FileType(FileType.TYPE_UNKNOWN, icon_compress));
-        TYPE_ICON_MAP.put("7z", new FileType(FileType.TYPE_UNKNOWN, icon_compress));
+//        TYPE_TRIE.put("bin", new FileType(FileType.TYPE_TXT, icon_code));
+        TYPE_TRIE.put("bmp", new FileType(FileType.TYPE_IMAGE, icon_image));
+        TYPE_TRIE.put("c", new FileType(FileType.TYPE_TXT, icon_code));
+        TYPE_TRIE.put("cpp", new FileType(FileType.TYPE_TXT, icon_code));
+        TYPE_TRIE.put("css", new FileType(FileType.TYPE_TXT, icon_code));
+        TYPE_TRIE.put("csv", new FileType(FileType.TYPE_TXT, icon_code));
+        TYPE_TRIE.put("flac", new FileType(FileType.TYPE_UNKNOWN, icon_music));
+        TYPE_TRIE.put("flv", new FileType(FileType.TYPE_VIDEO, icon_video));
+        TYPE_TRIE.put("gif", new FileType(FileType.TYPE_IMAGE, icon_image));
+        TYPE_TRIE.put("gz", new FileType(FileType.TYPE_UNKNOWN, icon_compress));
+        TYPE_TRIE.put("html", new FileType(FileType.TYPE_TXT, icon_code));
+        TYPE_TRIE.put("ini", new FileType(FileType.TYPE_TXT, icon_txt));
+        TYPE_TRIE.put("ios", new FileType(FileType.TYPE_UNKNOWN, icon_compress));
+        TYPE_TRIE.put("jar", new FileType(FileType.TYPE_UNKNOWN, icon_compress));
+        TYPE_TRIE.put("jpeg", new FileType(FileType.TYPE_IMAGE, icon_image));
+        TYPE_TRIE.put("jpg", new FileType(FileType.TYPE_IMAGE, icon_image));
+        TYPE_TRIE.put("js", new FileType(FileType.TYPE_TXT, icon_code));
+        TYPE_TRIE.put("json", new FileType(FileType.TYPE_TXT, icon_code));
+        TYPE_TRIE.put("log", new FileType(FileType.TYPE_TXT, icon_txt));
+        TYPE_TRIE.put("mkv", new FileType(FileType.TYPE_VIDEO, icon_video));
+        TYPE_TRIE.put("mp3", new FileType(FileType.TYPE_UNKNOWN, icon_music));
+        TYPE_TRIE.put("mp4", new FileType(FileType.TYPE_VIDEO, icon_video));
+        TYPE_TRIE.put("otf", new FileType(FileType.TYPE_UNKNOWN, icon_ttf));
+        TYPE_TRIE.put("pdf", new FileType(FileType.TYPE_UNKNOWN, icon_pdf));
+        TYPE_TRIE.put("png", new FileType(FileType.TYPE_IMAGE, icon_image));
+        TYPE_TRIE.put("rar", new FileType(FileType.TYPE_UNKNOWN, icon_compress));
+        TYPE_TRIE.put("raw", new FileType(FileType.TYPE_IMAGE, icon_image));
+        TYPE_TRIE.put("sh", new FileType(FileType.TYPE_TXT, icon_code));
+        TYPE_TRIE.put("so", new FileType(FileType.TYPE_UNKNOWN, icon_compress));
+        TYPE_TRIE.put("ts", new FileType(FileType.TYPE_VIDEO, icon_video));
+        TYPE_TRIE.put("ttf", new FileType(FileType.TYPE_UNKNOWN, icon_ttf));
+        TYPE_TRIE.put("txt", new FileType(FileType.TYPE_TXT, icon_txt));
+        TYPE_TRIE.put("wmv", new FileType(FileType.TYPE_VIDEO, icon_video));
+        TYPE_TRIE.put("xml", new FileType(FileType.TYPE_TXT, icon_code));
+        TYPE_TRIE.put("zip", new FileType(FileType.TYPE_UNKNOWN, icon_compress));
+        TYPE_TRIE.put("7z", new FileType(FileType.TYPE_UNKNOWN, icon_compress));
     }
 
     public int fillIcon(ImageView imageView, String name) {
@@ -119,7 +121,7 @@ public class TypeUtil {
             final int extensionLen = name.length() - dot;
             if (extensionLen > 0 && extensionLen <= 4) {
                 String extension = name.substring(dot).toLowerCase();
-                FileType fileType = TYPE_ICON_MAP.get(extension);
+                FileType fileType = TYPE_TRIE.get(extension);
                 if (fileType != null) {
                     imageView.setImageDrawable(fileType.icon);
                     return fileType.type;
