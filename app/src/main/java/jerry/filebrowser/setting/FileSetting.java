@@ -84,9 +84,7 @@ public class FileSetting {
     public static String innerPath(String path) {
         final String tag = FileSetting.PHONE_ROOT_TAG;
         if (path.startsWith(tag)) {
-            final StringBuilder builder = new StringBuilder(FileSetting.PHONE_ROOT.length() + path.length());
-            builder.append(FileSetting.PHONE_ROOT).append(path, tag.length(), path.length());
-            return builder.toString();
+            return FileSetting.PHONE_ROOT + path.substring(tag.length());
         } else {
             return path;
         }
@@ -95,9 +93,7 @@ public class FileSetting {
     public static String tagPath(String path) {
         final String root = FileSetting.PHONE_ROOT;
         if (path.startsWith(root)) {
-            final StringBuilder builder = new StringBuilder(FileSetting.PHONE_ROOT_TAG.length() + path.length());
-            builder.append(FileSetting.PHONE_ROOT_TAG).append(path, root.length(), path.length());
-            return builder.toString();
+            return FileSetting.PHONE_ROOT_TAG + path.substring(root.length());
         } else {
             return path;
         }

@@ -12,9 +12,8 @@
     <color name="colorBg">#EEEEEE</color>
     <!--突出颜色-->
     <color name="colorLight">#C1C1C1</color>
-    <color name="colorSelect">@color/mmaterial_grey_500</color>
+    <color name="colorSelect">#96BFEC</color>
     <color name="colorDecoration">@color/mmaterial_grey_500</color>
-
 
     <!--    <color name="colorGrey400">#BDBDBD</color>-->
     <!--    <color name="colorGrey500">#9E9E9E</color>-->

@@ -37,15 +37,21 @@ public class PathNavView extends RecyclerView {
         super(context, attrs, defStyleAttr);
         setItemAnimator(null);
         addItemDecoration(new ArrowItemDecoration(context));
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(context, RecyclerView.HORIZONTAL, false);
 //        layoutManager.setStackFromEnd(true);
         setLayoutManager(layoutManager);
-        this.adapter = new PathNavAdapter(this);
+
+        adapter = new PathNavAdapter(this);
         setAdapter(this.adapter);
     }
 
     public void setPathNavInterface(PathNavAdapter.PathNavInterface pathNavInterface) {
-        this.adapter.setPathNavInterface(pathNavInterface);
+        adapter.setPathNavInterface(pathNavInterface);
+    }
+
+    public void setLoading(boolean isLoading) {
+        adapter.setLoading(isLoading);
     }
 
     public void updatePath(String absolutePath) {
@@ -58,8 +64,8 @@ public class PathNavView extends RecyclerView {
         private final int width;
 
         public ArrowItemDecoration(Context context) {
-            this.arrow = ContextCompat.getDrawable(context, R.drawable.ic_action_next);
-            this.arrow.setTint(context.getColor(R.color.text_subtitle));
+            arrow = ContextCompat.getDrawable(context, R.drawable.ic_action_next);
+            arrow.setTint(context.getColor(R.color.text_subtitle));
             width = DPUtils.DP(24);
         }
 
@@ -67,6 +73,7 @@ public class PathNavView extends RecyclerView {
         public void onDraw(@NonNull Canvas canvas, RecyclerView parent, @NonNull RecyclerView.State state) {
             final int top = (parent.getHeight() - width) / 2;
             final int count = parent.getChildCount() - 1;
+
             for (int i = 0; i < count; i++) {
                 int left = parent.getChildAt(i + 1).getLeft() - width + DPUtils.DP4;
                 arrow.setBounds(left, top, left + width, top + width);
@@ -76,7 +83,9 @@ public class PathNavView extends RecyclerView {
 
         @Override
         public void getItemOffsets(Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-            outRect.set(0, 0, DPUtils.DP(24 - 8), 0);
+            // int position = parent.getChildAdapterPosition(view);
+            // int count = parent.getAdapter().getItemCount();
+            outRect.set(0, 0, DPUtils.DP(16), 0);
         }
     }
 }

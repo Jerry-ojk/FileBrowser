@@ -59,8 +59,8 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
     public static final int TYPE_JUMP = 3;
     public static final int TYPE_REFRESH = 4;
 
-    public static final int NOTIFY_RENAME = 1;
-    public static final int NOTIFY_SELECT_CHANGE = 2;
+    public static final Integer NOTIFY_RENAME = 1;
+    public static final Integer NOTIFY_SELECT_CHANGE = 2;
 
     public static final int DURING_ANIMATION_FADE = 16 * 5;
     public static final int DURING_ANIMATION_SHOW = 16 * 3;
@@ -90,7 +90,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
     private boolean isMultipleSelectMode = false;
 
     private final TypeUtil typeUtil;
-    private final StateListDrawable drawable;
+    private final StateListDrawable itemBgDrawable;
 
     private FileListResult lastSuccessLoadResult;
     private FileListResult loadResult;
@@ -109,9 +109,9 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         layoutManager = new LinearLayoutManager(mainActivity, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
-        drawable = new StateListDrawable();
-        drawable.addState(new int[]{-android.R.attr.state_selected}, ContextCompat.getDrawable(activity, R.drawable.ripple));
-        drawable.addState(new int[]{android.R.attr.state_selected}, new ColorDrawable(activity.getColor(R.color.colorSelect)));
+        itemBgDrawable = new StateListDrawable();
+        itemBgDrawable.addState(new int[]{-android.R.attr.state_selected}, ContextCompat.getDrawable(activity, R.drawable.ripple));
+        itemBgDrawable.addState(new int[]{android.R.attr.state_selected}, new ColorDrawable(activity.getColor(R.color.colorSelect)));
 
         typeUtil = new TypeUtil(activity);
 
@@ -128,6 +128,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
     public void setPathNavView(PathNavView pathNavView) {
         this.pathNavView = pathNavView;
         this.pathNavView.setPathNavInterface(this);
+        this.pathNavView.updatePath(FileSetting.tagPath(FileSetting.getCurrentPath()));
     }
 
     private void initPopupMenu() {
@@ -137,8 +138,6 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         menu.add(Menu.NONE, 2, Menu.NONE, "剪切").setIcon(R.drawable.ic_cut);
         menu.add(Menu.NONE, 3, Menu.NONE, "重命名").setIcon(R.drawable.ic_edit);
         menu.add(Menu.NONE, 4, Menu.NONE, "删除").setIcon(R.drawable.ic_delete);
-        //menuItem = menu.add(Menu.NONE, 5, Menu.NONE, "收藏");
-        //menuItem.setIcon(R.drawable.ic_star_dark);
         //menuItem = menu.add(Menu.NONE, 6, Menu.NONE, "压缩");
         //menuItem.setIcon(R.drawable.ic_type_compress);
         menu.add(Menu.NONE, 7, Menu.NONE, "属性").setIcon(R.drawable.ic_info);
@@ -232,8 +231,8 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                 AppUtil.showIcon(menu);
                 menu.add(Menu.NONE, 1, Menu.NONE, "全选").setIcon(R.drawable.ic_select_all).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-                menu.add(Menu.NONE, 2, Menu.NONE, "反选").setIcon(R.drawable.ic_action_select).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-                menu.add(Menu.NONE, 3, Menu.NONE, "取消").setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+                menu.add(Menu.NONE, 2, Menu.NONE, "反选").setIcon(R.drawable.ic_action_swap_horiz).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+                // menu.add(Menu.NONE, 3, Menu.NONE, "取消").setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
                 return true;
             }
 
@@ -245,7 +244,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                 switch (item.getItemId()) {
-                    case 1://全选
+                    case 1: // 全选
                         if (select.isSelectedAll()) {
                             select.clearSelect();
                         } else {
@@ -254,14 +253,14 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
                         notifyDataSetChanged();
                         actionMode.setSubtitle("选中数：" + select.getSelectCount());
                         break;
-                    case 2://反选
+                    case 2: // 反选
                         select.selectReverse();
                         actionMode.setSubtitle("选中数：" + select.getSelectCount());
                         notifyDataSetChanged();
                         break;
-                    case 3://反选
-                        quitMultipleSelectMode();
-                        break;
+                    // case 3:
+                    //     quitMultipleSelectMode();
+                    //     break;
                 }
                 return true;
             }
@@ -283,7 +282,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         ViewHolder holder = new ViewHolder(view);
         holder.itemView.setOnClickListener(this::dispatchOrInterruptItemClick);
         holder.itemView.setOnLongClickListener(this::onItemLongClick);
-        holder.itemView.setBackground(drawable.getConstantState().newDrawable());
+        holder.itemView.setBackground(itemBgDrawable.getConstantState().newDrawable());
         return holder;
     }
 
@@ -295,7 +294,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         } else {
             Object object = payloads.get(0);
             if (object instanceof Integer) {
-                if ((int) object == NOTIFY_SELECT_CHANGE) {
+                if (object == NOTIFY_SELECT_CHANGE) {
                     //holder.itemView.setBackground(selectedColor);
                     // holder.itemView.setBackground(drawable.mutate());
                     // holder.itemView.setBackground(drawable);
@@ -339,6 +338,10 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
 
     @Override
     public void onViewRecycled(@NonNull ViewHolder holder) {
+        holder.name.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_NONE);
+        holder.name.setText("");
+        holder.name.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
+
         Object object = holder.icon.getTag();
         holder.icon.setTag(null);
         if (object instanceof ImageLoadTask) {
@@ -459,6 +462,12 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
     public void onNavDirectory(String absolutePath, int type) {
         if (!isAllow) return;
         isAllow = false;
+
+        // if (!UnixFile.access(FileSetting.innerPath(absolutePath), UnixFile.ACCESS_READ)) {
+        //     activity.showToast(PathUtil.getPathName(absolutePath) + " 打开失败");
+        //     return;
+        // }
+
         if (loadResult != null && loadResult.list != null) {
             lastSuccessLoadResult = loadResult;
         }
@@ -489,7 +498,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
             }
         }).start();
         new FileListTask(this, type).execute(absolutePath);
-        activity.onStartLoadFileInfo();
+        activity.onStartLoadDir(FileSetting.tagPath(absolutePath));
     }
 
 
@@ -506,7 +515,10 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         loadResult = null;
         if (result.list == null) {
             activity.showToast(PathUtil.getPathName(result.absolutePath) + " 打开失败");
-            activity.onLoadedFileInfo(lastSuccessLoadResult.dirs, lastSuccessLoadResult.files);
+            activity.onFinishLoadDir(lastSuccessLoadResult.dirs, lastSuccessLoadResult.files);
+
+            pathNavView.updatePath(FileSetting.tagPath(FileSetting.getCurrentPath()));
+
             recyclerView.setAlpha(1f);
             isAllow = true;
             return;
@@ -515,9 +527,10 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         }
         FileSetting.setCurrentPath(result.absolutePath);
         fileList = result.list;
-        pathNavView.updatePath(FileSetting.tagPath(result.absolutePath));
+
         notifyDataSetChanged();
-        activity.onLoadedFileInfo(result.dirs, result.files);
+
+        activity.onFinishLoadDir(result.dirs, result.files);
 
         if (result.type != TYPE_REFRESH) { // 恢复浏览位置
             final Position position = positionCache.get(result.absolutePath);
@@ -640,7 +653,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
                 files++;
             }
         }
-        activity.onLoadedFileInfo(dirs, files);
+        activity.onFinishLoadDir(dirs, files);
     }
 
     public void notifyItemDelete(String name) {

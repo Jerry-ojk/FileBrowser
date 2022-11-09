@@ -1,4 +1,4 @@
-package jerry.filebrowser.adapter;
+package jerry.filebrowser.view;
 
 import android.content.Context;
 import android.graphics.Canvas;

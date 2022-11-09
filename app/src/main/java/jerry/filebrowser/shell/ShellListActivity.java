@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import jerry.filebrowser.R;
-import jerry.filebrowser.adapter.ItemDecoration;
+import jerry.filebrowser.view.ItemDecoration;
 import jerry.filebrowser.app.AppUtil;
 import jerry.filebrowser.setting.SettingManager;
 

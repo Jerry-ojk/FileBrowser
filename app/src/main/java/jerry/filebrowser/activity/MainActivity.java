@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -22,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -38,7 +40,7 @@ import java.util.List;
 import jerry.filebrowser.BuildConfig;
 import jerry.filebrowser.R;
 import jerry.filebrowser.adapter.FileBrowserAdapter;
-import jerry.filebrowser.adapter.ItemDecoration;
+import jerry.filebrowser.view.ItemDecoration;
 import jerry.filebrowser.app.AppUtil;
 import jerry.filebrowser.dialog.DialogManager;
 import jerry.filebrowser.dialog.FileClearDialog;
@@ -58,6 +60,7 @@ import jerry.filebrowser.theme.ThemeHelper;
 import jerry.filebrowser.util.PathUtil;
 import jerry.filebrowser.util.Util;
 import jerry.filebrowser.view.ExpandView;
+import jerry.filebrowser.view.PathNavView;
 import jerry.filebrowser.view.TagView;
 
 import static jerry.filebrowser.setting.SettingManager.SETTING_DATA;
@@ -69,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
     private Toolbar toolbar;
     private RecyclerView recyclerView;
     private FileBrowserAdapter adapter;
+    private PathNavView pathNavView;
 
     //private SharedPreferences preferences;
     private LinearLayout bottomNav;
@@ -248,8 +252,21 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (!Environment.isExternalStorageManager()) {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                intent.setData(Uri.fromParts("package", getPackageName(), null));
+                registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                    if (!Environment.isExternalStorageManager()) {
+                        showToast("授权失败，软件将无法工作");
+                        return;
+                    }
+                    updateSpace();
+                    adapter.refresh();
+                    boolean success = SettingManager.read();
+                    if (success) {
+                        applyDrawerSettings(SETTING_DATA);
+                    }
+                }).launch(intent);
                 startActivity(intent);
-                showToast("请授权允许所有文件管理");
+                showToast("请授权软件文件管理权限");
             }
         } else {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -261,14 +278,17 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
             applyDrawerSettings(SETTING_DATA);
         }
 
-        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            adapter = new FileBrowserAdapter(this, recyclerView);
-            adapter.setPathNavView(findViewById(R.id.recv_path));
-            recyclerView.setAdapter(adapter);
-        } else {
+        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             showToast("内部存储空间尚未准备好，请退出重试");
             return;
         }
+
+
+        pathNavView = findViewById(R.id.recv_path);
+
+        adapter = new FileBrowserAdapter(this, recyclerView);
+        adapter.setPathNavView(pathNavView);
+        recyclerView.setAdapter(adapter);
 
 //        tag_root = drawer.findViewById(R.id.tag_root);
 //        tag_root.setOnClick(v -> {
@@ -312,24 +332,6 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
         refreshFileRoot();
     }
 
-
-    private void collectionPath(String path) {
-        if (SETTING_DATA.colList == null) {
-            SETTING_DATA.colList = new ArrayList<>();
-        }
-        if (!SETTING_DATA.colList.contains(path)) {
-            SETTING_DATA.colList.add(path);
-            TagView tagView = expand_collect.addTag(PathUtil.getPathName(path), FileSetting.tagPath(path), R.drawable.ic_type_folder, PathItemListener);
-            tagView.setOnLongClickListener(v -> {
-                SETTING_DATA.colList.remove(FileSetting.innerPath(((TagView) v).getMessage()));
-                expand_collect.removeView(v);
-                return true;
-            });
-            showToast("收藏成功");
-        } else {
-            showToast("已经收藏过该目录了");
-        }
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -386,7 +388,7 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
         if (requestCode == 0) {
             for (int code : grantResults) {
                 if (code != PackageManager.PERMISSION_GRANTED) {
-                    showToast("不授权文件读写权限软件无法工作！");
+                    showToast("授权失败，软件将无法工作");
                     return;
                 }
             }
@@ -413,6 +415,38 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
         }
     }
 
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(refreshReceiver);
+        super.onDestroy();
+        SettingManager.save(expendViewList);
+        if (dialogManager != null) dialogManager.onLowMemory();
+        ImageManager.onLowMemory();
+    }
+
+    private void collectionPath(String path) {
+        if (SETTING_DATA.colList == null) {
+            SETTING_DATA.colList = new ArrayList<>();
+        }
+        if (!SETTING_DATA.colList.contains(path)) {
+            SETTING_DATA.colList.add(path);
+            TagView tagView = expand_collect.addTag(PathUtil.getPathName(path), FileSetting.tagPath(path), R.drawable.ic_type_folder, PathItemListener);
+            tagView.setOnLongClickListener(v -> {
+                SETTING_DATA.colList.remove(FileSetting.innerPath(((TagView) v).getMessage()));
+                expand_collect.removeView(v);
+                return true;
+            });
+            showToast("收藏成功");
+        } else {
+            showToast("已经收藏过该目录了");
+        }
+    }
+
     public void onIntoMultipleSelectMode() {
         iv_select.setSelected(true);
 //        iv_select.setImageTintList(ColorStateList.valueOf(0xFF117BFF));
@@ -432,14 +466,17 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
         iv_paste.setEnabled(false);
     }
 
-    public void onStartLoadFileInfo() {
+    public void onStartLoadDir(String absolutePath) {
         toolbar.setSubtitle(" ");
+        pathNavView.updatePath(absolutePath);
+        pathNavView.setLoading(true);
     }
 
-    public void onLoadedFileInfo(int dirs, int files) {
+    public void onFinishLoadDir(int dirs, int files) {
         builder.append(dirs).append("个文件夹，").append(files).append("个文件");
         toolbar.setSubtitle(builder.toString());
         builder.setLength(0);
+        pathNavView.setLoading(false);
     }
 
     public void updateSpace() {
@@ -463,7 +500,6 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
         }
     }
 
-
     @Override
     public void showToast(String text) {
         toast.setText(text);
@@ -476,15 +512,6 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
         if (dialogManager != null) dialogManager.onLowMemory();
         ImageManager.onLowMemory();
         super.onLowMemory();
-    }
-
-    @Override
-    protected void onDestroy() {
-        unregisterReceiver(refreshReceiver);
-        super.onDestroy();
-        SettingManager.save(expendViewList);
-        if (dialogManager != null) dialogManager.onLowMemory();
-        ImageManager.onLowMemory();
     }
 
     public void applyDrawerSettings(SettingData data) {

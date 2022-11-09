@@ -2,12 +2,14 @@ package jerry.filebrowser.adapter;
 
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -19,18 +21,29 @@ public class PathNavAdapter extends RecyclerView.Adapter<PathNavAdapter.ViewHold
     private RecyclerView recyclerView;
     private ArrayList<String> pathList = new ArrayList<>();
     private PathNavInterface pathNavInterface;
+    private final Drawable loading;
     private final int color_active;
     private final int color_normal;
+    private boolean isLoading;
 
     public PathNavAdapter(RecyclerView recyclerView) {
         this.recyclerView = recyclerView;
         Context context = recyclerView.getContext();
         color_active = context.getColor(R.color.text_active);
         color_normal = context.getColor(R.color.text_subtitle);
+
+        loading = ContextCompat.getDrawable(context, R.drawable.ic_action_refresh);
+        loading.setTint(color_active);
+        loading.setBounds(0, 0, DPUtils.DP16, DPUtils.DP16);
     }
 
     public void setPathNavInterface(PathNavInterface pathNavInterface) {
         this.pathNavInterface = pathNavInterface;
+    }
+
+    public void setLoading(boolean isLoading) {
+        this.isLoading = isLoading;
+        notifyItemChanged(getItemCount() - 1);
     }
 
     public void updatePath(String path) {
@@ -70,9 +83,20 @@ public class PathNavAdapter extends RecyclerView.Adapter<PathNavAdapter.ViewHold
         textView.setText(pathList.get(position));
         if (position == pathList.size() - 1) {
             textView.setTextColor(color_active);
+            if (isLoading) {
+                textView.setCompoundDrawables(null, null, loading, null);
+            } else {
+                textView.setCompoundDrawables(null, null, null, null);
+            }
         } else {
             textView.setTextColor(color_normal);
         }
+    }
+
+    @Override
+    public void onViewRecycled(@NonNull ViewHolder holder) {
+        final TextView textView = (TextView) holder.itemView;
+        textView.setCompoundDrawables(null, null, null, null);
     }
 
     @Override
