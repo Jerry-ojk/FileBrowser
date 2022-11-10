@@ -1,8 +1,9 @@
 package jerry.filebrowser.adapter;
 
 
+import android.animation.ValueAnimator;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,12 +17,16 @@ import java.util.ArrayList;
 
 import jerry.filebrowser.R;
 import jerry.filebrowser.view.DPUtils;
+import jerry.filebrowser.view.RotatableDrawable;
 
 public class PathNavAdapter extends RecyclerView.Adapter<PathNavAdapter.ViewHolder> {
-    private RecyclerView recyclerView;
-    private ArrayList<String> pathList = new ArrayList<>();
+    private final RecyclerView recyclerView;
+    private final ArrayList<String> pathList = new ArrayList<>();
     private PathNavInterface pathNavInterface;
-    private final Drawable loading;
+
+    private final RotatableDrawable drawable;
+    private final ValueAnimator animator = new ValueAnimator();
+
     private final int color_active;
     private final int color_normal;
     private boolean isLoading;
@@ -32,9 +37,24 @@ public class PathNavAdapter extends RecyclerView.Adapter<PathNavAdapter.ViewHold
         color_active = context.getColor(R.color.text_active);
         color_normal = context.getColor(R.color.text_subtitle);
 
-        loading = ContextCompat.getDrawable(context, R.drawable.ic_action_refresh);
-        loading.setTint(color_active);
-        loading.setBounds(0, 0, DPUtils.DP16, DPUtils.DP16);
+        drawable = new RotatableDrawable(ContextCompat.getDrawable(context, R.drawable.ic_action_refresh));
+        drawable.setTint(color_active);
+        drawable.setBounds(0, 0, DPUtils.DP16, DPUtils.DP16);
+
+        animator.setIntValues(0, 360 - 1);
+        animator.setDuration(400);
+        animator.setInterpolator(null);
+        animator.setRepeatCount(ValueAnimator.INFINITE);
+        animator.setRepeatMode(ValueAnimator.RESTART);
+        animator.addUpdateListener(animation -> {
+            if (!isLoading) {
+                animation.cancel();
+            }
+            int value = (int) animation.getAnimatedValue();
+            Log.i("animator", value + "");
+            drawable.setDegrees(value);
+            drawable.invalidateSelf();
+        });
     }
 
     public void setPathNavInterface(PathNavInterface pathNavInterface) {
@@ -43,6 +63,15 @@ public class PathNavAdapter extends RecyclerView.Adapter<PathNavAdapter.ViewHold
 
     public void setLoading(boolean isLoading) {
         this.isLoading = isLoading;
+        if (this.isLoading) {
+            if (!animator.isStarted()) {
+                animator.start();
+            }
+        } else {
+            if (animator.isRunning()) {
+                animator.cancel();
+            }
+        }
         notifyItemChanged(getItemCount() - 1);
     }
 
@@ -84,11 +113,14 @@ public class PathNavAdapter extends RecyclerView.Adapter<PathNavAdapter.ViewHold
         if (position == pathList.size() - 1) {
             textView.setTextColor(color_active);
             if (isLoading) {
-                textView.setCompoundDrawables(null, null, loading, null);
+                textView.setPadding(DPUtils.DP8, 0, DPUtils.DP8, 0);
+                textView.setCompoundDrawables(null, null, drawable, null);
             } else {
+                textView.setPadding(DPUtils.DP8, 0, DPUtils.DP8 + DPUtils.DP16, 0);
                 textView.setCompoundDrawables(null, null, null, null);
             }
         } else {
+            textView.setPadding(DPUtils.DP8, 0, DPUtils.DP8, 0);
             textView.setTextColor(color_normal);
         }
     }

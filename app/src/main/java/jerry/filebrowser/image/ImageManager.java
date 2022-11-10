@@ -112,7 +112,7 @@ public class ImageManager {
         task.execute();
     }
 
-    public static void onLowMemory() {
+    public static void clear() {
         thumbnailCache.evictAll();
     }
 }

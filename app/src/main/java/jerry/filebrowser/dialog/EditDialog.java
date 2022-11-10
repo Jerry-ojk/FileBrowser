@@ -30,15 +30,15 @@ import jerry.filebrowser.util.PathUtil;
  */
 
 public class EditDialog extends BaseDialog {
-    private MainActivity activity;
-    private FileBrowserAdapter adapter;
-    private InputMethodManager manager;
+    private final MainActivity activity;
+    private final FileBrowserAdapter adapter;
+    private final InputMethodManager manager;
 
-    private TextView title;
-    private TextView message;
-    private TextInputLayout til_name;
-    private EditText ed_name;
-    private Button positiveButton;
+    private final TextView title;
+    private final TextView message;
+    private final TextInputLayout til_name;
+    private final EditText ed_name;
+    private final Button positiveButton;
 
     private RadioButton newDir;
     private RadioButton newFile;
@@ -88,12 +88,16 @@ public class EditDialog extends BaseDialog {
 
     public void showRenameDialog(JerryFile file) {
         title.setText("重命名");
+
+        til_name.setVisibility(View.VISIBLE);
         newDir.setVisibility(View.INVISIBLE);
         newFile.setVisibility(View.INVISIBLE);
-        ed_name.setVisibility(View.VISIBLE);
-        ed_name.setText(file.name);
+        message.setVisibility(View.GONE);
+
         til_name.setHint("名称");
         til_name.setErrorEnabled(false);
+        ed_name.setText(file.name);
+
         int end;
         if (file.isDir()) {
             end = file.name.length();
@@ -104,25 +108,19 @@ public class EditDialog extends BaseDialog {
             }
         }
         ed_name.setSelection(0, end);
-        message.setVisibility(View.GONE);
+
         positiveButton.setOnClickListener(v -> {
             String newName = ed_name.getText().toString();
             String newPath = PathUtil.mergePath(file.getParentPath(), newName);
             if (file.name.equals(newName)) {
-//                message.setVisibility(View.VISIBLE);
-//                message.setText("名称原来相同");
                 til_name.setError("名称原来相同");
                 return;
             }
             if (newName.length() > 254 || newPath.length() > 1023) {
-//                message.setVisibility(View.VISIBLE);
-//                message.setText("名称过长");
                 til_name.setError("名称过长");
                 return;
             }
             if (UnixFile.isExist(newPath)) {
-//                message.setVisibility(View.VISIBLE);
-//                message.setText("该文件名已存在");
                 til_name.setError("该文件名已存在");
                 return;
             }
@@ -142,22 +140,23 @@ public class EditDialog extends BaseDialog {
     }
 
     public void showCreateDialog(String currentPath) {
+        title.setText("新建");
+
+        til_name.setVisibility(View.VISIBLE);
         newDir.setVisibility(View.VISIBLE);
         newFile.setVisibility(View.VISIBLE);
-        ed_name.setVisibility(View.VISIBLE);
-        title.setText("新建");
         message.setVisibility(View.GONE);
+
         til_name.setHint("名称");
+
         positiveButton.setOnClickListener(v -> {
             String newName = ed_name.getText().toString();
             if (TextUtils.isEmpty(newName)) {
-//                message.setText("名称不能为空");
                 til_name.setError("名称不能为空");
                 return;
             }
             String newPath = PathUtil.mergePath(currentPath, newName);
             if (UnixFile.isExist(newPath)) {
-//                message.setText("该文件已存在");
                 til_name.setError("该文件已存在");
                 return;
             }
@@ -183,14 +182,17 @@ public class EditDialog extends BaseDialog {
     }
 
     public void showDeleteDialog(JerryFile file) {
+        title.setText("删除");
+
         newDir.setVisibility(View.INVISIBLE);
         newFile.setVisibility(View.INVISIBLE);
         til_name.setVisibility(View.GONE);
-        title.setText("删除");
+        message.setVisibility(View.VISIBLE);
+
         String type = file.getTypeName();
         StringBuilder builder = new StringBuilder("确定要删除该").append(type).append("吗？");
         message.setText(builder);
-        message.setVisibility(View.VISIBLE);
+
         positiveButton.setOnClickListener(v -> {
             if (UnixFile.delete(file.getAbsPath())) {
                 adapter.notifyItemDelete(file.name);
@@ -203,17 +205,20 @@ public class EditDialog extends BaseDialog {
     }
 
     public void showDeleteListDialog(ArrayList<UnixFile> list) {
+        title.setText("删除");
+
         newDir.setVisibility(View.INVISIBLE);
         newFile.setVisibility(View.INVISIBLE);
-        ed_name.setVisibility(View.GONE);
-        title.setText("删除");
+        til_name.setVisibility(View.GONE);
+        message.setVisibility(View.VISIBLE);
+
         String size = String.valueOf(list.size());
         SpannableStringBuilder builder = new SpannableStringBuilder("确定要删除选定的")
                 .append(size)
                 .append("个项目吗？");
         builder.setSpan(new ForegroundColorSpan(0xFF117BFF), 8, 8 + size.length() + 1, Spanned.SPAN_MARK_MARK);
         message.setText(builder);
-        message.setVisibility(View.VISIBLE);
+
         positiveButton.setOnClickListener(v -> {
             dismiss();
             //adapter.clear();

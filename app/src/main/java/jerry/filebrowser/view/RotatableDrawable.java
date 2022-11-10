@@ -2,6 +2,7 @@ package jerry.filebrowser.view;
 
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.NonNull;
@@ -9,7 +10,6 @@ import androidx.annotation.Nullable;
 
 
 public class RotatableDrawable extends Drawable {
-
     private Drawable target;
     private float degrees;
 
@@ -33,13 +33,16 @@ public class RotatableDrawable extends Drawable {
     @Override
     public void draw(@NonNull Canvas canvas) {
         //Log.i("RotatableDrawable", "draw" + degrees);
-        canvas.translate(36, 36);
+        Rect rect = getBounds();
+        canvas.translate(rect.width() / 2f, rect.height() / 2f);
         canvas.rotate(degrees);
-        canvas.translate(-36, -36);
+        canvas.translate(-rect.width() / 2f, -rect.height() / 2f);
+
         target.draw(canvas);
-        canvas.translate(-36, -36);
+
+        canvas.translate(-rect.width() / 2f, -rect.height() / 2f);
         canvas.rotate(-degrees);
-        canvas.translate(36, 36);
+        canvas.translate(rect.width() / 2f, rect.height() / 2f);
     }
 
     @Override

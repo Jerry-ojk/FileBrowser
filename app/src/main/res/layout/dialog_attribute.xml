@@ -26,7 +26,6 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:text="名字"
-
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
@@ -38,7 +37,6 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:text="路径"
-
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dialog_name_content" />
@@ -50,7 +48,6 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:text="类型"
-
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dialog_path_content" />
@@ -62,7 +59,6 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:text="大小"
-
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dialog_type" />
@@ -74,7 +70,6 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:text="权限"
-
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dialog_size" />
@@ -86,7 +81,6 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:text="所有者"
-
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dialog_mode" />
@@ -98,7 +92,6 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:text="所有组"
-
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dialog_author" />
@@ -110,22 +103,9 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:text="访问时间"
-
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dialog_group" />
-
-    <TextView
-        android:id="@+id/dialog_mtime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:text="修改时间"
-
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dialog_atime" />
 
     <TextView
         android:id="@+id/dialog_ctime"
@@ -133,13 +113,23 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="16dp"
         android:text="状态时间"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_atime" />
 
+    <TextView
+        android:id="@+id/dialog_mtime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:text="修改时间"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dialog_mtime" />
+        app:layout_constraintTop_toBottomOf="@+id/dialog_ctime" />
 
     <TextView
         android:id="@+id/dialog_name_content"
@@ -208,11 +198,12 @@
         android:id="@+id/dialog_change_mode"
         android:layout_width="40dp"
         android:layout_height="22dp"
-        android:layout_marginStart="8dp"
-        android:background="@color/colorLight"
+        android:layout_marginStart="4dp"
+        android:background="@null"
         android:elevation="0dp"
         android:text="更改"
-        android:textSize="16sp"
+        android:textColor="@color/colorAccent"
+        android:textSize="14sp"
         app:layout_constraintStart_toEndOf="@+id/dialog_mode_content"
         app:layout_constraintTop_toTopOf="@+id/dialog_mode" />
 
@@ -246,15 +237,6 @@
         app:layout_constraintTop_toTopOf="@+id/dialog_atime"
         tools:text="2019-12-23 12:45" />
 
-    <TextView
-        android:id="@+id/dialog_mtime_content"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:textSize="16sp"
-        app:layout_constraintStart_toEndOf="@+id/dialog_atime"
-        app:layout_constraintTop_toTopOf="@+id/dialog_mtime"
-        tools:text="2019-12-23 12:45" />
 
     <TextView
         android:id="@+id/dialog_ctime_content"
@@ -264,6 +246,16 @@
         android:textSize="16sp"
         app:layout_constraintStart_toEndOf="@+id/dialog_atime"
         app:layout_constraintTop_toTopOf="@+id/dialog_ctime"
+        tools:text="2019-12-23 12:45" />
+
+    <TextView
+        android:id="@+id/dialog_mtime_content"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:textSize="16sp"
+        app:layout_constraintStart_toEndOf="@+id/dialog_atime"
+        app:layout_constraintTop_toTopOf="@+id/dialog_mtime"
         tools:text="2019-12-23 12:45" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

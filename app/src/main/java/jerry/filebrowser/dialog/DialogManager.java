@@ -9,7 +9,7 @@ import jerry.filebrowser.file.JerryFile;
 import jerry.filebrowser.file.UnixFile;
 
 public class DialogManager {
-    private AppCompatActivity activity;
+    private final AppCompatActivity activity;
     private EditDialog editDialog;
     private FileAttributeDialog attributeDialog;
     private FileClearDialog fileClearDialog;
@@ -68,7 +68,7 @@ public class DialogManager {
 //        new OpenWayDialog(activity, file).show();
 //    }
 
-    public void onLowMemory() {
+    public void clear() {
         editDialog = null;
         attributeDialog = null;
     }

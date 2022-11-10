@@ -66,7 +66,6 @@ import jerry.filebrowser.view.TagView;
 import static jerry.filebrowser.setting.SettingManager.SETTING_DATA;
 
 public class MainActivity extends AppCompatActivity implements ToastInterface {
-
     private DialogManager dialogManager;
 
     private Toolbar toolbar;
@@ -248,7 +247,6 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(new ItemDecoration(this));
 
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (!Environment.isExternalStorageManager()) {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
@@ -282,7 +280,6 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
             showToast("内部存储空间尚未准备好，请退出重试");
             return;
         }
-
 
         pathNavView = findViewById(R.id.recv_path);
 
@@ -319,14 +316,11 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
             new FileClearDialog(MainActivity.this).show(FileSetting.getCurrentPath(), adapter.fileList);
         }), drawer);
 
-        ((TagView) expand_tool.findViewById(R.id.tag_dart_mode)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ThemeHelper.setDarkMode(!ThemeHelper.isDarkMode);
-            }
-        });
+        ((TagView) expand_tool.findViewById(R.id.tag_dart_mode)).setOnClickListener(v ->
+                ThemeHelper.setDarkMode(!ThemeHelper.isDarkMode));
+
         if (BuildConfig.DEBUG) {
-            Log.i("666", "MainActivity.onCreate()共耗时" + (System.currentTimeMillis() - b));
+            Log.i("MainActivity", "onCreate()耗时: " + (System.currentTimeMillis() - b));
         }
 
         refreshFileRoot();
@@ -422,11 +416,14 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
 
     @Override
     protected void onDestroy() {
-        unregisterReceiver(refreshReceiver);
         super.onDestroy();
+
+        unregisterReceiver(refreshReceiver);
+        unregisterReceiver(otgReceiver);
         SettingManager.save(expendViewList);
-        if (dialogManager != null) dialogManager.onLowMemory();
-        ImageManager.onLowMemory();
+
+        if (dialogManager != null) dialogManager.clear();
+        ImageManager.clear();
     }
 
     private void collectionPath(String path) {
@@ -508,10 +505,10 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
 
     @Override
     public void onLowMemory() {
-//        showToast("内存不足，自动清空缓存");
-        if (dialogManager != null) dialogManager.onLowMemory();
-        ImageManager.onLowMemory();
         super.onLowMemory();
+//        showToast("内存不足，自动清空缓存");
+        if (dialogManager != null) dialogManager.clear();
+        ImageManager.clear();
     }
 
     public void applyDrawerSettings(SettingData data) {

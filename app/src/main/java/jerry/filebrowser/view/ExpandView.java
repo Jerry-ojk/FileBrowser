@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import jerry.filebrowser.R;
@@ -21,7 +22,6 @@ import jerry.filebrowser.R;
  */
 
 public class ExpandView extends ViewGroup {
-
     public final static int STATE_CLOSED = 0;
     public final static int STATE_EXPANDED = 1;
     public final static int STATE_CLOSING = 2;
@@ -29,24 +29,19 @@ public class ExpandView extends ViewGroup {
     public final static int STATE_ALPHA0ING = 4;
     public final static int STATE_ALPHA1ING = 5;
 
-    private final RotatableDrawable arrow;
-
     private int state = STATE_CLOSED;
     private int action = STATE_CLOSED;
 
-    int total_height = 0;
-    int current_height = 0;
-
+    int totalHeight = 0;
+    int currentHeight = 0;
     int during = 0;
 
     private TextView textView;
-
-    private ValueAnimator animator_expand;
-    private final ValueAnimator.AnimatorUpdateListener listener;
+    private DrawerLayout drawer;
+    private final RotatableDrawable arrow;
+    private ValueAnimator expandAnimator;
     //    private OnViewRemoveListener removeListener;
     private boolean isChange = true;
-
-    private DrawerLayout drawer;
 
     public ExpandView(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
@@ -54,15 +49,9 @@ public class ExpandView extends ViewGroup {
 
     public ExpandView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        arrow = new RotatableDrawable(getResources().getDrawable(R.drawable.ic_action_pre, null));
+        arrow = new RotatableDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_action_pre, null));
         //expandDrawable.mutate();
         //arrow.setTint(context.getResources().getColor(R.color.action, null));
-        listener = animation -> {
-            current_height = (int) animation.getAnimatedValue();
-            arrow.setDegrees(-current_height * 90f / total_height);
-            textView.invalidateDrawable(arrow);
-            requestLayout();
-        };
     }
 
     public void setDrawer(DrawerLayout drawer) {
@@ -134,16 +123,16 @@ public class ExpandView extends ViewGroup {
                 temp += item.getMeasuredHeight();
             }
             if (state == STATE_CLOSED) {
-                current_height = 0;
+                currentHeight = 0;
                 setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), 0);
             } else {
-                current_height = temp;
+                currentHeight = temp;
                 setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), temp);
             }
-            total_height = temp;
-            during = 100 + (total_height >> 2);
+            totalHeight = temp;
+            during = 100 + (totalHeight >> 2);
         } else {
-            setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), current_height);
+            setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), currentHeight);
         }
     }
 
@@ -151,7 +140,7 @@ public class ExpandView extends ViewGroup {
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         // if (!changed) return;
         if (state == STATE_EXPANDING || state == STATE_CLOSING) {
-            int bottom = current_height;
+            int bottom = currentHeight;
             int width = getMeasuredWidth();
             int count = getChildCount();
             for (int i = count - 1; i >= 0; i--) {
@@ -176,8 +165,8 @@ public class ExpandView extends ViewGroup {
             checkAnimator();
             action = STATE_EXPANDING;
             state = STATE_EXPANDING;
-            animator_expand.setIntValues(0, total_height);
-            animator_expand.start();
+            expandAnimator.setIntValues(0, totalHeight);
+            expandAnimator.start();
         } else {
             state = STATE_EXPANDED;
             arrow.setDegrees(-90);
@@ -190,13 +179,10 @@ public class ExpandView extends ViewGroup {
             checkAnimator();
             action = STATE_CLOSING;
             state = STATE_ALPHA0ING;
-            animate().alpha(0).setDuration(100).withEndAction(new Runnable() {
-                @Override
-                public void run() {
-                    state = STATE_CLOSING;
-                    animator_expand.setIntValues(total_height, 0);
-                    animator_expand.start();
-                }
+            animate().alpha(0).setDuration(100).withEndAction(() -> {
+                state = STATE_CLOSING;
+                expandAnimator.setIntValues(totalHeight, 0);
+                expandAnimator.start();
             }).start();
         } else {
             state = STATE_CLOSED;
@@ -206,12 +192,18 @@ public class ExpandView extends ViewGroup {
     }
 
     private void checkAnimator() {
-        if (animator_expand == null) {
-            animator_expand = new ValueAnimator();
-            animator_expand.setDuration(during);
+        if (expandAnimator == null) {
+            expandAnimator = new ValueAnimator();
+            expandAnimator.setDuration(during);
             //animator_expand.setInterpolator(new AccelerateDecelerateInterpolator());
-            animator_expand.addUpdateListener(listener);
-            animator_expand.addListener(new Animator.AnimatorListener() {
+            expandAnimator.addUpdateListener(animation -> {
+                currentHeight = (int) animation.getAnimatedValue();
+                arrow.setDegrees(-currentHeight * 90f / totalHeight);
+                arrow.invalidateSelf();
+                // textView.invalidateDrawable(arrow);
+                requestLayout();
+            });
+            expandAnimator.addListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {
 
@@ -252,7 +244,7 @@ public class ExpandView extends ViewGroup {
             arrow.setDegrees(0);
             setAlpha(0);
             textView.invalidateDrawable(arrow);
-            current_height = 0;
+            currentHeight = 0;
             requestLayout();
         }
     }

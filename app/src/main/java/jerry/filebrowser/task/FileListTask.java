@@ -13,8 +13,8 @@ import jerry.filebrowser.util.SortHelper;
 
 public class FileListTask extends AsyncTask<String, Object, ArrayList<UnixFile>> {
     private FileListCallback callback;
+    private final int type;
     private String path;
-    private int type;
     private int dirs = 0;
     private int files = 0;
 
@@ -59,10 +59,10 @@ public class FileListTask extends AsyncTask<String, Object, ArrayList<UnixFile>>
             dirs = dirsList.size();
             files = filesList.size();
             if (dirs > 1) {
-                Collections.sort(dirsList, comparator);
+                dirsList.sort(comparator);
             }
             if (files > 1) {
-                Collections.sort(filesList, comparator);
+                filesList.sort(comparator);
             }
             if (FileSetting.isReverse()) {
                 Collections.reverse(dirsList);
@@ -84,7 +84,7 @@ public class FileListTask extends AsyncTask<String, Object, ArrayList<UnixFile>>
                     files++;
                 }
             }
-            Collections.sort(list, comparator);
+            list.sort(comparator);
             if (FileSetting.isReverse()) {
                 Collections.reverse(list);
             }
