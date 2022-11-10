@@ -86,7 +86,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
 
     private boolean isAllow = true;
     private boolean isAnimator = false;
-    private boolean isLoading = false;
+    private final boolean isLoading = false;
     private boolean isMultipleSelectMode = false;
 
     private final TypeUtil typeUtil;
@@ -579,11 +579,15 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
     public void intoMultipleSelectMode() {
         if (!isMultipleSelectMode) {
             isMultipleSelectMode = true;
-            select.onIntoMultipleSelectMode(fileList);
-            activity.onIntoMultipleSelectMode();
+
             actionMode = activity.startSupportActionMode(callback);
+            if (actionMode == null) return;
+
+            select.onIntoMultipleSelectMode(fileList);
+
             actionMode.setTitle("多选模式");
             actionMode.setSubtitle("选中数：" + select.getSelectCount());
+            activity.onIntoMultipleSelectMode();
         }
     }
 
@@ -591,8 +595,10 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
     public void quitMultipleSelectMode() {
         if (isMultipleSelectMode) {
             isMultipleSelectMode = false;
+
             select.onQuitMultipleSelectMode();
             activity.onQuitMultipleSelectMode();
+
             if (actionMode != null) actionMode.finish();
             notifyDataSetChanged();
         }

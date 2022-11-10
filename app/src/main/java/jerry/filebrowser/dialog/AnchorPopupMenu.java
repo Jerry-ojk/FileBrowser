@@ -1,5 +1,6 @@
 package jerry.filebrowser.dialog;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.Gravity;
 import android.view.View;
@@ -15,7 +16,7 @@ import jerry.filebrowser.R;
 
 public class AnchorPopupMenu extends PopupMenu {
     private MenuPopupHelper popupHelper;
-    private RecyclerView recyclerView;
+    private final RecyclerView recyclerView;
     protected View anchorView;
     private int position;
 
@@ -24,6 +25,7 @@ public class AnchorPopupMenu extends PopupMenu {
         this.recyclerView = recyclerView;
     }
 
+    @SuppressLint("RestrictedApi")
     public void setAnchorView(View view) {
         anchorView = view;
         if (popupHelper == null) {

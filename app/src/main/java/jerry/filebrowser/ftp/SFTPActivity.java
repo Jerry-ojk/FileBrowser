@@ -40,7 +40,7 @@ public class SFTPActivity extends AppCompatActivity implements SSHConnectCallbac
     private RefreshReceiver refreshReceiver;
 
     private SFTPConfig config;
-    private TextView tv_output;
+    // private TextView tv_output;
 
     private String root;
     private Toast toast;
@@ -56,7 +56,7 @@ public class SFTPActivity extends AppCompatActivity implements SSHConnectCallbac
         Toolbar toolbar = findViewById(R.id.toolbar_ftp);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        tv_output = findViewById(R.id.tv_output);
+        // tv_output = findViewById(R.id.tv_output);
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
 
         recyclerView = findViewById(R.id.recv_file);
