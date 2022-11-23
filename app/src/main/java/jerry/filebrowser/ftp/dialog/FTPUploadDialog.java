@@ -59,7 +59,7 @@ public class FTPUploadDialog extends BaseDialog {
             if (!isSuccess) return;
 
 
-            SFTPTransportConfig config = new SFTPTransportConfig(localPath, PathUtil.mergePath(destDir, name));
+            SFTPTransportConfig config = new SFTPTransportConfig(localPath, PathUtil.join(destDir, name));
             config.destDir = destDir;
             config.name = name;
             activity.onStartFTPUploadSure(config);

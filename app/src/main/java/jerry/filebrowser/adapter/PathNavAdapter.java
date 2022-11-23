@@ -51,7 +51,6 @@ public class PathNavAdapter extends RecyclerView.Adapter<PathNavAdapter.ViewHold
                 animation.cancel();
             }
             int value = (int) animation.getAnimatedValue();
-            Log.i("animator", value + "");
             drawable.setDegrees(value);
             drawable.invalidateSelf();
         });
@@ -160,7 +159,7 @@ public class PathNavAdapter extends RecyclerView.Adapter<PathNavAdapter.ViewHold
         }
     }
 
-    public static interface PathNavInterface {
+    public interface PathNavInterface {
         public void onNavDirectory(String absPath, int type);
     }
 }

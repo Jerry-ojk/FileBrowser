@@ -72,17 +72,17 @@ public class TypeUtil {
 
 //        icon_compress.mutate();
 //        icon_compress.setTint(0xFF82F386);
+
         // 存入后缀名
+        TYPE_TRIE.put("7z", new FileType(FileType.TYPE_UNKNOWN, icon_compress));
         TYPE_TRIE.put("aac", new FileType(FileType.TYPE_UNKNOWN, icon_music));
         TYPE_TRIE.put("apk", new FileType(FileType.TYPE_UNKNOWN, icon_apk));
         TYPE_TRIE.put("avi", new FileType(FileType.TYPE_VIDEO, icon_video));
-//        TYPE_MAP.put("bat", new FileType(FileType.TYPE_TXT, icon_code));
-//        TYPE_TRIE.put("bin", new FileType(FileType.TYPE_TXT, icon_code));
         TYPE_TRIE.put("bmp", new FileType(FileType.TYPE_IMAGE, icon_image));
         TYPE_TRIE.put("c", new FileType(FileType.TYPE_TXT, icon_code));
         TYPE_TRIE.put("cpp", new FileType(FileType.TYPE_TXT, icon_code));
         TYPE_TRIE.put("css", new FileType(FileType.TYPE_TXT, icon_code));
-        TYPE_TRIE.put("csv", new FileType(FileType.TYPE_TXT, icon_code));
+        TYPE_TRIE.put("csv", new FileType(FileType.TYPE_TXT, icon_txt));
         TYPE_TRIE.put("flac", new FileType(FileType.TYPE_UNKNOWN, icon_music));
         TYPE_TRIE.put("flv", new FileType(FileType.TYPE_VIDEO, icon_video));
         TYPE_TRIE.put("gif", new FileType(FileType.TYPE_IMAGE, icon_image));
@@ -97,6 +97,7 @@ public class TypeUtil {
         TYPE_TRIE.put("json", new FileType(FileType.TYPE_TXT, icon_code));
         TYPE_TRIE.put("log", new FileType(FileType.TYPE_TXT, icon_txt));
         TYPE_TRIE.put("mkv", new FileType(FileType.TYPE_VIDEO, icon_video));
+        TYPE_TRIE.put("mov", new FileType(FileType.TYPE_VIDEO, icon_video));
         TYPE_TRIE.put("mp3", new FileType(FileType.TYPE_UNKNOWN, icon_music));
         TYPE_TRIE.put("mp4", new FileType(FileType.TYPE_VIDEO, icon_video));
         TYPE_TRIE.put("otf", new FileType(FileType.TYPE_UNKNOWN, icon_ttf));
@@ -109,10 +110,10 @@ public class TypeUtil {
         TYPE_TRIE.put("ts", new FileType(FileType.TYPE_VIDEO, icon_video));
         TYPE_TRIE.put("ttf", new FileType(FileType.TYPE_UNKNOWN, icon_ttf));
         TYPE_TRIE.put("txt", new FileType(FileType.TYPE_TXT, icon_txt));
+        TYPE_TRIE.put("webp", new FileType(FileType.TYPE_IMAGE, icon_image));
         TYPE_TRIE.put("wmv", new FileType(FileType.TYPE_VIDEO, icon_video));
         TYPE_TRIE.put("xml", new FileType(FileType.TYPE_TXT, icon_code));
         TYPE_TRIE.put("zip", new FileType(FileType.TYPE_UNKNOWN, icon_compress));
-        TYPE_TRIE.put("7z", new FileType(FileType.TYPE_UNKNOWN, icon_compress));
     }
 
     public int fillIcon(ImageView imageView, String name) {

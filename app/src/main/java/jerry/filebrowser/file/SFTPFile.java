@@ -2,12 +2,12 @@ package jerry.filebrowser.file;
 
 import jerry.filebrowser.util.PathUtil;
 
-public class SFTPFile extends JerryFile {
+public class SFTPFile extends BaseFile {
     private String longName;
     private SFTPAttrs attrs;
 
     public SFTPFile(String absPath, SFTPAttrs attrs) {
-        super(PathUtil.getPathName(absPath), PathUtil.getPathParent(absPath));
+        super(PathUtil.getPathParent(absPath), PathUtil.getPathName(absPath));
         this.absPath = absPath;
         this.attrs = attrs;
         this.length = attrs.size;

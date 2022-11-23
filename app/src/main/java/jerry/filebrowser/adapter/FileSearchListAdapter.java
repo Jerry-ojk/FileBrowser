@@ -14,10 +14,11 @@ import java.util.ArrayList;
 
 import jerry.filebrowser.R;
 import jerry.filebrowser.activity.MainActivity;
+import jerry.filebrowser.file.BaseFile;
 import jerry.filebrowser.file.UnixFile;
 
 public class FileSearchListAdapter extends RecyclerView.Adapter<FileSearchListAdapter.ViewHolder> {
-    private ArrayList<UnixFile> list;
+    private ArrayList<BaseFile> list;
 
     private MainActivity activity;
     //view
@@ -36,7 +37,7 @@ public class FileSearchListAdapter extends RecyclerView.Adapter<FileSearchListAd
         this.listener = listener;
     }
 
-    public void setResult(ArrayList<UnixFile> list) {
+    public void setResult(ArrayList<BaseFile> list) {
         this.list = list;
     }
 
@@ -52,7 +53,7 @@ public class FileSearchListAdapter extends RecyclerView.Adapter<FileSearchListAd
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        final UnixFile item = list.get(position);
+        final BaseFile item = list.get(position);
         holder.image.setImageDrawable(icon_folder);
         holder.name.setText(item.name);
         holder.path.setText(item.getAbsPath());

@@ -8,9 +8,11 @@ import android.widget.EditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
+
 import jerry.filebrowser.R;
 import jerry.filebrowser.activity.MainActivity;
 import jerry.filebrowser.app.AppUtil;
+import jerry.filebrowser.file.BaseFile;
 import jerry.filebrowser.setting.FileSetting;
 import jerry.filebrowser.file.UnixFile;
 import jerry.filebrowser.task.FileListCallback;
@@ -81,7 +83,7 @@ public class SearchDialog extends BaseDialog implements FileListCallback {
     public void onListResult(FileListResult result) {
         task = null;
         bu_sure.setEnabled(true);
-        final ArrayList<UnixFile> list = result.list;
+        final ArrayList<BaseFile> list = result.list;
         if (list == null || list.isEmpty()) {
             activity.showToast("搜索结果为空");
         } else {

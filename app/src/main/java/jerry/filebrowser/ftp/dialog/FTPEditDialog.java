@@ -20,7 +20,7 @@ import jerry.filebrowser.R;
 import jerry.filebrowser.activity.MainActivity;
 import jerry.filebrowser.adapter.FileBrowserAdapter;
 import jerry.filebrowser.dialog.BaseDialog;
-import jerry.filebrowser.file.JerryFile;
+import jerry.filebrowser.file.BaseFile;
 import jerry.filebrowser.util.PathUtil;
 
 /**
@@ -104,7 +104,7 @@ public class FTPEditDialog extends BaseDialog {
                 message.setText("名称原来相同");
                 return;
             }
-            String newPath = PathUtil.mergePath(parent, newName);
+            String newPath = PathUtil.join(parent, newName);
             if (newName.length() > 254 || newPath.length() > 1024) {
                 message.setVisibility(View.VISIBLE);
                 message.setText("名称过长");
@@ -141,7 +141,7 @@ public class FTPEditDialog extends BaseDialog {
                 return;
             }
             if (callback != null) {
-                callback.onCreateSure(isFile, PathUtil.mergePath(currentPath, newName));
+                callback.onCreateSure(isFile, PathUtil.join(currentPath, newName));
             }
             manager.hideSoftInputFromWindow(editText.getWindowToken(), 0, null);
             dismiss();
@@ -171,7 +171,7 @@ public class FTPEditDialog extends BaseDialog {
         show();
     }
 
-    public void showDeleteListDialog(ArrayList<JerryFile> list) {
+    public void showDeleteListDialog(ArrayList<BaseFile> list) {
         newDir.setVisibility(View.INVISIBLE);
         newFile.setVisibility(View.INVISIBLE);
         editText.setVisibility(View.GONE);

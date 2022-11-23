@@ -53,7 +53,7 @@ public class FTPDownloadDialog extends BaseDialog {
             }
             if (!isSuccess) return;
 
-            final String localPath = PathUtil.mergePath(destDir, name);
+            final String localPath = PathUtil.join(destDir, name);
             if (UnixFile.isExist(localPath) && !cb_cover.isChecked()) {
                 ed_name.setError("该文件已存在");
                 return;

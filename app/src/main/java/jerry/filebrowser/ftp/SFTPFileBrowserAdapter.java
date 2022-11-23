@@ -29,7 +29,7 @@ import jerry.filebrowser.adapter.LruCache;
 import jerry.filebrowser.adapter.PathNavAdapter;
 import jerry.filebrowser.file.Select;
 import jerry.filebrowser.dialog.DataPopupMenu;
-import jerry.filebrowser.file.JerryFile;
+import jerry.filebrowser.file.BaseFile;
 import jerry.filebrowser.file.SFTPAttrs;
 import jerry.filebrowser.file.SFTPFile;
 import jerry.filebrowser.ftp.callback.FTPListCallback;
@@ -144,7 +144,7 @@ public class SFTPFileBrowserAdapter extends RecyclerView.Adapter<SFTPFileBrowser
             SFTPFile file = popupMenu.getFile();
             switch (item.getItemId()) {//长按菜单
                 case 1://下载
-                    if (file.type != JerryFile.TYPE_DIR) {
+                    if (file.type != BaseFile.TYPE_DIR) {
                         new FTPDownloadDialog(activity, file.getAbsPath()).show();
                     }
                     break;
@@ -205,12 +205,12 @@ public class SFTPFileBrowserAdapter extends RecyclerView.Adapter<SFTPFileBrowser
     public void onBindViewHolder(ViewHolder holder, int position) {
         final SFTPFile item = fileList.get(position);
         holder.itemView.setTag(position);
-        if (item.type == JerryFile.TYPE_LINK) {
+        if (item.type == BaseFile.TYPE_LINK) {
             if (item instanceof SFTPLinkFile) {
                 final SFTPFile link = ((SFTPLinkFile) item).getLink();
                 holder.name.setText(item.name + " -> " + link.getAbsPath());
                 holder.time.setText(Util.time(link.time));
-                if (link.type == JerryFile.TYPE_DIR) {
+                if (link.type == BaseFile.TYPE_DIR) {
                     holder.image.setImageDrawable(typeUtil.getFolderDrawable());
                 } else {
                     holder.image.setImageResource(R.drawable.ic_type_link);
@@ -228,7 +228,7 @@ public class SFTPFileBrowserAdapter extends RecyclerView.Adapter<SFTPFileBrowser
         holder.name.setText(item.name);
         holder.time.setText(Util.time(item.time));
 
-        if (item.type == JerryFile.TYPE_DIR) {
+        if (item.type == BaseFile.TYPE_DIR) {
             holder.size.setText("");
 //            holder.size.setText(Util.size(item.getAttrs().getSize()));
             holder.image.setImageDrawable(typeUtil.getFolderDrawable());
@@ -354,7 +354,7 @@ public class SFTPFileBrowserAdapter extends RecyclerView.Adapter<SFTPFileBrowser
         if (!isAllow) return;
         final int pos = recyclerView.getChildAdapterPosition(view);
         final SFTPFile file = fileList.get(pos);
-        if (file.type == JerryFile.TYPE_DIR) {
+        if (file.type == BaseFile.TYPE_DIR) {
             onDirectoryClick(pos, file);
         } else if (file instanceof SFTPLinkFile) {
             SFTPFile link = ((SFTPLinkFile) file).getLink();
@@ -382,7 +382,7 @@ public class SFTPFileBrowserAdapter extends RecyclerView.Adapter<SFTPFileBrowser
         view.setSelected(true);
         final int pos = recyclerView.getChildAdapterPosition(view);
         popupMenu.setAnchorView(view);
-        popupMenu.getMenu().getItem(0).setVisible(fileList.get(pos).type != JerryFile.TYPE_DIR);
+        popupMenu.getMenu().getItem(0).setVisible(fileList.get(pos).type != BaseFile.TYPE_DIR);
         popupMenu.show(fileList.get(pos));
         return true;
     }

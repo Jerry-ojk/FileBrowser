@@ -19,6 +19,7 @@ class PathNavView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : RecyclerView(context, attrs, defStyleAttr) {
 
+    private var path: String = ""
     private val adapter: PathNavAdapter = PathNavAdapter(this)
     private val runnable = Runnable { scrollToPosition(adapter.itemCount - 1) }
 
@@ -37,7 +38,12 @@ class PathNavView @JvmOverloads constructor(
         adapter.setLoading(isLoading)
     }
 
-    fun updatePath(absolutePath: String?) {
+    fun getPath(): String {
+        return path
+    }
+
+    fun updatePath(absolutePath: String) {
+        path = absolutePath
         adapter.updatePath(absolutePath)
         post(runnable)
     }

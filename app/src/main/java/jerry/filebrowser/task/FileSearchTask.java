@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import jerry.filebrowser.setting.FileSetting;
-import jerry.filebrowser.file.JerryFile;
+import jerry.filebrowser.file.BaseFile;
 import jerry.filebrowser.file.UnixFile;
 
-public class FileSearchTask extends AsyncTask<String, Object, ArrayList<UnixFile>> {
+public class FileSearchTask extends AsyncTask<String, Object, ArrayList<BaseFile>> {
     private WeakReference<FileListCallback> reference;
     public String path;
     public String pattern;
@@ -22,7 +22,7 @@ public class FileSearchTask extends AsyncTask<String, Object, ArrayList<UnixFile
     private int type;
     private int max = 100;
 
-    private final ArrayList<UnixFile> result = new ArrayList<>();
+    private final ArrayList<BaseFile> result = new ArrayList<>();
 
     public FileSearchTask(FileListCallback callback, int type) {
         super();
@@ -31,8 +31,8 @@ public class FileSearchTask extends AsyncTask<String, Object, ArrayList<UnixFile
     }
 
     @Override
-    protected ArrayList<UnixFile> doInBackground(String... strings) {
-        path = FileSetting.innerPath(strings[0]);
+    protected ArrayList<BaseFile> doInBackground(String... strings) {
+        path = FileSetting.toRealPath(strings[0]);
 
         final File root = new File(path);
         if (!root.exists()) {
@@ -68,7 +68,7 @@ public class FileSearchTask extends AsyncTask<String, Object, ArrayList<UnixFile
             }
             final String name = isCaseSensitive ? file.getName() : file.getName().toLowerCase(Locale.US);
             if (name.contains(pattern)) {
-                final UnixFile unixFile = new UnixFile(file.getName(), JerryFile.getType(file), -1, -1);
+                final UnixFile unixFile = new UnixFile(file.getName(), BaseFile.getType(file), -1, -1);
                 unixFile.parent = path;
                 unixFile.setAbsPath(file.getAbsolutePath());
                 result.add(unixFile);
@@ -84,7 +84,7 @@ public class FileSearchTask extends AsyncTask<String, Object, ArrayList<UnixFile
 
 
     @Override
-    protected void onPostExecute(ArrayList<UnixFile> list) {
+    protected void onPostExecute(ArrayList<BaseFile> list) {
         FileListCallback callback = reference.get();
         if (callback != null) {
             callback.onListResult(new FileListResult(path, list, type));
@@ -93,7 +93,7 @@ public class FileSearchTask extends AsyncTask<String, Object, ArrayList<UnixFile
     }
 
     @Override
-    protected void onCancelled(ArrayList<UnixFile> list) {
+    protected void onCancelled(ArrayList<BaseFile> list) {
         reference = null;
     }
 }

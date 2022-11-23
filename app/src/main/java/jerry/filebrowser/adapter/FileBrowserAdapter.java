@@ -34,6 +34,7 @@ import jerry.filebrowser.app.AppUtil;
 import jerry.filebrowser.dialog.DataPopupMenu;
 import jerry.filebrowser.dialog.DialogManager;
 import jerry.filebrowser.dialog.OpenWayDialog;
+import jerry.filebrowser.file.BaseFile;
 import jerry.filebrowser.file.Clipboard;
 import jerry.filebrowser.file.FileType;
 import jerry.filebrowser.file.Select;
@@ -49,7 +50,6 @@ import jerry.filebrowser.util.PathUtil;
 import jerry.filebrowser.util.TypeUtil;
 import jerry.filebrowser.util.Util;
 import jerry.filebrowser.view.ItemViewGroup;
-import jerry.filebrowser.view.PathNavView;
 
 
 @SuppressLint("SetTextI18n")
@@ -68,37 +68,37 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
     private final MainActivity activity;
     private final DialogManager dialogManager;
 
-    //data
-    public ArrayList<UnixFile> fileList;
+    // data
+    public ArrayList<BaseFile> fileList;
     private final Select select = new Select();
 
-    //view
+    // view
     private final RecyclerView recyclerView;
     private final LinearLayoutManager layoutManager;
-    private PathNavView pathNavView;
     private ActionMode actionMode;
-    private DataPopupMenu<UnixFile> popupMenu;
+    private DataPopupMenu<BaseFile> popupMenu;
 
     private long a;
 
-    //callback
+    // callback
     private ActionMode.Callback callback;
 
-    private boolean isAllow = true;
     private boolean isAnimator = false;
-    private final boolean isLoading = false;
+    private boolean isLoading = false;
     private boolean isMultipleSelectMode = false;
 
     private final TypeUtil typeUtil;
     private final StateListDrawable itemBgDrawable;
 
+    private int version;
+    private FileListTask loadTask = null;
     private FileListResult lastSuccessLoadResult;
     private FileListResult loadResult;
     private final LruCache<String, Position> positionCache = new LruCache<>(100);
 
 
     public FileBrowserAdapter(MainActivity activity, RecyclerView recyclerView) {
-        this(activity, FileSetting.USER_ROOT, recyclerView);
+        this(activity, FileSetting.getCurrentPath(), recyclerView);
     }
 
     private FileBrowserAdapter(MainActivity mainActivity, String root, RecyclerView recyclerView) {
@@ -118,17 +118,10 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         initPopupMenu();
         initActionMode();
 
-        FileSetting.setCurrentPath(root);
-        isAllow = false;
+        // FileSetting.setCurrentPath(root);
         a = System.currentTimeMillis();
-        recyclerView.setAlpha(0f);
-        new FileListTask(this, FileBrowserAdapter.TYPE_JUMP).execute(root);
-    }
 
-    public void setPathNavView(PathNavView pathNavView) {
-        this.pathNavView = pathNavView;
-        this.pathNavView.setPathNavInterface(this);
-        this.pathNavView.updatePath(FileSetting.tagPath(FileSetting.getCurrentPath()));
+        onNavDirectory(root, FileBrowserAdapter.TYPE_JUMP);
     }
 
     private void initPopupMenu() {
@@ -148,7 +141,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
             if (isAnimator) return true;
             final int id = item.getItemId();
             if (!isMultipleSelectMode) {
-                final UnixFile file = popupMenu.getFile();
+                final BaseFile file = popupMenu.getFile();
                 final int position = popupMenu.getPosition();
                 switch (id) {// 长按菜单
                     case 1:// 复制
@@ -198,7 +191,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
                         activity.onPerformCopy();
                         break;
                     case 4://删除
-                        ArrayList<UnixFile> list = select.getSelectList();
+                        ArrayList<BaseFile> list = select.getSelectList();
                         if (list.size() == 1) {
                             dialogManager.showDeleteDialog(list.get(0));
                         } else if (list.size() > 1) {
@@ -288,7 +281,6 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull List<Object> payloads) {
-        // this.onBindViewHolder(holder, position);
         if (payloads.isEmpty()) {
             this.onBindViewHolder(holder, position);
         } else {
@@ -306,7 +298,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        final UnixFile item = fileList.get(position);
+        final BaseFile item = fileList.get(position);
         holder.time.setText(Util.time(item.time));
         holder.name.setText(item.name);
         // holder.itemView.setTag(position);
@@ -350,7 +342,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         }
     }
 
-
+    // 分发文件点击事件
     private void dispatchOrInterruptItemClick(View view) {
         if (isAnimator) return;
         final int position = recyclerView.getChildAdapterPosition(view);
@@ -369,7 +361,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
             // 再次判断是否在多选模式中
             if (isMultipleSelectMode) actionMode.setSubtitle("选中数：" + select.getSelectCount());
         } else {
-            final UnixFile file = fileList.get(position);
+            final BaseFile file = fileList.get(position);
             if (!file.isExist()) {
                 activity.showToast("该文件（夹）已不存在");
                 refresh();
@@ -383,39 +375,32 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         }
     }
 
-    private void onDirectoryClick(int position, UnixFile file) {
+    // 点击文件夹时的回调
+    private void onDirectoryClick(int position, BaseFile file) {
         onNavDirectory(file.getAbsPath(), TYPE_TO_CHILD);
     }
 
-    private void onFileClick(int position, UnixFile file) {
+    // 点击文件时的回调
+    private void onFileClick(int position, BaseFile file) {
         final Uri uri = JerryFileProvider.getUriForFile(activity, BuildConfig.APPLICATION_ID + ".fileprovider", file.getAbsPath());
 
         final Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.putExtra(Intent.EXTRA_TITLE, file.name);
 
         final String mime = TypeUtil.getMimeType(file.name);
-//        activity.showToast(mime);
+        if (BuildConfig.DEBUG) activity.showToast(mime);
+
         intent.setDataAndType(uri, mime);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
+        // json与text使用自己打开
         if (file.name.endsWith(".json") || mime.startsWith("text/")) {
             intent.setClass(activity, EditActivity.class);
             activity.startActivity(intent);
             return;
         }
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                int l = path.lastIndexOf('.');
-//                if (l < (path.length() - 6)) {
-//                    intent.setDataAndType(uri, "text/*");
-//                }
-//                List<ResolveInfo> resInfoList = activity.getPackageManager()
-//                        .queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-//                for (ResolveInfo resolveInfo : resInfoList) {
-//                    activity.grantUriPermission(resolveInfo.activityInfo.packageName, uri,
-//                            Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-//                }
-//                boolean isFind = false;
         try {
             activity.startActivity(Intent.createChooser(intent, "选择打开该文件的程序"));
             // isFind = true;
@@ -426,7 +411,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
     }
 
     private boolean onItemLongClick(View view) {
-        if (isAnimator || !isAllow) return false;
+        if (isAnimator || isLoading) return false;
         final int pos = recyclerView.getChildAdapterPosition(view);
         if (isMultipleSelectMode) {
             if (!select.isSelect(pos)) return false;
@@ -438,11 +423,11 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
             popupMenu.setAnchorView(view);
             popupMenu.show();
         } else {
-            final UnixFile file = fileList.get(pos);
+            final BaseFile file = fileList.get(pos);
             final Menu menu = popupMenu.getMenu();
             menu.findItem(3).setVisible(true);// 重命名
             menu.findItem(7).setVisible(true);// 属性
-            final boolean isFile = file.notDir();
+            final boolean isFile = file.type == BaseFile.TYPE_FILE;
             menu.findItem(8).setVisible(isFile);// 分享
             menu.findItem(9).setVisible(isFile);// 打开方式
 
@@ -460,8 +445,11 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
 
     @Override
     public void onNavDirectory(String absolutePath, int type) {
-        if (!isAllow) return;
-        isAllow = false;
+        if (isMultipleSelectMode) return;
+        if (isLoading) {
+            cancelLoading();
+        }
+        isLoading = true;
 
         // if (!UnixFile.access(FileSetting.innerPath(absolutePath), UnixFile.ACCESS_READ)) {
         //     activity.showToast(PathUtil.getPathName(absolutePath) + " 打开失败");
@@ -472,9 +460,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
             lastSuccessLoadResult = loadResult;
         }
         loadResult = null;
-        if (isMultipleSelectMode) {
-            quitMultipleSelectMode();
-        }
+
         a = System.currentTimeMillis();
         Position position = positionCache.get(FileSetting.getCurrentPath());
         final int viewPosition = layoutManager.findFirstVisibleItemPosition();
@@ -491,36 +477,35 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         }
 
         isAnimator = true;
+        recyclerView.setEnabled(false);
         recyclerView.animate().alpha(0f).setDuration(DURING_ANIMATION_FADE).setInterpolator(new DecelerateInterpolator()).withEndAction(() -> {
             isAnimator = false;
-            if (loadResult != null) {
+            if (loadResult != null && loadResult.version == version) {
                 onListResult(loadResult);
             }
         }).start();
-        new FileListTask(this, type).execute(absolutePath);
-        activity.onStartLoadDir(FileSetting.tagPath(absolutePath));
-    }
 
+        loadTask = new FileListTask(this, type, ++version);
+        loadTask.execute(absolutePath);
+
+        activity.onStartLoadDir(FileSetting.toShowPath(absolutePath));
+    }
 
     @Override
     public void onListResult(FileListResult result) {
-        long b = System.currentTimeMillis();
-        if (isAnimator) {
-//            Log.i("onLoadFinish", "第一次" + (b - a) + "ms");
+        loadTask = null;
+        if (result.version != version) return;
+        if (isAnimator) { // 如果仍然在动画，就等动画执行完毕再调用该函数
             loadResult = result;
             return;
-        } else {
-//            Log.i("onLoadFinish", "第二次" + (b - a) + "ms");
         }
-        loadResult = null;
+
+        loadResult = null; // 消耗掉本次结果
         if (result.list == null) {
             activity.showToast(PathUtil.getPathName(result.absolutePath) + " 打开失败");
             activity.onFinishLoadDir(lastSuccessLoadResult.dirs, lastSuccessLoadResult.files);
 
-            pathNavView.updatePath(FileSetting.tagPath(FileSetting.getCurrentPath()));
-
             recyclerView.setAlpha(1f);
-            isAllow = true;
             return;
         } else {
             lastSuccessLoadResult = result;
@@ -556,13 +541,40 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
 //        })
                 .withEndAction(() -> {
                     isAnimator = false;
-                    isAllow = true;
+                    isLoading = false;
+                    recyclerView.setEnabled(true);
                 }).start();
+    }
+
+    // 取消加载
+    public void cancelLoading() {
+        if (!isLoading) return;
+
+        // 取消掉异步任务
+        loadTask.cancel(true);
+        loadTask = null;
+
+        isLoading = false;
+
+        // 更新加载版本号
+        ++version;
+
+        // 恢复列表状态
+        recyclerView.animate().cancel();
+        recyclerView.setAlpha(1f);
+        recyclerView.setEnabled(true);
+
+        // 回调activity
+        if (lastSuccessLoadResult != null) {
+            activity.onCancelLoadDir(lastSuccessLoadResult.dirs, lastSuccessLoadResult.files);
+        } else {
+            activity.onCancelLoadDir(-1, -1);
+        }
     }
 
     private void toParentDirectory() {
         final String currentPath = FileSetting.getCurrentPath();
-        if (FileSetting.USER_ROOT.equals(currentPath)) {
+        if (FileSetting.DEFAULT_USER_ROOT.equals(currentPath)) {
             activity.showToast("已到达根目录");
             return;
         }
@@ -570,11 +582,9 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         onNavDirectory(parent, TYPE_TO_PARENT);
     }
 
-
     public boolean isMultipleSelectMode() {
         return isMultipleSelectMode;
     }
-
 
     public void intoMultipleSelectMode() {
         if (!isMultipleSelectMode) {
@@ -591,7 +601,6 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         }
     }
 
-
     public void quitMultipleSelectMode() {
         if (isMultipleSelectMode) {
             isMultipleSelectMode = false;
@@ -604,35 +613,38 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         }
     }
 
-
     public void refresh() {
-        clear();
+        if (isMultipleSelectMode) {
+            quitMultipleSelectMode();
+        }
         onNavDirectory(FileSetting.getCurrentPath(), TYPE_REFRESH);
-    }
-
-    public void clear() {
-        quitMultipleSelectMode();
     }
 
     public boolean onBackKey() {
         if (isMultipleSelectMode) {
             quitMultipleSelectMode();
             return true;
-        } else if (FileSetting.getCurrentPath().equals(FileSetting.USER_ROOT)) {
-            return false;
-        } else {
+        }
+
+        if (isLoading) {
+            cancelLoading();
+            return true;
+        }
+
+        if (!FileSetting.getCurrentPath().equals(FileSetting.DEFAULT_USER_ROOT)) {
             toParentDirectory();
             return true;
         }
+
+        return false;
     }
 
     public void switchRoot(String path) {
         quitMultipleSelectMode();
         FileSetting.setCurrentPath(path);
-        FileSetting.USER_ROOT = path;
+        FileSetting.DEFAULT_USER_ROOT = path;
         onNavDirectory(path, TYPE_JUMP);
     }
-
 
     public int findPosition(String name) {
         if (name == null) {
@@ -652,7 +664,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         notifyItemRemoved(position);
         int dirs = 0;
         int files = 0;
-        for (UnixFile file : fileList) {
+        for (BaseFile file : fileList) {
             if (file.isDir()) {
                 dirs++;
             } else {
@@ -674,7 +686,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
     public void notifyItemRename(String name, String newName, String newPath) {
         int position = findPosition(name);
         if (position != -1) {
-            UnixFile file = fileList.get(position);
+            BaseFile file = fileList.get(position);
             file.name = newName;
             file.setAbsPath(newPath);
             notifyItemChanged(position);

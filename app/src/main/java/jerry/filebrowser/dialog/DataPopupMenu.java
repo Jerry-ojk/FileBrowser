@@ -5,9 +5,9 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import jerry.filebrowser.file.JerryFile;
+import jerry.filebrowser.file.BaseFile;
 
-public class DataPopupMenu<T extends JerryFile> extends AnchorPopupMenu {
+public class DataPopupMenu<T extends BaseFile> extends AnchorPopupMenu {
 
     private int position = -1;
     private T file;

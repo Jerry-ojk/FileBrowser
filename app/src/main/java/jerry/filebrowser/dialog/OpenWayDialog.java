@@ -12,6 +12,7 @@ import android.widget.TextView;
 import jerry.filebrowser.BuildConfig;
 import jerry.filebrowser.R;
 import jerry.filebrowser.activity.MainActivity;
+import jerry.filebrowser.file.BaseFile;
 import jerry.filebrowser.file.UnixFile;
 import jerry.filebrowser.provider.JerryFileProvider;
 
@@ -22,7 +23,7 @@ public class OpenWayDialog extends BaseDialog {
     private TextView tv_audio;
     private TextView tv_video;
     private TextView tv_zip;
-    private UnixFile file;
+    private BaseFile file;
 
     public OpenWayDialog(Context context) {
         super(context);
@@ -85,7 +86,7 @@ public class OpenWayDialog extends BaseDialog {
         return R.layout.dialog_open_way;
     }
 
-    public void show(UnixFile file) {
+    public void show(BaseFile file) {
         this.file = file;
         show();
     }

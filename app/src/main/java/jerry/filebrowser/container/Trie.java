@@ -1,5 +1,6 @@
 package jerry.filebrowser.container;
 
+// 前缀树
 public class Trie<T> {
     private int size;
     private final TrieNode<T> root;
@@ -17,6 +18,7 @@ public class Trie<T> {
             TrieNode<T> child = node.getChildNode(c);
             if (child == null) {
                 child = node.addChildNode(c, null);
+                assert child != null;
             }
             node = child;
         }
@@ -77,8 +79,10 @@ public class Trie<T> {
             int i = 0;
             if (c >= '0' && c <= '9') {
                 i = c - '0';
+            } else if (c >= 'a' && c <= 'z') {
+                i = c - 'a' + 10;
             } else {
-                i = c - 'a';
+                return null;
             }
             return child[i];
         }
@@ -88,8 +92,10 @@ public class Trie<T> {
             int i = 0;
             if (c >= '0' && c <= '9') {
                 i = c - '0';
+            } else if (c >= 'a' && c <= 'z') {
+                i = c - 'a' + 10;
             } else {
-                i = c - 'a';
+                return null;
             }
             TrieNode<T> node = new TrieNode<T>(type);
             child[i] = node;

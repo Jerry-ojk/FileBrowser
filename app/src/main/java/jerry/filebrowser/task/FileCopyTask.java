@@ -10,6 +10,7 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 
 import jerry.filebrowser.activity.MainActivity;
+import jerry.filebrowser.file.BaseFile;
 import jerry.filebrowser.file.Clipboard;
 import jerry.filebrowser.dialog.ProgressDialog;
 import jerry.filebrowser.file.FilePair;
@@ -18,14 +19,14 @@ import jerry.filebrowser.file.UnixFile;
 public class FileCopyTask extends AsyncTask<Void, Object, Integer> {
     private WeakReference<MainActivity> reference;
     private ProgressDialog dialog;
-    private ArrayList<UnixFile> arrayList;
+    private ArrayList<BaseFile> arrayList;
     private ArrayList<FilePair> files;
     private String destPath;
     private int makeError = 0;
     private int error = 0;
     private int lastProgress = -1;
 
-    public FileCopyTask(ArrayList<UnixFile> arrayList, String destPath, MainActivity activity) {
+    public FileCopyTask(ArrayList<BaseFile> arrayList, String destPath, MainActivity activity) {
         this.arrayList = arrayList;
         this.destPath = destPath;
         this.reference = new WeakReference<>(activity);
@@ -39,7 +40,7 @@ public class FileCopyTask extends AsyncTask<Void, Object, Integer> {
         files.clear();
         int size = arrayList.size();
         for (int i = 0; i < size; i++) {
-            final UnixFile file = arrayList.get(i);
+            final BaseFile file = arrayList.get(i);
             File source = new File(file.getAbsPath());
             File dest = new File(destPath, file.name);
             makeList(source, dest);

@@ -13,12 +13,13 @@ import java.util.ArrayList;
 import jerry.filebrowser.R;
 import jerry.filebrowser.activity.MainActivity;
 import jerry.filebrowser.adapter.FileSearchListAdapter;
+import jerry.filebrowser.file.BaseFile;
 import jerry.filebrowser.file.UnixFile;
 
 public class SearchResultDialog extends BaseDialog implements View.OnClickListener {
     private MainActivity activity;
     private Button bu_sure;
-    private ArrayList<UnixFile> list;
+    private ArrayList<BaseFile> list;
     private RecyclerView recyclerView;
     private FileSearchListAdapter adapter;
 
@@ -55,7 +56,7 @@ public class SearchResultDialog extends BaseDialog implements View.OnClickListen
     public void onClick(View view) {
         final int position = recyclerView.getChildAdapterPosition(view);
         if (position == RecyclerView.NO_POSITION) return;
-        final UnixFile file = list.get(position);
+        final BaseFile file = list.get(position);
         if (file.isDir()) {
             MainActivity.sendNavigation(activity, file.getAbsPath());
         } else {
@@ -64,7 +65,7 @@ public class SearchResultDialog extends BaseDialog implements View.OnClickListen
         dismiss();
     }
 
-    public void show(ArrayList<UnixFile> list) {
+    public void show(ArrayList<BaseFile> list) {
         this.list = list;
         adapter.setResult(list);
         adapter.notifyDataSetChanged();

@@ -24,6 +24,7 @@ public class TrieTest {
         System.out.println(TYPE_TRIE.get("html"));
         System.out.println(TYPE_TRIE.get("ini"));
         System.out.println(TYPE_TRIE.get("in"));
+        System.out.println(TYPE_TRIE.get("2"));
 
         assert Objects.equals(TYPE_TRIE.get("gif"), "gif");
         assert Objects.equals(TYPE_TRIE.get("gz"), "gz");

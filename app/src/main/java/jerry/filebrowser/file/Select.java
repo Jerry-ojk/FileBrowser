@@ -4,12 +4,12 @@ import java.util.ArrayList;
 
 public class Select {
 
-    private ArrayList<UnixFile> fileList;
+    private ArrayList<BaseFile> fileList;
     private boolean[] selectArray;
     private int selectCount = 0;
 
 
-    public void onIntoMultipleSelectMode(ArrayList<UnixFile> fileList) {
+    public void onIntoMultipleSelectMode(ArrayList<BaseFile> fileList) {
         this.fileList = fileList;
         final int size = fileList.size();
         selectArray = new boolean[size];
@@ -76,12 +76,12 @@ public class Select {
     }
 
 
-    public ArrayList<UnixFile> getSelectList() {
+    public ArrayList<BaseFile> getSelectList() {
         final int size = selectArray.length;
         if (fileList.size() != size) {
             return null;
         }
-        ArrayList<UnixFile> result = new ArrayList<>(selectCount);
+        ArrayList<BaseFile> result = new ArrayList<>(selectCount);
         for (int i = 0; i < size; i++) {
             if (selectArray[i]) {
                 result.add(fileList.get(i));

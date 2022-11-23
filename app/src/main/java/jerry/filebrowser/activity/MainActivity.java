@@ -14,13 +14,17 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.StatFs;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -40,6 +44,8 @@ import java.util.List;
 import jerry.filebrowser.BuildConfig;
 import jerry.filebrowser.R;
 import jerry.filebrowser.adapter.FileBrowserAdapter;
+import jerry.filebrowser.adapter.PathNavAdapter;
+import jerry.filebrowser.file.BaseFile;
 import jerry.filebrowser.view.ItemDecoration;
 import jerry.filebrowser.app.AppUtil;
 import jerry.filebrowser.dialog.DialogManager;
@@ -61,11 +67,12 @@ import jerry.filebrowser.util.PathUtil;
 import jerry.filebrowser.util.Util;
 import jerry.filebrowser.view.ExpandView;
 import jerry.filebrowser.view.PathNavView;
+import jerry.filebrowser.view.SlideLayer;
 import jerry.filebrowser.view.TagView;
 
 import static jerry.filebrowser.setting.SettingManager.SETTING_DATA;
 
-public class MainActivity extends AppCompatActivity implements ToastInterface {
+public class MainActivity extends AppCompatActivity implements ToastInterface, PathNavAdapter.PathNavInterface {
     private DialogManager dialogManager;
 
     private Toolbar toolbar;
@@ -91,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
     private TagView tag_sd;
 
     private final StringBuilder builder = new StringBuilder();
+    private String lastPath;
 
     private View.OnClickListener PathItemListener;
 
@@ -186,8 +194,8 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
                 return;
             }
             if (Clipboard.type == Clipboard.TYPE_CUT_SINGLE) {
-                UnixFile file = Clipboard.single;
-                boolean isSuccess = UnixFile.rename(file.getAbsPath(), PathUtil.mergePath(dest, Clipboard.single.name));
+                BaseFile file = Clipboard.single;
+                boolean isSuccess = UnixFile.rename(file.getAbsPath(), PathUtil.join(dest, Clipboard.single.name));
                 if (!isSuccess) {
                     showToast("剪切失败");
                 }
@@ -197,8 +205,8 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
 //                }
             } else if (Clipboard.type == Clipboard.TYPE_CUT_LIST) {
                 int error = 0;
-                for (UnixFile item : Clipboard.list) {
-                    boolean isSuccess = UnixFile.rename(item.getAbsPath(), PathUtil.mergePath(dest, item.name));
+                for (BaseFile item : Clipboard.list) {
+                    boolean isSuccess = UnixFile.rename(item.getAbsPath(), PathUtil.join(dest, item.name));
                     if (!isSuccess) error++;
                 }
                 if (error == 0) {
@@ -208,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
                 }
                 adapter.refresh();
             } else if (Clipboard.type == Clipboard.TYPE_COPY_SINGLE) {
-                ArrayList<UnixFile> list = new ArrayList<>();
+                ArrayList<BaseFile> list = new ArrayList<>();
                 list.add(Clipboard.single);
                 FileCopyTask task = new FileCopyTask(list, dest, this);
                 task.execute();
@@ -282,9 +290,10 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
         }
 
         pathNavView = findViewById(R.id.recv_path);
+        pathNavView.updatePath(FileSetting.toShowPath(FileSetting.getCurrentPath()));
+        pathNavView.setPathNavInterface(this);
 
         adapter = new FileBrowserAdapter(this, recyclerView);
-        adapter.setPathNavView(pathNavView);
         recyclerView.setAdapter(adapter);
 
 //        tag_root = drawer.findViewById(R.id.tag_root);
@@ -338,7 +347,7 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.action_search:
-                new SearchDialog(this).show(FileSetting.getCurrentPath());
+                new SearchDialog(this).show(FileSetting.toShowPath(FileSetting.getCurrentPath()));
                 break;
             case R.id.action_refresh:
                 adapter.refresh();
@@ -426,22 +435,42 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
         ImageManager.clear();
     }
 
+    private void addCollectionItem(String path) {
+        TagView tagView = new TagView(this);
+        tagView.setTitle(PathUtil.getPathName(path));
+        tagView.setMessage(FileSetting.toShowPath(path));
+        tagView.setIcon(R.drawable.ic_type_folder);
+        tagView.setOnClick(PathItemListener, drawer);
+
+        TextView tv = new TextView(this);
+        tv.setText("删除");
+        tv.setGravity(Gravity.CENTER);
+        tv.setBackgroundColor(getColor(R.color.error));
+
+        SlideLayer slideLayer = new SlideLayer(this);
+        slideLayer.setContentView(tagView);
+        slideLayer.setSlideView(tv, new ViewGroup.LayoutParams(240, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        expand_collect.addView(slideLayer, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        tv.setOnClickListener(v -> {
+            SETTING_DATA.colList.remove(FileSetting.toRealPath(tagView.getMessage()));
+            expand_collect.removeView(slideLayer);
+        });
+    }
+
     private void collectionPath(String path) {
         if (SETTING_DATA.colList == null) {
             SETTING_DATA.colList = new ArrayList<>();
         }
-        if (!SETTING_DATA.colList.contains(path)) {
-            SETTING_DATA.colList.add(path);
-            TagView tagView = expand_collect.addTag(PathUtil.getPathName(path), FileSetting.tagPath(path), R.drawable.ic_type_folder, PathItemListener);
-            tagView.setOnLongClickListener(v -> {
-                SETTING_DATA.colList.remove(FileSetting.innerPath(((TagView) v).getMessage()));
-                expand_collect.removeView(v);
-                return true;
-            });
-            showToast("收藏成功");
-        } else {
+        if (SETTING_DATA.colList.contains(path)) {
             showToast("已经收藏过该目录了");
+            return;
         }
+
+        SETTING_DATA.colList.add(path);
+        addCollectionItem(path);
+        showToast("收藏成功");
     }
 
     public void onIntoMultipleSelectMode() {
@@ -463,10 +492,24 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
         iv_paste.setEnabled(false);
     }
 
+    @Override
+    public void onNavDirectory(String absPath, int type) {
+        adapter.onNavDirectory(absPath, type);
+    }
+
     public void onStartLoadDir(String absolutePath) {
+        lastPath = pathNavView.getPath(); // 保持上一个路径，方便恢复
         toolbar.setSubtitle(" ");
         pathNavView.updatePath(absolutePath);
         pathNavView.setLoading(true);
+    }
+
+    public void onCancelLoadDir(int dirs, int files) {
+        pathNavView.setLoading(false);
+        if (!TextUtils.isEmpty(lastPath)) pathNavView.updatePath(lastPath);
+        builder.append(dirs).append("个文件夹，").append(files).append("个文件");
+        toolbar.setSubtitle(builder.toString());
+        builder.setLength(0);
     }
 
     public void onFinishLoadDir(int dirs, int files) {
@@ -512,14 +555,10 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
     }
 
     public void applyDrawerSettings(SettingData data) {
+        // 添加收藏项
         final List<String> colList = data.colList;
         for (String path : colList) {
-            final TagView tagView = expand_collect.addTag(PathUtil.getPathName(path), path, R.drawable.ic_type_folder, PathItemListener);
-            tagView.setOnLongClickListener(v -> {
-                SettingManager.SETTING_DATA.colList.remove(path);
-                expand_collect.removeView(v);
-                return true;
-            });
+            addCollectionItem(path);
         }
         final List<Boolean> triggerList = data.triggerList;
         int len = expendViewList.size();
@@ -569,6 +608,7 @@ public class MainActivity extends AppCompatActivity implements ToastInterface {
         }
         updateSpace();
     }
+
 
     private class RefreshReceiver extends BroadcastReceiver {
         public static final String ACTION_REFRESH = "JERRY.ACTION.REFRESH.MAIN_ACTIVITY";

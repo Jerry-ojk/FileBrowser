@@ -26,6 +26,7 @@ import jerry.filebrowser.R;
 import jerry.filebrowser.dialog.DataPopupMenu;
 import jerry.filebrowser.dialog.DialogManager;
 import jerry.filebrowser.dialog.FileSelectAdapterCallback;
+import jerry.filebrowser.file.BaseFile;
 import jerry.filebrowser.file.FileType;
 import jerry.filebrowser.file.UnixFile;
 import jerry.filebrowser.image.ImageLoadTask;
@@ -66,7 +67,7 @@ public class FileSelectAdapter extends RecyclerView.Adapter<FileSelectAdapter.Vi
     private View.OnLongClickListener longClickListener;
 
     //data
-    public ArrayList<UnixFile> fileList;
+    public ArrayList<BaseFile> fileList;
 
     //位置
     private View targetView;
@@ -96,7 +97,7 @@ public class FileSelectAdapter extends RecyclerView.Adapter<FileSelectAdapter.Vi
 
 
     public FileSelectAdapter(Context context, RecyclerView recyclerView) {
-        this(context, FileSetting.USER_ROOT, recyclerView);
+        this(context, FileSetting.DEFAULT_USER_ROOT, recyclerView);
     }
 
     private FileSelectAdapter(Context context, String root, RecyclerView recyclerView) {
@@ -116,7 +117,7 @@ public class FileSelectAdapter extends RecyclerView.Adapter<FileSelectAdapter.Vi
         initPopupMenu();
         currentPath = root;
         isAllow = false;
-        new FileListTask(this, FileSelectAdapter.TYPE_JUMP).execute(root);
+        new FileListTask(this, FileSelectAdapter.TYPE_JUMP, 0).execute(root);
     }
 
     public void setBackView(View backView) {
@@ -176,7 +177,7 @@ public class FileSelectAdapter extends RecyclerView.Adapter<FileSelectAdapter.Vi
     private void onItemClick(View view) {
         if (isAnimator || !isAllow) return;
         final int position = recyclerView.getChildAdapterPosition(view);
-        final UnixFile file = fileList.get(position);
+        final BaseFile file = fileList.get(position);
         if (file.type == UnixFile.TYPE_DIR) {
             onNavDirectory(file.getAbsPath(), TYPE_TO_CHILD);
         } else {
@@ -319,7 +320,7 @@ public class FileSelectAdapter extends RecyclerView.Adapter<FileSelectAdapter.Vi
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        final UnixFile item = fileList.get(position);
+        final BaseFile item = fileList.get(position);
         holder.time.setText(Util.time(item.time));
         holder.name.setText(item.name);
         holder.itemView.setOnClickListener(this::onItemClick);
@@ -390,7 +391,7 @@ public class FileSelectAdapter extends RecyclerView.Adapter<FileSelectAdapter.Vi
         }
         isAllow = false;
         loadResult = null;
-        new FileListTask(this, type).execute(absolutePath);
+        new FileListTask(this, type, 0).execute(absolutePath);
         //animator_out.start();
         isAnimator = true;
         recyclerView.animate().alpha(0f).setDuration(150).setInterpolator(new AccelerateInterpolator(1f)).withEndAction(new Runnable() {
@@ -438,7 +439,7 @@ public class FileSelectAdapter extends RecyclerView.Adapter<FileSelectAdapter.Vi
     }
 
     private void toParentDirectory() {
-        if (FileSetting.USER_ROOT.equals(currentPath)) {
+        if (FileSetting.DEFAULT_USER_ROOT.equals(currentPath)) {
             callback.onShowToast("已到达根目录");
             return;
         }
@@ -484,7 +485,7 @@ public class FileSelectAdapter extends RecyclerView.Adapter<FileSelectAdapter.Vi
         if (isMultipleSelectMode) {
             quitMultipleSelectMode();
             return true;
-        } else if (FileSetting.USER_ROOT.equals(currentPath)) {
+        } else if (FileSetting.DEFAULT_USER_ROOT.equals(currentPath)) {
             callback.onShowToast("已到达根目录");
             return false;
         } else {

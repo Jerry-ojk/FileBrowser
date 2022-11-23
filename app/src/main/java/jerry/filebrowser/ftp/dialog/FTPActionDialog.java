@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 import jerry.filebrowser.R;
 import jerry.filebrowser.app.AppUtil;
-import jerry.filebrowser.file.JerryFile;
+import jerry.filebrowser.file.BaseFile;
 import jerry.filebrowser.file.SFTPFile;
 import jerry.filebrowser.file.UnixFile;
 import jerry.filebrowser.ftp.SFTPActionResult;
@@ -98,7 +98,7 @@ public class FTPActionDialog extends BaseFTPDialog {
         message.setVisibility(View.GONE);
         bu_sure.setOnClickListener(v -> {
             String newName = editText.getText().toString();
-            String newPath = PathUtil.mergePath(file.getParentPath(), newName);
+            String newPath = PathUtil.join(file.getParentPath(), newName);
             if (file.name.equals(newName)) {
                 message.setVisibility(View.VISIBLE);
                 message.setText("名称原来相同");
@@ -136,7 +136,7 @@ public class FTPActionDialog extends BaseFTPDialog {
                 message.setText("该文件已存在");
                 return;
             }
-            String newPath = PathUtil.mergePath(currentPath, newName);
+            String newPath = PathUtil.join(currentPath, newName);
             final SFTPActionTask task = buildTask(newPath);
             if (isFile) {
                 task.execute(SFTPActionTask.TYPE_CREATE_FILE);
@@ -173,7 +173,7 @@ public class FTPActionDialog extends BaseFTPDialog {
                 dismiss();
                 return;
             }
-            if (file.type == JerryFile.TYPE_DIR) {
+            if (file.type == BaseFile.TYPE_DIR) {
                 task.execute(SFTPActionTask.TYPE_DELETE_DIR);
             } else {
                 task.execute(SFTPActionTask.TYPE_DELETE_FILE);

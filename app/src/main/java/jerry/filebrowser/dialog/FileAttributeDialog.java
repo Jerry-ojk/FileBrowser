@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import jerry.filebrowser.file.BaseFile;
 import jerry.filebrowser.file.FileAttribute;
 import jerry.filebrowser.R;
 import jerry.filebrowser.file.UnixFile;
@@ -14,23 +15,21 @@ import jerry.filebrowser.util.Util;
 import jerry.filebrowser.activity.MainActivity;
 
 public class FileAttributeDialog extends BaseDialog {
-    private MainActivity activity;
     private FileAttribute attribute;
-    private TextView tv_name;
-    private TextView tv_path;
-    private TextView tv_type;
-    private TextView tv_size;
-    private TextView tv_mode;
-    private TextView tv_author;
-    private TextView tv_group;
-    private TextView tv_atime;
-    private TextView tv_mtime;
-    private TextView tv_ctime;
-    private UnixFile file;
+    private final TextView tv_name;
+    private final TextView tv_path;
+    private final TextView tv_type;
+    private final TextView tv_size;
+    private final TextView tv_mode;
+    private final TextView tv_author;
+    private final TextView tv_group;
+    private final TextView tv_atime;
+    private final TextView tv_mtime;
+    private final TextView tv_ctime;
+    private BaseFile file;
 
     public FileAttributeDialog(@NonNull Context context) {
         super(context);
-        activity = (MainActivity) context;
         setContentView(R.layout.dialog_attribute);
         tv_name = findViewById(R.id.dialog_name_content);
         tv_path = findViewById(R.id.dialog_path_content);
@@ -49,7 +48,7 @@ public class FileAttributeDialog extends BaseDialog {
         return R.layout.dialog_attribute;
     }
 
-    public void show(UnixFile file) {
+    public void show(BaseFile file) {
         this.file = file;
         setAttribute(UnixFile.getFileAttribute0(file.getAbsPath()));
         show();
@@ -77,7 +76,7 @@ public class FileAttributeDialog extends BaseDialog {
             tv_size.setText(builder.append(Util.size(attribute.size)).append('(').append(attribute.size).append(')').toString());
             if ((attribute.mode) != -1) {
                 findViewById(R.id.dialog_change_mode).setOnClickListener(v -> {
-                    FilePermissionDialog dialog = new FilePermissionDialog(activity);
+                    FilePermissionDialog dialog = new FilePermissionDialog(getContext());
                     dialog.setFile(file);
                     dialog.setPermissions(attribute.mode);
                     dialog.setPermissionChangeCallback(permission -> dismiss());

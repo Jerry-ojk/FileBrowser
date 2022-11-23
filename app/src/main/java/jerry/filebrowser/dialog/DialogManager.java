@@ -5,8 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 
 import jerry.filebrowser.activity.MainActivity;
-import jerry.filebrowser.file.JerryFile;
-import jerry.filebrowser.file.UnixFile;
+import jerry.filebrowser.file.BaseFile;
 
 public class DialogManager {
     private final AppCompatActivity activity;
@@ -25,7 +24,7 @@ public class DialogManager {
         }
     }
 
-    public void showRenameDialog(JerryFile file) {
+    public void showRenameDialog(BaseFile file) {
         checkEditDialog();
         editDialog.showRenameDialog(file);
     }
@@ -35,17 +34,17 @@ public class DialogManager {
         editDialog.showCreateDialog(currentPath);
     }
 
-    public void showDeleteDialog(JerryFile file) {
+    public void showDeleteDialog(BaseFile file) {
         checkEditDialog();
         editDialog.showDeleteDialog(file);
     }
 
-    public void showDeleteDialog(ArrayList<UnixFile> list) {
+    public void showDeleteDialog(ArrayList<BaseFile> list) {
         checkEditDialog();
         editDialog.showDeleteListDialog(list);
     }
 
-    public void showAttributeDialog(UnixFile file) {
+    public void showAttributeDialog(BaseFile file) {
         if (attributeDialog == null) {
             attributeDialog = new FileAttributeDialog(activity);
         }
@@ -53,7 +52,7 @@ public class DialogManager {
     }
 
 
-    public void showFileListDialog(String path, ArrayList<UnixFile> list) {
+    public void showFileListDialog(String path, ArrayList<BaseFile> list) {
         if (fileClearDialog == null) {
             fileClearDialog = new FileClearDialog(activity);
         }

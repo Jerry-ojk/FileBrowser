@@ -8,18 +8,19 @@ import java.util.ArrayList;
 import jerry.filebrowser.activity.MainActivity;
 import jerry.filebrowser.adapter.FileBrowserAdapter;
 import jerry.filebrowser.dialog.ProgressDialog;
+import jerry.filebrowser.file.BaseFile;
 import jerry.filebrowser.file.UnixFile;
 
 public class FileDeleteTask extends AsyncTask<Void, Object, Integer> {
     private ProgressDialog dialog;
     private WeakReference<MainActivity> reference;
     private FileBrowserAdapter adapter;
-    private ArrayList<UnixFile> arrayList;
+    private ArrayList<BaseFile> arrayList;
     private int size;
     private int finish;
 
 
-    public FileDeleteTask(ArrayList<UnixFile> arrayList, MainActivity activity) {
+    public FileDeleteTask(ArrayList<BaseFile> arrayList, MainActivity activity) {
         this.arrayList = arrayList;
         size = arrayList.size();
         reference = new WeakReference<>(activity);
@@ -46,7 +47,7 @@ public class FileDeleteTask extends AsyncTask<Void, Object, Integer> {
         publishProgress("", 0, 0);
         int error = 0;
         for (int i = 0; i < size; i++) {
-            UnixFile file = arrayList.get(i);
+            BaseFile file = arrayList.get(i);
             if (UnixFile.delete(file.getAbsPath()) || !file.isExist()) {
                 finish++;
             } else {

@@ -10,18 +10,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
 import jerry.filebrowser.R;
+import jerry.filebrowser.file.BaseFile;
+import jerry.filebrowser.file.SelectableFile;
 import jerry.filebrowser.util.Util;
 import jerry.filebrowser.activity.MainActivity;
 import jerry.filebrowser.file.UnixFile;
 
 public class FileClearListAdapter extends RecyclerView.Adapter<FileClearListAdapter.ViewHolder> {
     private String currentPath;
-    private ArrayList<UnixFile> dirs;
+    private ArrayList<SelectableFile> dirs;
 
     private MainActivity activity;
     //view
@@ -35,7 +38,7 @@ public class FileClearListAdapter extends RecyclerView.Adapter<FileClearListAdap
     public FileClearListAdapter(MainActivity activity, RecyclerView recyclerView) {
         this.activity = activity;
         this.recyclerView = recyclerView;
-        icon_folder = activity.getDrawable(R.drawable.ic_type_folder);
+        icon_folder = ContextCompat.getDrawable(activity, R.drawable.ic_type_folder);
 
         checkedListener = new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -46,15 +49,18 @@ public class FileClearListAdapter extends RecyclerView.Adapter<FileClearListAdap
         };
     }
 
-    public void setDir(ArrayList<UnixFile> dirs) {
-        this.dirs = dirs;
+    public void setDir(ArrayList<BaseFile> dirs) {
+        this.dirs = new ArrayList<>();
+        for (BaseFile item : dirs) {
+            this.dirs.add(new SelectableFile(item));
+        }
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        private ImageView image;
-        private TextView name;
-        private TextView time;
-        private CheckBox checkBox;
+        private final ImageView image;
+        private final TextView name;
+        private final TextView time;
+        private final CheckBox checkBox;
 
         ViewHolder(View itemView) {
             super(itemView);
@@ -67,14 +73,13 @@ public class FileClearListAdapter extends RecyclerView.Adapter<FileClearListAdap
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_check_file_list, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_check_file_list, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        UnixFile item = dirs.get(position);
+        SelectableFile item = dirs.get(position);
 
         holder.image.setImageDrawable(icon_folder);
         holder.name.setText(item.name);

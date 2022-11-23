@@ -14,7 +14,7 @@ import jerry.filebrowser.file.FileRoot;
 import jerry.filebrowser.setting.FileSetting;
 
 public class PathUtil {
-    public static String mergePath(String parent, String name) {
+    public static String join(String parent, String name) {
         if (parent.charAt(parent.length() - 1) == '/') {
             return parent + name;
         } else {

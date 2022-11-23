@@ -37,7 +37,6 @@
         <activity
             android:name="jerry.filebrowser.activity.MainActivity"
             android:exported="true"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustNothing">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -65,7 +64,6 @@
         <activity android:name="jerry.filebrowser.ftp.SFTPConfigListActivity" />
         <activity
             android:name="jerry.filebrowser.ftp.SFTPActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustNothing" />
 
         <activity android:name="jerry.filebrowser.shell.ShellListActivity" />

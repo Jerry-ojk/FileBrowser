@@ -14,7 +14,7 @@ import jerry.filebrowser.R;
 import jerry.filebrowser.file.UnixFile;
 import jerry.filebrowser.util.Util;
 import jerry.filebrowser.activity.ToastInterface;
-import jerry.filebrowser.file.JerryFile;
+import jerry.filebrowser.file.BaseFile;
 
 @SuppressLint("SetTextI18n")
 public class FilePermissionDialog extends BaseDialog {
@@ -43,7 +43,7 @@ public class FilePermissionDialog extends BaseDialog {
     private int other_mode = 0;
 
     protected int oldPermission = 0;
-    protected JerryFile file;
+    protected BaseFile file;
 
     private boolean isMask = false;
     protected ToastInterface toastInterface;
@@ -138,7 +138,7 @@ public class FilePermissionDialog extends BaseDialog {
 
     }
 
-    public void setFile(JerryFile file) {
+    public void setFile(BaseFile file) {
         this.file = file;
     }
 

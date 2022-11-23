@@ -14,7 +14,7 @@ import jerry.filebrowser.setting.FileSetting;
  * Created by Jerry on 2018/1/16
  */
 
-public class UnixFile extends JerryFile {
+public class UnixFile extends BaseFile {
     // mask for st_mode
     public static final int MASK_PERMISSION = 0b000_111_111_111;
     public static final int MASK_SETID = 0b111_000_000_000;
@@ -61,19 +61,12 @@ public class UnixFile extends JerryFile {
 
     public boolean isSelect = false;
 
-    public static final int API_MODE_OS = 1;
-    public static final int API_MODE_NATIVE = 2;
-    public static final int API_MODE_FILE = 3;
-
-    public static int API_MODE = API_MODE_OS;
-
     public UnixFile(String name, int type, long length, long time) {
         super(name);
         super.type = type;
         super.length = length;
         super.time = time;
     }
-
 
     public UnixFile(UnixFile file) {
         super(file.name);
@@ -143,7 +136,7 @@ public class UnixFile extends JerryFile {
     }
 
     public static boolean isExist(String path) {
-        if (API_MODE == API_MODE_OS) {
+        if (FileSetting.API_MODE == FileSetting.API_MODE_OS) {
             return isExistOsOrFile(path);
         } else {
             return new File(path).exists();
@@ -159,7 +152,6 @@ public class UnixFile extends JerryFile {
             return new File(path).exists();
         }
     }
-
 
     public static boolean isEmptyDir(String path) {
         String[] names = null;
@@ -189,7 +181,7 @@ public class UnixFile extends JerryFile {
     }
 
     public static boolean rename(String oldPath, String newPath) {
-        if (API_MODE == API_MODE_OS) {
+        if (FileSetting.API_MODE == FileSetting.API_MODE_OS) {
             return renameOsOrFile(oldPath, newPath);
         } else {
             return new File(oldPath).renameTo(new File(newPath));

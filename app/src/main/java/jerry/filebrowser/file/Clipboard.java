@@ -11,31 +11,31 @@ public class Clipboard {
 
     public static int type;
     public static String path;
-    public static ArrayList<UnixFile> list;
-    public static UnixFile single;
+    public static ArrayList<BaseFile> list;
+    public static BaseFile single;
 
 
-    public static void copy(String path, ArrayList<UnixFile> list) {
+    public static void copy(String path, ArrayList<BaseFile> list) {
         if (list == null || list.size() == 0) return;
         type = TYPE_COPY_LIST;
         Clipboard.path = path;
         Clipboard.list = list;
     }
 
-    public static void cut(String path, ArrayList<UnixFile> list) {
+    public static void cut(String path, ArrayList<BaseFile> list) {
         if (list == null || list.size() == 0) return;
         type = TYPE_CUT_LIST;
         Clipboard.path = path;
         Clipboard.list = list;
     }
 
-    public static void copySingle(String path, UnixFile file) {
+    public static void copySingle(String path, BaseFile file) {
         type = TYPE_COPY_SINGLE;
         Clipboard.path = path;
         Clipboard.single = file;
     }
 
-    public static void cutSingle(String path, UnixFile file) {
+    public static void cutSingle(String path, BaseFile file) {
         type = TYPE_CUT_SINGLE;
         Clipboard.path = path;
         Clipboard.single = file;

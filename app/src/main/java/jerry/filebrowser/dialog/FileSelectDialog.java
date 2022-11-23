@@ -93,7 +93,7 @@ public class FileSelectDialog extends BaseDialog implements FileSelectAdapterCal
     }
 
     public void show(String path) {
-        adapter.setRootAndDeauftPath(FileSetting.USER_ROOT, path);
+        adapter.setRootAndDeauftPath(FileSetting.DEFAULT_USER_ROOT, path);
         show();
     }
 

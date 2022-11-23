@@ -105,7 +105,6 @@ public class ExpandView extends ViewGroup {
     @Override
     public void onViewRemoved(View child) {
         isChange = true;
-        ((TagView) child).setOnClick(null, null);
         super.onViewRemoved(child);
     }
 
@@ -170,7 +169,7 @@ public class ExpandView extends ViewGroup {
         } else {
             state = STATE_EXPANDED;
             arrow.setDegrees(-90);
-            //textView.invalidateDrawable(expandDrawable);
+            // textView.invalidateDrawable(expandDrawable);
         }
     }
 

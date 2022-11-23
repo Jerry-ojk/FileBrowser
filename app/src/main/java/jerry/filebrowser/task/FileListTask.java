@@ -6,49 +6,58 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import jerry.filebrowser.setting.FileSetting;
 import jerry.filebrowser.file.JerryFile;
+import jerry.filebrowser.setting.FileSetting;
+import jerry.filebrowser.file.BaseFile;
 import jerry.filebrowser.file.UnixFile;
 import jerry.filebrowser.util.SortHelper;
 
-public class FileListTask extends AsyncTask<String, Object, ArrayList<UnixFile>> {
+public class FileListTask extends AsyncTask<String, Object, ArrayList<BaseFile>> {
     private FileListCallback callback;
     private final int type;
+    private final int version;
     private String path;
     private int dirs = 0;
     private int files = 0;
 
 
-    public FileListTask(FileListCallback callback, int type) {
+    public FileListTask(FileListCallback callback, int type, int version) {
         super();
         this.callback = callback;
         this.type = type;
+        this.version = version;
     }
 
     @Override
-    protected ArrayList<UnixFile> doInBackground(String... strings) {
-        path = FileSetting.innerPath(strings[0]);
-        final UnixFile[] unixFiles = UnixFile.listFiles(path);
-        if (unixFiles == null) {
-            return null;
-        } else if (unixFiles.length <= 1) {
-            ArrayList<UnixFile> list = new ArrayList<>(unixFiles.length);
-            for (UnixFile file : unixFiles) {
-                file.parent = path;
-                if (file.isDir()) {
-                    dirs++;
-                } else {
-                    files++;
-                }
-                list.add(file);
+    protected ArrayList<BaseFile> doInBackground(String... strings) {
+        path = FileSetting.toRealPath(strings[0]);
+        ArrayList<BaseFile> list = null;
+        if (FileSetting.API_MODE == FileSetting.API_MODE_OS) {
+            UnixFile[] unixFiles = UnixFile.listFiles(path);
+            if (unixFiles == null) return null;
+            list = new ArrayList<>(unixFiles.length);
+            for (UnixFile item : unixFiles) {
+                list.add(item);
             }
-            return list;
+        } else {
+            list = JerryFile.listFiles1(path);
         }
-        final Comparator<JerryFile> comparator = SortHelper.getComparator(FileSetting.getSortType());
-        if (!FileSetting.isMix()) {// 分开排序
-            final ArrayList<UnixFile> dirsList = new ArrayList<>(unixFiles.length);
-            final ArrayList<UnixFile> filesList = new ArrayList<>(unixFiles.length);
-            for (UnixFile file : unixFiles) {
+
+        // try {
+        //     Thread.sleep(3000);
+        // } catch (InterruptedException e) {
+        //     e.printStackTrace();
+        // }
+
+        if (isCancelled()) {
+            return null;
+        }
+
+        final Comparator<BaseFile> comparator = SortHelper.getComparator(FileSetting.getSortType());
+        if (!FileSetting.isMix()) { // 分开排序
+            final ArrayList<BaseFile> dirsList = new ArrayList<>(list.size());
+            final ArrayList<BaseFile> filesList = new ArrayList<>(list.size());
+            for (BaseFile file : list) {
                 file.parent = path;
                 if (file.isDir()) {
                     dirsList.add(file);
@@ -73,37 +82,39 @@ public class FileListTask extends AsyncTask<String, Object, ArrayList<UnixFile>>
                 dirsList.add(filesList.get(i));
             }
             return dirsList;
-        } else {// 混合排序
-            final ArrayList<UnixFile> list = new ArrayList<>(unixFiles.length);
-            for (UnixFile file : unixFiles) {
+        } else { // 混合排序
+            final ArrayList<BaseFile> res = new ArrayList<>(list.size());
+            for (BaseFile file : list) {
                 file.parent = path;
-                list.add(file);
+                res.add(file);
                 if (file.isDir()) {
                     dirs++;
                 } else {
                     files++;
                 }
             }
-            list.sort(comparator);
+            res.sort(comparator);
             if (FileSetting.isReverse()) {
-                Collections.reverse(list);
+                Collections.reverse(res);
             }
-            return list;
+            return res;
         }
     }
 
 
     @Override
-    protected void onPostExecute(ArrayList<UnixFile> list) {
+    protected void onPostExecute(ArrayList<BaseFile> list) {
         final FileListResult result = new FileListResult(path, list, type);
         result.dirs = dirs;
         result.files = files;
+        result.version = version;
+        // 调用传入的回调函数
         callback.onListResult(result);
         callback = null;
     }
 
     @Override
-    protected void onCancelled(ArrayList<UnixFile> list) {
+    protected void onCancelled(ArrayList<BaseFile> list) {
         callback = null;
     }
 }

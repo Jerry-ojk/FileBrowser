@@ -3,11 +3,10 @@ package jerry.filebrowser.setting;
 import android.os.Environment;
 
 public class FileSetting {
-    //public MainActivity activity;
-    //private FileBrowserAdapter adapter;
-    private static String CURRENT_PATH;
-    public static String USER_ROOT = Environment.getExternalStorageDirectory().getAbsolutePath();
-    public static final String PHONE_ROOT = USER_ROOT;
+
+    public static String DEFAULT_USER_ROOT = Environment.getExternalStorageDirectory().getAbsolutePath();
+    private static String CURRENT_PATH = FileSetting.DEFAULT_USER_ROOT;
+    public static final String PHONE_ROOT = DEFAULT_USER_ROOT;
     public static final String PHONE_ROOT_TAG = "内部存储";
 
     // 逆序
@@ -26,9 +25,16 @@ public class FileSetting {
 
     public static int OPTION = 0;
 
+    public static final int API_MODE_OS = 1;
+    public static final int API_MODE_NATIVE = 2;
+    public static final int API_MODE_FILE = 3;
+
+    public static int API_MODE = API_MODE_OS;
+
     public FileSetting() {
     }
 
+    // 获取文件浏览器当前真实路径
     public static String getCurrentPath() {
         return CURRENT_PATH;
     }
@@ -36,7 +42,6 @@ public class FileSetting {
     public static void setCurrentPath(String currentPath) {
         FileSetting.CURRENT_PATH = currentPath;
     }
-
 
     public static int getSortType() {
         return OPTION & SORT_MASK;
@@ -81,7 +86,8 @@ public class FileSetting {
         OPTION |= sortType;
     }
 
-    public static String innerPath(String path) {
+    // 用户显示路径转为真实路径
+    public static String toRealPath(String path) {
         final String tag = FileSetting.PHONE_ROOT_TAG;
         if (path.startsWith(tag)) {
             return FileSetting.PHONE_ROOT + path.substring(tag.length());
@@ -90,7 +96,8 @@ public class FileSetting {
         }
     }
 
-    public static String tagPath(String path) {
+    // 真实路径转为用户显示路径
+    public static String toShowPath(String path) {
         final String root = FileSetting.PHONE_ROOT;
         if (path.startsWith(root)) {
             return FileSetting.PHONE_ROOT_TAG + path.substring(root.length());

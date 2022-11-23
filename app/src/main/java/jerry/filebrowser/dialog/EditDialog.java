@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import jerry.filebrowser.R;
 import jerry.filebrowser.activity.MainActivity;
 import jerry.filebrowser.adapter.FileBrowserAdapter;
-import jerry.filebrowser.file.JerryFile;
+import jerry.filebrowser.file.BaseFile;
 import jerry.filebrowser.file.UnixFile;
 import jerry.filebrowser.task.FileDeleteTask;
 import jerry.filebrowser.util.PathUtil;
@@ -86,7 +86,7 @@ public class EditDialog extends BaseDialog {
         return R.layout.dialog_edit;
     }
 
-    public void showRenameDialog(JerryFile file) {
+    public void showRenameDialog(BaseFile file) {
         title.setText("重命名");
 
         til_name.setVisibility(View.VISIBLE);
@@ -111,7 +111,7 @@ public class EditDialog extends BaseDialog {
 
         positiveButton.setOnClickListener(v -> {
             String newName = ed_name.getText().toString();
-            String newPath = PathUtil.mergePath(file.getParentPath(), newName);
+            String newPath = PathUtil.join(file.getParentPath(), newName);
             if (file.name.equals(newName)) {
                 til_name.setError("名称原来相同");
                 return;
@@ -155,7 +155,7 @@ public class EditDialog extends BaseDialog {
                 til_name.setError("名称不能为空");
                 return;
             }
-            String newPath = PathUtil.mergePath(currentPath, newName);
+            String newPath = PathUtil.join(currentPath, newName);
             if (UnixFile.isExist(newPath)) {
                 til_name.setError("该文件已存在");
                 return;
@@ -181,7 +181,7 @@ public class EditDialog extends BaseDialog {
         ed_name.postDelayed(() -> manager.showSoftInput(ed_name, InputMethodManager.SHOW_IMPLICIT, null), 200);
     }
 
-    public void showDeleteDialog(JerryFile file) {
+    public void showDeleteDialog(BaseFile file) {
         title.setText("删除");
 
         newDir.setVisibility(View.INVISIBLE);
@@ -204,7 +204,7 @@ public class EditDialog extends BaseDialog {
         show();
     }
 
-    public void showDeleteListDialog(ArrayList<UnixFile> list) {
+    public void showDeleteListDialog(ArrayList<BaseFile> list) {
         title.setText("删除");
 
         newDir.setVisibility(View.INVISIBLE);

@@ -3,7 +3,7 @@ package jerry.filebrowser.util;
 import java.util.Comparator;
 
 import jerry.filebrowser.setting.FileSetting;
-import jerry.filebrowser.file.JerryFile;
+import jerry.filebrowser.file.BaseFile;
 
 
 public class SortHelper {
@@ -13,7 +13,7 @@ public class SortHelper {
     public static SqrtBySize sqrtBySize = null;
 
 
-    public static Comparator<JerryFile> getComparator(int sortType) {
+    public static Comparator<BaseFile> getComparator(int sortType) {
         switch (sortType) {
             case FileSetting.SORT_BY_TIME:
                 if (sqrtByTime == null) {
@@ -37,9 +37,9 @@ public class SortHelper {
 
 
     // 小于排前面
-    public static class SqrtByName implements Comparator<JerryFile> {
+    public static class SqrtByName implements Comparator<BaseFile> {
         @Override
-        public int compare(JerryFile a, JerryFile b) {
+        public int compare(BaseFile a, BaseFile b) {
             return a.name.compareTo(b.name);
         }
     }
@@ -52,9 +52,9 @@ public class SortHelper {
 //    }
 
 
-    public static class SqrtByTime implements Comparator<JerryFile> {
+    public static class SqrtByTime implements Comparator<BaseFile> {
         @Override
-        public int compare(JerryFile a, JerryFile b) {
+        public int compare(BaseFile a, BaseFile b) {
             // 旧文件排前面
             final long d = a.time - b.time;
             if (d > 0) {
@@ -74,9 +74,9 @@ public class SortHelper {
 //        }
 //    }
 
-    public static class SqrtByExtension implements Comparator<JerryFile> {
+    public static class SqrtByExtension implements Comparator<BaseFile> {
         @Override
-        public int compare(JerryFile a, JerryFile b) {
+        public int compare(BaseFile a, BaseFile b) {
             final boolean aIsDir = a.isDir();
             final boolean bIsDir = b.isDir();
             if (aIsDir) {
@@ -118,9 +118,9 @@ public class SortHelper {
 //        }
 //    }
 
-    public static class SqrtBySize implements Comparator<JerryFile> {
+    public static class SqrtBySize implements Comparator<BaseFile> {
         @Override
-        public int compare(JerryFile a, JerryFile b) {
+        public int compare(BaseFile a, BaseFile b) {
             final boolean aIsDir = a.isDir();
             final boolean bIsDir = b.isDir();
             if (aIsDir) {

@@ -13,11 +13,13 @@ import java.util.ArrayList;
 import jerry.filebrowser.R;
 import jerry.filebrowser.activity.MainActivity;
 import jerry.filebrowser.adapter.FileClearListAdapter;
+import jerry.filebrowser.file.BaseFile;
+import jerry.filebrowser.file.SelectableFile;
 import jerry.filebrowser.file.UnixFile;
 
 public class FileClearDialog extends BaseDialog {
     private MainActivity activity;
-    private ArrayList<UnixFile> dirs;
+    private ArrayList<SelectableFile> dirs;
     private RecyclerView recyclerView;
     private FileClearListAdapter adapter;
     private TextView tv_path;
@@ -57,7 +59,7 @@ public class FileClearDialog extends BaseDialog {
             boolean isSuccess = true;
             boolean isDelete = false;
             for (int i = 0; i < len; i++) {
-                UnixFile file = dirs.get(i);
+                SelectableFile file = dirs.get(i);
                 if (file.isSelect) {
                     if (UnixFile.deleteEmptyDir0(file.getAbsPath())) {
                         isDelete = true;
@@ -87,22 +89,22 @@ public class FileClearDialog extends BaseDialog {
         return R.layout.dialog_clear;
     }
 
-    public void show(String path, ArrayList<UnixFile> list) {
+    public void show(String path, ArrayList<BaseFile> list) {
         message.setText("正在扫描空文件夹");
         tv_path.setText("路径：" + path);
         show();
-        ArrayList<UnixFile> dirs = new ArrayList<>();
+        ArrayList<SelectableFile> dirs = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
-            final UnixFile file = list.get(i);
+            final BaseFile file = list.get(i);
             if (file.isDir() && UnixFile.isEmptyDir(file.getAbsPath())) {
-                dirs.add(file);
+                dirs.add(new SelectableFile(file));
             }
         }
         if (dirs.size() == 0) {
             message.setText("没有空文件夹");
         } else {
             this.dirs = dirs;
-            adapter.setDir(dirs);
+            adapter.setDir(new ArrayList<>(dirs));
             adapter.notifyDataSetChanged();
             message.setText("选择要删除的项目");
         }
