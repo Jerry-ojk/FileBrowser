@@ -2,7 +2,7 @@
 
 #### 介绍
 
-一款支持SSH和SFTP协议的Android文件浏览器。实现了SSH协议连接远程终端、SFTP协议与服务器传输文件。支持文件浏览、编辑、搜索、自定义排序、文件夹收藏、图片与视频缩略图、OTG设备读取、白天/夜间主题切换等功能。文件权限设置与打开终端功能正在开发中。
+一款支持SSH和SFTP协议的Android文件浏览器/文件管理器。实现了SSH协议连接远程终端、SFTP协议与服务器传输文件。支持文件浏览、编辑、搜索、自定义排序、文件夹收藏、图片与视频缩略图、OTG设备读取、白天/夜间主题切换等功能。文件权限设置与打开终端功能正在开发中。
 
 #### 软件截图
 
@@ -14,8 +14,6 @@
 |![图6](https://gitee.com/jerry-ojk/file-browser/raw/master/Screenshots/Screenshot_2021-02-27-16-18-22-846_jerry.filebrowser.debug.jpg)|![图7](https://gitee.com/jerry-ojk/file-browser/raw/master/Screenshots/Screenshot_2021-02-26-15-58-30-146_jerry.filebrowser.debug.jpg)|
 
 #### 软件架构
-
-
 
 #### 安装教程
 
@@ -46,3 +44,4 @@
 #### LICENSE
 
 本项目使用 [AGPL-3.0](LICENSE) 开源许可协议，使用本项目请遵守该协议。
+**未经允许，禁止用于商用**
