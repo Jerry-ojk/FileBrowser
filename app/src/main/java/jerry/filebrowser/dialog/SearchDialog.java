@@ -1,6 +1,7 @@
 package jerry.filebrowser.dialog;
 
 import android.content.Context;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -29,11 +30,14 @@ public class SearchDialog extends BaseDialog implements FileListCallback {
     private CheckBox cb_subdir;
     private CheckBox cb_search_hide;
     private Button bu_sure;
+    private final InputMethodManager manager;
 
     private FileSearchTask task;
 
     public SearchDialog(Context context) {
         super(context);
+        manager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+
         activity = (MainActivity) context;
         til_path = findViewById(R.id.til_path);
         til_name = findViewById(R.id.til_name);
@@ -52,7 +56,7 @@ public class SearchDialog extends BaseDialog implements FileListCallback {
             if (AppUtil.isEmpty(path)) {
                 til_path.setError("路径不能为空");
                 return;
-            } else if (!UnixFile.isExist(path)) {
+            } else if (!BaseFile.isExist(FileSetting.toRealPath(path))) {
                 til_path.setError("该路径不存在");
                 return;
             }
@@ -78,7 +82,6 @@ public class SearchDialog extends BaseDialog implements FileListCallback {
         return R.layout.dialog_search;
     }
 
-
     @Override
     public void onListResult(FileListResult result) {
         task = null;
@@ -97,12 +100,6 @@ public class SearchDialog extends BaseDialog implements FileListCallback {
         ed_name.requestFocus();
         cb_search_hide.setChecked(FileSetting.isShowHide());
         show();
-
-//        ed_name.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                ed_name.requestFocus();
-//            }
-//        });
+        ed_name.postDelayed(() -> manager.showSoftInput(ed_name, InputMethodManager.SHOW_IMPLICIT, null), 200);
     }
 }

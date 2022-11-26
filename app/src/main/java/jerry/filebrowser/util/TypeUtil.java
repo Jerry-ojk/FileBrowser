@@ -87,6 +87,7 @@ public class TypeUtil {
         TYPE_TRIE.put("flv", new FileType(FileType.TYPE_VIDEO, icon_video));
         TYPE_TRIE.put("gif", new FileType(FileType.TYPE_IMAGE, icon_image));
         TYPE_TRIE.put("gz", new FileType(FileType.TYPE_UNKNOWN, icon_compress));
+        TYPE_TRIE.put("h", new FileType(FileType.TYPE_TXT, icon_code));
         TYPE_TRIE.put("html", new FileType(FileType.TYPE_TXT, icon_code));
         TYPE_TRIE.put("ini", new FileType(FileType.TYPE_TXT, icon_txt));
         TYPE_TRIE.put("ios", new FileType(FileType.TYPE_UNKNOWN, icon_compress));
@@ -100,6 +101,8 @@ public class TypeUtil {
         TYPE_TRIE.put("mov", new FileType(FileType.TYPE_VIDEO, icon_video));
         TYPE_TRIE.put("mp3", new FileType(FileType.TYPE_UNKNOWN, icon_music));
         TYPE_TRIE.put("mp4", new FileType(FileType.TYPE_VIDEO, icon_video));
+        TYPE_TRIE.put("mpeg", new FileType(FileType.TYPE_VIDEO, icon_video));
+        TYPE_TRIE.put("mpg", new FileType(FileType.TYPE_VIDEO, icon_video));
         TYPE_TRIE.put("otf", new FileType(FileType.TYPE_UNKNOWN, icon_ttf));
         TYPE_TRIE.put("pdf", new FileType(FileType.TYPE_UNKNOWN, icon_pdf));
         TYPE_TRIE.put("png", new FileType(FileType.TYPE_IMAGE, icon_image));
@@ -107,6 +110,8 @@ public class TypeUtil {
         TYPE_TRIE.put("raw", new FileType(FileType.TYPE_IMAGE, icon_image));
         TYPE_TRIE.put("sh", new FileType(FileType.TYPE_TXT, icon_code));
         TYPE_TRIE.put("so", new FileType(FileType.TYPE_UNKNOWN, icon_compress));
+        TYPE_TRIE.put("tif", new FileType(FileType.TYPE_IMAGE, icon_image));
+        TYPE_TRIE.put("tiff", new FileType(FileType.TYPE_IMAGE, icon_image));
         TYPE_TRIE.put("ts", new FileType(FileType.TYPE_VIDEO, icon_video));
         TYPE_TRIE.put("ttf", new FileType(FileType.TYPE_UNKNOWN, icon_ttf));
         TYPE_TRIE.put("txt", new FileType(FileType.TYPE_TXT, icon_txt));

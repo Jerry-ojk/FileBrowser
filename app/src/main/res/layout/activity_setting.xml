@@ -10,7 +10,13 @@
         android:id="@+id/toolbar_setting"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:background="@color/toolbar"
+        android:elevation="4dp"
+        app:contentInsetStartWithNavigation="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:subtitleTextAppearance="@style/SubTitleTextAppearance"
+        app:title="设置"
+        app:titleTextColor="@color/text_title" />
 
     <TextView
         android:id="@+id/tv_1"

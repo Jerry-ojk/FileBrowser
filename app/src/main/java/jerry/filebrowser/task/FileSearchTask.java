@@ -56,10 +56,8 @@ public class FileSearchTask extends AsyncTask<String, Object, ArrayList<BaseFile
             return;
         }
         final File[] files = root.listFiles();
-        if (files == null || files.length == 0) return;
-        final int length = files.length;
-        for (int i = 0; i < length; i++) {
-            final File file = files[i];
+        if (files == null) return;
+        for (final File file : files) {
             if (file.getName().charAt(0) == '.' && !isSearchHide) {
                 continue;
             }
@@ -68,10 +66,8 @@ public class FileSearchTask extends AsyncTask<String, Object, ArrayList<BaseFile
             }
             final String name = isCaseSensitive ? file.getName() : file.getName().toLowerCase(Locale.US);
             if (name.contains(pattern)) {
-                final UnixFile unixFile = new UnixFile(file.getName(), BaseFile.getType(file), -1, -1);
-                unixFile.parent = path;
-                unixFile.setAbsPath(file.getAbsolutePath());
-                result.add(unixFile);
+                BaseFile baseFile = new BaseFile(file);
+                result.add(baseFile);
             }
             if (result.size() == max) {
                 return;

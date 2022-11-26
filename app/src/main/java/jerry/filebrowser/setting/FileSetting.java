@@ -25,11 +25,11 @@ public class FileSetting {
 
     public static int OPTION = 0;
 
-    public static final int API_MODE_OS = 1;
+    public static final int API_MODE_AUTO = 1;
     public static final int API_MODE_NATIVE = 2;
     public static final int API_MODE_FILE = 3;
 
-    public static int API_MODE = API_MODE_OS;
+    public static int API_MODE = API_MODE_AUTO;
 
     public FileSetting() {
     }
@@ -88,6 +88,7 @@ public class FileSetting {
 
     // 用户显示路径转为真实路径
     public static String toRealPath(String path) {
+        if (path == null) return null;
         final String tag = FileSetting.PHONE_ROOT_TAG;
         if (path.startsWith(tag)) {
             return FileSetting.PHONE_ROOT + path.substring(tag.length());
@@ -98,6 +99,7 @@ public class FileSetting {
 
     // 真实路径转为用户显示路径
     public static String toShowPath(String path) {
+        if (path == null) return null;
         final String root = FileSetting.PHONE_ROOT;
         if (path.startsWith(root)) {
             return FileSetting.PHONE_ROOT_TAG + path.substring(root.length());

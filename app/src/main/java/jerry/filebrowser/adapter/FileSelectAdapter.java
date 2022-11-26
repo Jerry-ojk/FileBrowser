@@ -39,10 +39,11 @@ import jerry.filebrowser.util.PathUtil;
 import jerry.filebrowser.util.TypeUtil;
 import jerry.filebrowser.util.Util;
 import jerry.filebrowser.view.ItemViewGroup;
+import jerry.filebrowser.view.PathNavView;
 
 
 @SuppressLint("SetTextI18n")
-public class FileSelectAdapter extends RecyclerView.Adapter<FileSelectAdapter.ViewHolder> implements PathNavAdapter.PathNavInterface, FileListCallback {
+public class FileSelectAdapter extends RecyclerView.Adapter<FileSelectAdapter.ViewHolder> implements PathNavView.OnPathClickListener, FileListCallback {
     public static final int TYPE_TO_CHILD = 1;
     public static final int TYPE_TO_PARENT = 2;
 

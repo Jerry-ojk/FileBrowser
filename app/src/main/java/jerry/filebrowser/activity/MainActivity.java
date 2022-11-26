@@ -1,5 +1,7 @@
 package jerry.filebrowser.activity;
 
+import static jerry.filebrowser.setting.SettingManager.SETTING_DATA;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
@@ -44,14 +46,12 @@ import java.util.List;
 import jerry.filebrowser.BuildConfig;
 import jerry.filebrowser.R;
 import jerry.filebrowser.adapter.FileBrowserAdapter;
-import jerry.filebrowser.adapter.PathNavAdapter;
-import jerry.filebrowser.file.BaseFile;
-import jerry.filebrowser.view.ItemDecoration;
 import jerry.filebrowser.app.AppUtil;
 import jerry.filebrowser.dialog.DialogManager;
 import jerry.filebrowser.dialog.FileClearDialog;
 import jerry.filebrowser.dialog.SearchDialog;
 import jerry.filebrowser.dialog.SortDialog;
+import jerry.filebrowser.file.BaseFile;
 import jerry.filebrowser.file.Clipboard;
 import jerry.filebrowser.file.FileRoot;
 import jerry.filebrowser.file.UnixFile;
@@ -66,13 +66,12 @@ import jerry.filebrowser.theme.ThemeHelper;
 import jerry.filebrowser.util.PathUtil;
 import jerry.filebrowser.util.Util;
 import jerry.filebrowser.view.ExpandView;
+import jerry.filebrowser.view.ItemDecoration;
 import jerry.filebrowser.view.PathNavView;
 import jerry.filebrowser.view.SlideLayer;
 import jerry.filebrowser.view.TagView;
 
-import static jerry.filebrowser.setting.SettingManager.SETTING_DATA;
-
-public class MainActivity extends AppCompatActivity implements ToastInterface, PathNavAdapter.PathNavInterface {
+public class MainActivity extends AppCompatActivity implements ToastInterface, PathNavView.OnPathClickListener {
     private DialogManager dialogManager;
 
     private Toolbar toolbar;
@@ -81,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements ToastInterface, P
     private PathNavView pathNavView;
 
     //private SharedPreferences preferences;
-    private LinearLayout bottomNav;
+    // private LinearLayout bottomNav;
     private ImageView iv_select;
     public ImageView iv_paste;
     private Toast toast;
@@ -128,8 +127,11 @@ public class MainActivity extends AppCompatActivity implements ToastInterface, P
         long a = System.currentTimeMillis();
         setContentView(R.layout.activity_main);
         if (BuildConfig.DEBUG) {
-            Log.i("666", "MainActivity布局耗时" + (System.currentTimeMillis() - a));
+            Log.i("MainActivity", "布局耗时: " + (System.currentTimeMillis() - a) + "ms");
         }
+
+        registerReceivers();
+
         dialogManager = new DialogManager(this);
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
 
@@ -137,8 +139,7 @@ public class MainActivity extends AppCompatActivity implements ToastInterface, P
         setSupportActionBar(toolbar);
 
         drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, 0, 0) {
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, 0, 0) {
             @Override
             public void onDrawerOpened(@NonNull View drawerView) {
                 updateSpace();
@@ -147,25 +148,17 @@ public class MainActivity extends AppCompatActivity implements ToastInterface, P
         drawer.addDrawerListener(toggle);
         toggle.getDrawerArrowDrawable().setColor(getColor(R.color.text_title));
         toggle.syncState();
-        bottomNav = drawer.findViewById(R.id.ll_bottom);
+        // bottomNav = drawer.findViewById(R.id.ll_bottom);
 
         // 底部新建按钮
         findViewById(R.id.action_create).setOnClickListener(v -> {
             dialogManager.showCreateDialog(FileSetting.getCurrentPath());
         });
 
-        registerReceivers();
-
         // 底部多选按钮
         iv_select = findViewById(R.id.action_select);
         iv_select.getDrawable().mutate();
-        iv_select.setImageTintList(new ColorStateList(
-                new int[][]{
-                        {-android.R.attr.state_selected},
-                        {android.R.attr.state_selected}}, new int[]{
-                getColor(R.color.action),
-                getColor(R.color.colorAccent)
-        }));
+        iv_select.setImageTintList(new ColorStateList(new int[][]{{-android.R.attr.state_selected}, {android.R.attr.state_selected}}, new int[]{getColor(R.color.action), getColor(R.color.colorAccent)}));
 
         iv_select.setOnClickListener(v -> {
             if (adapter.isMultipleSelectMode()) {
@@ -177,13 +170,7 @@ public class MainActivity extends AppCompatActivity implements ToastInterface, P
 
         // 底部粘贴按钮
         iv_paste = findViewById(R.id.action_paste);
-        ColorStateList colorStateList = new ColorStateList(
-                new int[][]{
-                        {-android.R.attr.state_enabled},
-                        {android.R.attr.state_enabled}},
-                new int[]{
-                        getColor(R.color.disable),
-                        getColor(R.color.colorAccent)});
+        ColorStateList colorStateList = new ColorStateList(new int[][]{{-android.R.attr.state_enabled}, {android.R.attr.state_enabled}}, new int[]{getColor(R.color.disable), getColor(R.color.colorAccent)});
 
         iv_paste.setImageTintList(colorStateList);
         iv_paste.setEnabled(false);
@@ -290,8 +277,8 @@ public class MainActivity extends AppCompatActivity implements ToastInterface, P
         }
 
         pathNavView = findViewById(R.id.recv_path);
-        pathNavView.updatePath(FileSetting.toShowPath(FileSetting.getCurrentPath()));
-        pathNavView.setPathNavInterface(this);
+        pathNavView.setPath(FileSetting.toShowPath(FileSetting.getCurrentPath()));
+        pathNavView.setOnPathClickListener(this);
 
         adapter = new FileBrowserAdapter(this, recyclerView);
         recyclerView.setAdapter(adapter);
@@ -325,8 +312,7 @@ public class MainActivity extends AppCompatActivity implements ToastInterface, P
             new FileClearDialog(MainActivity.this).show(FileSetting.getCurrentPath(), adapter.fileList);
         }), drawer);
 
-        ((TagView) expand_tool.findViewById(R.id.tag_dart_mode)).setOnClickListener(v ->
-                ThemeHelper.setDarkMode(!ThemeHelper.isDarkMode));
+        ((TagView) expand_tool.findViewById(R.id.tag_dart_mode)).setOnClickListener(v -> ThemeHelper.setDarkMode(!ThemeHelper.isDarkMode));
 
         if (BuildConfig.DEBUG) {
             Log.i("MainActivity", "onCreate()耗时: " + (System.currentTimeMillis() - b));
@@ -334,7 +320,6 @@ public class MainActivity extends AppCompatActivity implements ToastInterface, P
 
         refreshFileRoot();
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -352,6 +337,9 @@ public class MainActivity extends AppCompatActivity implements ToastInterface, P
             case R.id.action_refresh:
                 adapter.refresh();
                 break;
+            case R.id.action_sort:
+                new SortDialog(this).show();
+                break;
 //            case R.id.action_paste:
 //                break;
 //            case R.id.action_create:
@@ -365,10 +353,8 @@ public class MainActivity extends AppCompatActivity implements ToastInterface, P
                     collectionPath(FileSetting.getCurrentPath());
                 }
                 break;
-            case R.id.action_sort:
-                new SortDialog(this).show();
-                break;
-//            case R.id.action_settings:
+            case R.id.action_setting:
+                startActivity(new Intent(this, SettingActivity.class));
 //            case R.id.action_upload:
 //                new FileSelectDialog(this, new FileSelectCallback() {
 //                    @Override
@@ -500,13 +486,13 @@ public class MainActivity extends AppCompatActivity implements ToastInterface, P
     public void onStartLoadDir(String absolutePath) {
         lastPath = pathNavView.getPath(); // 保持上一个路径，方便恢复
         toolbar.setSubtitle(" ");
-        pathNavView.updatePath(absolutePath);
+        pathNavView.setPath(absolutePath);
         pathNavView.setLoading(true);
     }
 
     public void onCancelLoadDir(int dirs, int files) {
         pathNavView.setLoading(false);
-        if (!TextUtils.isEmpty(lastPath)) pathNavView.updatePath(lastPath);
+        if (!TextUtils.isEmpty(lastPath)) pathNavView.setPath(lastPath);
         builder.append(dirs).append("个文件夹，").append(files).append("个文件");
         toolbar.setSubtitle(builder.toString());
         builder.setLength(0);
@@ -533,9 +519,7 @@ public class MainActivity extends AppCompatActivity implements ToastInterface, P
             long total = statFs.getTotalBytes();
             long available = statFs.getAvailableBytes();
             tagView.setProcess((int) ((total - available) * 100 / total));
-            tagView.setMessage("共" + Util.size(total)
-                    + "，可用" + Util.size(available)
-                    + "，自由" + Util.size(statFs.getFreeBytes()));
+            tagView.setMessage("共" + Util.size(total) + "，可用" + Util.size(available) + "，自由" + Util.size(statFs.getFreeBytes()));
 
         }
     }
@@ -601,8 +585,7 @@ public class MainActivity extends AppCompatActivity implements ToastInterface, P
         ArrayList<FileRoot> otgPathList = PathUtil.getOTGPathList(this);
         if (otgPathList == null) return;
         for (FileRoot item : otgPathList) {
-            TagView view = expand_catalog.addTag(item.getName(), item.getPath(), R.drawable.ic_sd_dark,
-                    v -> adapter.onNavDirectory(item.getPath(), FileBrowserAdapter.TYPE_JUMP));
+            TagView view = expand_catalog.addTag(item.getName(), item.getPath(), R.drawable.ic_sd_dark, v -> adapter.onNavDirectory(item.getPath(), FileBrowserAdapter.TYPE_JUMP));
             view.setProcess(0);
             view.setData(item.getPath());
         }
@@ -620,8 +603,7 @@ public class MainActivity extends AppCompatActivity implements ToastInterface, P
             if (adapter == null) return;
             final String path = intent.getStringExtra(RefreshReceiver.PARAM_PATH);
             if (ACTION_REFRESH.equals(intent.getAction())) {
-                if (path == null || FileSetting.getCurrentPath().equals(path))
-                    adapter.refresh();
+                if (path == null || FileSetting.getCurrentPath().equals(path)) adapter.refresh();
             } else if (ACTION_NAVIGATION.equals(intent.getAction())) {
                 if (!FileSetting.getCurrentPath().equals(path)) {
                     adapter.onNavDirectory(path, FileBrowserAdapter.TYPE_JUMP);

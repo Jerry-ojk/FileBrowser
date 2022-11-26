@@ -19,13 +19,34 @@ class TagView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : ViewGroup(context, attrs, defStyleAttr) {
     private var enableProcess = false
-    private var process = 0
+    var process = 0
+        set(value) {
+            enableProcess = value >= 0
+            if (field != value) {
+                field = value
+                invalidate()
+            }
+        }
+
     private val offset: Float
     private val titleColor: Int
     private val subtitleColor: Int
     private val subtitleSize = DPUtils.toDp(context, 10)
-    private var title: String? = null
-    private var message: String? = null
+
+    var title: String? = null
+        set(value) {
+            field = value
+            if (value == null) field = ""
+            invalidate()
+        }
+
+    var message: String? = null
+        set(value) {
+            field = value
+            if (value == null) field = ""
+            invalidate()
+        }
+
     private val ivIcon: ImageView
     private val paint: Paint
     private val builder: StringBuilder
@@ -150,25 +171,4 @@ class TagView @JvmOverloads constructor(
         ivIcon.setImageResource(id)
     }
 
-    fun setProcess(process: Int) {
-        enableProcess = process >= 0
-        if (this.process != process) {
-            this.process = process
-            invalidate()
-        }
-    }
-
-    fun setTitle(title: String?) {
-        this.title = title
-    }
-
-    fun setMessage(message: String?) {
-        this.message = message
-        if (message == null) this.message = ""
-        invalidate()
-    }
-
-    fun getMessage(): String? {
-        return message
-    }
 }

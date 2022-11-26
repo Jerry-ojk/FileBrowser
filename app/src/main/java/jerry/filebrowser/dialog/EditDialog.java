@@ -135,7 +135,7 @@ public class EditDialog extends BaseDialog {
             dismiss();
         });
         show();
-        ed_name.requestFocus();
+        // ed_name.requestFocus();
         ed_name.postDelayed(() -> manager.showSoftInput(ed_name, InputMethodManager.SHOW_IMPLICIT, null), 200);
     }
 

@@ -3,7 +3,6 @@ package jerry.filebrowser.adapter;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,28 +16,30 @@ import java.util.ArrayList;
 
 import jerry.filebrowser.R;
 import jerry.filebrowser.view.DPUtils;
+import jerry.filebrowser.view.PathNavView;
 import jerry.filebrowser.view.RotatableDrawable;
 
 public class PathNavAdapter extends RecyclerView.Adapter<PathNavAdapter.ViewHolder> {
     private final RecyclerView recyclerView;
     private final ArrayList<String> pathList = new ArrayList<>();
-    private PathNavInterface pathNavInterface;
+
+    private PathNavView.OnPathClickListener onPathClickListener;
 
     private final RotatableDrawable drawable;
     private final ValueAnimator animator = new ValueAnimator();
 
-    private final int color_active;
-    private final int color_normal;
+    private final int colorActive;
+    private final int colorNormal;
     private boolean isLoading;
 
     public PathNavAdapter(RecyclerView recyclerView) {
         this.recyclerView = recyclerView;
         Context context = recyclerView.getContext();
-        color_active = context.getColor(R.color.text_active);
-        color_normal = context.getColor(R.color.text_subtitle);
+        colorActive = context.getColor(R.color.text_active);
+        colorNormal = context.getColor(R.color.text_subtitle);
 
         drawable = new RotatableDrawable(ContextCompat.getDrawable(context, R.drawable.ic_action_refresh));
-        drawable.setTint(color_active);
+        drawable.setTint(colorActive);
         drawable.setBounds(0, 0, DPUtils.DP16, DPUtils.DP16);
 
         animator.setIntValues(0, 360 - 1);
@@ -56,8 +57,8 @@ public class PathNavAdapter extends RecyclerView.Adapter<PathNavAdapter.ViewHold
         });
     }
 
-    public void setPathNavInterface(PathNavInterface pathNavInterface) {
-        this.pathNavInterface = pathNavInterface;
+    public void setOnPathClickListener(PathNavView.OnPathClickListener onPathClickListener) {
+        this.onPathClickListener = onPathClickListener;
     }
 
     public void setLoading(boolean isLoading) {
@@ -110,7 +111,7 @@ public class PathNavAdapter extends RecyclerView.Adapter<PathNavAdapter.ViewHold
         final TextView textView = (TextView) holder.itemView;
         textView.setText(pathList.get(position));
         if (position == pathList.size() - 1) {
-            textView.setTextColor(color_active);
+            textView.setTextColor(colorActive);
             if (isLoading) {
                 textView.setPadding(DPUtils.DP8, 0, DPUtils.DP8, 0);
                 textView.setCompoundDrawables(null, null, drawable, null);
@@ -120,7 +121,7 @@ public class PathNavAdapter extends RecyclerView.Adapter<PathNavAdapter.ViewHold
             }
         } else {
             textView.setPadding(DPUtils.DP8, 0, DPUtils.DP8, 0);
-            textView.setTextColor(color_normal);
+            textView.setTextColor(colorNormal);
         }
     }
 
@@ -147,8 +148,8 @@ public class PathNavAdapter extends RecyclerView.Adapter<PathNavAdapter.ViewHold
             builder.append(pathList.get(i));
             i++;
         }
-        if (pathNavInterface != null) {
-            pathNavInterface.onNavDirectory(builder.toString(), FileBrowserAdapter.TYPE_JUMP);
+        if (onPathClickListener != null) {
+            onPathClickListener.onNavDirectory(builder.toString(), FileBrowserAdapter.TYPE_JUMP);
         }
     }
 
@@ -157,9 +158,5 @@ public class PathNavAdapter extends RecyclerView.Adapter<PathNavAdapter.ViewHold
         public ViewHolder(View itemView) {
             super(itemView);
         }
-    }
-
-    public interface PathNavInterface {
-        public void onNavDirectory(String absPath, int type);
     }
 }

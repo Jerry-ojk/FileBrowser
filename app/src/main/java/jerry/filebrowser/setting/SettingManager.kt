@@ -2,6 +2,7 @@ package jerry.filebrowser.setting
 
 import android.os.Environment
 import com.alibaba.fastjson.JSON
+import jerry.filebrowser.file.BaseFile
 import jerry.filebrowser.file.UnixFile
 import jerry.filebrowser.util.FileUtils
 import jerry.filebrowser.view.ExpandView
@@ -34,7 +35,7 @@ object SettingManager {
 
     @JvmStatic
     fun read(): Boolean {
-        if (UnixFile.isExist(SETTING_PATH)) {
+        if (BaseFile.isExist(SETTING_PATH)) {
             try {
                 val json = FileUtils.readFile(SETTING_PATH)
                 if (json != null) {
@@ -49,14 +50,18 @@ object SettingManager {
             return false
         }
         FileSetting.OPTION = SETTING_DATA!!.option
+        if (SETTING_DATA!!.apiMode in 1..3) {
+            FileSetting.API_MODE = SETTING_DATA!!.apiMode
+        }
         return true
     }
 
     @JvmStatic
     fun save(list: ArrayList<ExpandView>?) {
         SETTING_DATA!!.option = FileSetting.OPTION
+        SETTING_DATA!!.apiMode = FileSetting.API_MODE
         if (list != null) {
-            SETTING_DATA!!.triggerList = getDrawerSettings(list)
+            getDrawerSettings(list, SETTING_DATA!!.triggerList)
         }
         saveJson(SETTING_PATH, SETTING_DATA)
     }
@@ -108,22 +113,17 @@ object SettingManager {
     }
 
     private fun saveJson(path: String?, `object`: Any?) {
-        try {
-            FileOutputStream(path, false).use { outputStream ->
-                val json = JSON.toJSONString(`object`, true)
-                outputStream.write(json.toByteArray(StandardCharsets.UTF_8))
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
+        FileOutputStream(path, false).use { outputStream ->
+            val json = JSON.toJSONString(`object`, true)
+            outputStream.write(json.toByteArray(StandardCharsets.UTF_8))
         }
     }
 
-    private fun getDrawerSettings(list: ArrayList<ExpandView>): ArrayList<Boolean> {
+    private fun getDrawerSettings(list: ArrayList<ExpandView>, res: ArrayList<Boolean>) {
+        res.clear()
         val len = list.size
-        val isOpen = ArrayList<Boolean>(len)
         for (i in 0 until len) {
-            isOpen.add(list[i].isOpen)
+            res.add(list[i].isOpen)
         }
-        return isOpen
     }
 }

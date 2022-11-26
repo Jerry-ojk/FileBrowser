@@ -47,7 +47,7 @@ import static jerry.filebrowser.adapter.FileBrowserAdapter.TYPE_REFRESH;
 
 
 @SuppressLint("SetTextI18n")
-public class SFTPFileBrowserAdapter extends RecyclerView.Adapter<SFTPFileBrowserAdapter.ViewHolder> implements PathNavAdapter.PathNavInterface, FTPListCallback {
+public class SFTPFileBrowserAdapter extends RecyclerView.Adapter<SFTPFileBrowserAdapter.ViewHolder> implements PathNavView.OnPathClickListener, FTPListCallback {
     private static final int TYPE_FIRST = 0;
     private static final int TYPE_TO_CHILD = 1;
     private static final int TYPE_TO_PARENT = 2;
@@ -114,7 +114,7 @@ public class SFTPFileBrowserAdapter extends RecyclerView.Adapter<SFTPFileBrowser
         tv_selectCount = backView.findViewById(R.id.tv_select_count);
 
         pathNavView = new PathNavView(activity);
-        pathNavView.setPathNavInterface(this);
+        pathNavView.setOnPathClickListener(this);
 
         typeUtil = new TypeUtil(activity);
 
@@ -322,7 +322,7 @@ public class SFTPFileBrowserAdapter extends RecyclerView.Adapter<SFTPFileBrowser
 
         //select.onLoadFinish(result.list);
 
-        pathNavView.updatePath(result.absolutePath);
+        pathNavView.setPath(result.absolutePath);
         countView.setText("文件数量：" + fileList.size());
         notifyDataSetChanged();
         if (result.type != TYPE_REFRESH) {

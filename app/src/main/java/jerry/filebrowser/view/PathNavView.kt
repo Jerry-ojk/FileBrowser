@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import jerry.filebrowser.R
 import jerry.filebrowser.adapter.PathNavAdapter
-import jerry.filebrowser.adapter.PathNavAdapter.PathNavInterface
 
 class PathNavView @JvmOverloads constructor(
     context: Context,
@@ -19,7 +18,13 @@ class PathNavView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : RecyclerView(context, attrs, defStyleAttr) {
 
-    private var path: String = ""
+    var path: String = ""
+        set(value) {
+            field = value
+            adapter.updatePath(value)
+            post(runnable)
+        }
+
     private val adapter: PathNavAdapter = PathNavAdapter(this)
     private val runnable = Runnable { scrollToPosition(adapter.itemCount - 1) }
 
@@ -30,22 +35,16 @@ class PathNavView @JvmOverloads constructor(
         setAdapter(adapter)
     }
 
-    fun setPathNavInterface(pathNavInterface: PathNavInterface?) {
-        adapter.setPathNavInterface(pathNavInterface)
+    fun setOnPathClickListener(onPathClickListener: OnPathClickListener?) {
+        adapter.setOnPathClickListener(onPathClickListener)
     }
 
     fun setLoading(isLoading: Boolean) {
         adapter.setLoading(isLoading)
     }
 
-    fun getPath(): String {
-        return path
-    }
-
-    fun updatePath(absolutePath: String) {
-        path = absolutePath
-        adapter.updatePath(absolutePath)
-        post(runnable)
+    interface OnPathClickListener {
+        fun onNavDirectory(absPath: String?, type: Int)
     }
 
     class ArrowItemDecoration(context: Context) : ItemDecoration() {

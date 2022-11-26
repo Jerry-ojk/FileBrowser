@@ -3,6 +3,7 @@ package jerry.filebrowser.task;
 import android.os.AsyncTask;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -32,15 +33,13 @@ public class FileListTask extends AsyncTask<String, Object, ArrayList<BaseFile>>
     protected ArrayList<BaseFile> doInBackground(String... strings) {
         path = FileSetting.toRealPath(strings[0]);
         ArrayList<BaseFile> list = null;
-        if (FileSetting.API_MODE == FileSetting.API_MODE_OS) {
+        if (FileSetting.API_MODE == FileSetting.API_MODE_NATIVE) {
             UnixFile[] unixFiles = UnixFile.listFiles(path);
             if (unixFiles == null) return null;
             list = new ArrayList<>(unixFiles.length);
-            for (UnixFile item : unixFiles) {
-                list.add(item);
-            }
+            list.addAll(Arrays.asList(unixFiles));
         } else {
-            list = JerryFile.listFiles1(path);
+            list = JerryFile.listFilesJava(path);
         }
 
         // try {

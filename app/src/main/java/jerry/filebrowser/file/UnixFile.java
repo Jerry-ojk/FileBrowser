@@ -59,36 +59,22 @@ public class UnixFile extends BaseFile {
      * #define S_IXOTH 00001 0000000000001
      */
 
-    public boolean isSelect = false;
-
     public UnixFile(String name, int type, long length, long time) {
         super(name);
-        super.type = type;
         super.length = length;
         super.time = time;
+        super.type = type;
+    }
+
+    public UnixFile(String name, long length, long time, int type) {
+        super(name);
+        super.length = length;
+        super.time = time;
+        super.type = type;
     }
 
     public UnixFile(UnixFile file) {
-        super(file.name);
-        super.parent = file.parent;
-        super.absPath = file.absPath;
-        super.type = file.type;
-        super.length = file.length;
-        super.time = file.time;
-    }
-
-    @Override
-    public boolean isDir() {
-        return type == UnixFile.TYPE_DIR;
-    }
-
-    public boolean notDir() {
-        return type != UnixFile.TYPE_DIR;
-    }
-
-    @Override
-    public boolean isExist() {
-        return isExist(getAbsPath());
+        super(file);
     }
 
     public static UnixFile[] listFiles(String path) {
@@ -114,44 +100,17 @@ public class UnixFile extends BaseFile {
         ArrayList<UnixFile> fileList = new ArrayList<>(files.length);
         for (File file : files) {
             //int type = file.isDirectory() ? UnixFile.TYPE_DIR : UnixFile.TYPE_FILE;
-            UnixFile unixFile = new UnixFile(file.getName(), 8, file.length(), file.lastModified());
+            UnixFile unixFile = new UnixFile(file.getName(), file.length(), file.lastModified(), 8);
             unixFile.parent = path;
         }
         return fileList;
     }
 
 
-    public static final int ACCESS_OK = 0;
-    public static final int ACCESS_READ = 4;
-    public static final int ACCESS_WRITE = 2;
-    public static final int ACCESS_EXECUTE = 1;
-
-    public static boolean access(String path, int mode) {
-        try {
-            return Os.access(path, mode);
-        } catch (ErrnoException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public static boolean isExist(String path) {
-        if (FileSetting.API_MODE == FileSetting.API_MODE_OS) {
-            return isExistOsOrFile(path);
-        } else {
-            return new File(path).exists();
-        }
-    }
-
-    private static boolean isExistOsOrFile(String path) {
-        try {
-            return Os.access(path, ACCESS_OK);
-        } catch (ErrnoException e) {
-            Log.i("isExistOsOrFile", path);
-            e.printStackTrace();
-            return new File(path).exists();
-        }
-    }
+    // public static final int ACCESS_OK = 0;
+    // public static final int ACCESS_READ = 4;
+    // public static final int ACCESS_WRITE = 2;
+    // public static final int ACCESS_EXECUTE = 1;
 
     public static boolean isEmptyDir(String path) {
         String[] names = null;
@@ -181,7 +140,7 @@ public class UnixFile extends BaseFile {
     }
 
     public static boolean rename(String oldPath, String newPath) {
-        if (FileSetting.API_MODE == FileSetting.API_MODE_OS) {
+        if (FileSetting.API_MODE == FileSetting.API_MODE_AUTO) {
             return renameOsOrFile(oldPath, newPath);
         } else {
             return new File(oldPath).renameTo(new File(newPath));
@@ -208,7 +167,9 @@ public class UnixFile extends BaseFile {
 
     private static boolean delete(File file) {
         if (file.isDirectory()) {
-            for (File item : file.listFiles()) {
+            File[] files = file.listFiles();
+            if (files == null) return false;
+            for (File item : files) {
                 delete(item);
             }
         }
