@@ -4,7 +4,7 @@ import android.os.Environment
 import com.alibaba.fastjson.JSON
 import jerry.filebrowser.file.BaseFile
 import jerry.filebrowser.file.UnixFile
-import jerry.filebrowser.util.FileUtils
+import jerry.filebrowser.util.FileUtil
 import jerry.filebrowser.view.ExpandView
 import java.io.File
 import java.io.FileOutputStream
@@ -37,7 +37,7 @@ object SettingManager {
     fun read(): Boolean {
         if (BaseFile.isExist(SETTING_PATH)) {
             try {
-                val json = FileUtils.readFile(SETTING_PATH)
+                val json = FileUtil.readFile(SETTING_PATH)
                 if (json != null) {
                     SETTING_DATA = JSON.parseObject(json, SettingData::class.java)
                 }
@@ -70,7 +70,7 @@ object SettingManager {
     fun readShellConfig(): ShellSettingData? {
         if (UnixFile.isExist(SHELL_CONFIG_PATH)) {
             try {
-                val json = FileUtils.readFile(SHELL_CONFIG_PATH)
+                val json = FileUtil.readFile(SHELL_CONFIG_PATH)
                 if (json != null) {
                     SHELL_SETTING_DATA = JSON.parseObject(json, ShellSettingData::class.java)
                 }
@@ -88,7 +88,7 @@ object SettingManager {
     fun readFTPConfig(): FTPSettingData? {
         if (UnixFile.isExist(FTP_CONFIG_PATH)) {
             try {
-                val json = FileUtils.readFile(FTP_CONFIG_PATH)
+                val json = FileUtil.readFile(FTP_CONFIG_PATH)
                 if (json != null) {
                     FTP_SETTING_DATA = JSON.parseObject(json, FTPSettingData::class.java)
                 }

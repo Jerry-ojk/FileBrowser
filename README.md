@@ -13,8 +13,6 @@
 |![图4](https://gitee.com/jerry-ojk/file-browser/raw/master/Screenshots/Screenshot_2021-02-26-15-55-41-466_jerry.filebrowser.debug.jpg)|![图5](https://gitee.com/jerry-ojk/file-browser/raw/master/Screenshots/Screenshot_2021-02-26-15-58-10-526_jerry.filebrowser.debug.jpg)|
 |![图6](https://gitee.com/jerry-ojk/file-browser/raw/master/Screenshots/Screenshot_2021-02-27-16-18-22-846_jerry.filebrowser.debug.jpg)|![图7](https://gitee.com/jerry-ojk/file-browser/raw/master/Screenshots/Screenshot_2021-02-26-15-58-30-146_jerry.filebrowser.debug.jpg)|
 
-#### 软件架构
-
 #### 安装教程
 
 1. xxxx

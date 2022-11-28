@@ -6,6 +6,7 @@ plugins {
 android {
     namespace 'jerry.filebrowser'
     compileSdk 32
+    ndkVersion '25.1.8937393'
 
     defaultConfig {
         applicationId "jerry.filebrowser"
@@ -34,9 +35,16 @@ android {
         }
     }
 
-    sourceSets {
-        main {
-            jniLibs.srcDirs = ['src/main/jni']
+//    sourceSets {
+//        main {
+//            jniLibs.srcDirs = ['libs']
+//        }
+//    }
+
+    externalNativeBuild {
+        cmake {
+            path file('src/main/cpp/CMakeLists.txt')
+            version '3.22.1'
         }
     }
 

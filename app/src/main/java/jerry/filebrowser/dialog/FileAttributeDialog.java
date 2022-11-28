@@ -11,6 +11,7 @@ import jerry.filebrowser.file.BaseFile;
 import jerry.filebrowser.file.FileAttribute;
 import jerry.filebrowser.R;
 import jerry.filebrowser.file.UnixFile;
+import jerry.filebrowser.util.NativeUtil;
 import jerry.filebrowser.util.Util;
 import jerry.filebrowser.activity.MainActivity;
 
@@ -50,7 +51,7 @@ public class FileAttributeDialog extends BaseDialog {
 
     public void show(BaseFile file) {
         this.file = file;
-        setAttribute(UnixFile.getFileAttribute0(file.getAbsPath()));
+        setAttribute(NativeUtil.GetFileAttribute(file.getAbsPath()));
         show();
     }
 

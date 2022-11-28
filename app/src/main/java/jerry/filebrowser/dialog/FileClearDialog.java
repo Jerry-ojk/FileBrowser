@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import jerry.filebrowser.R;
@@ -61,9 +62,8 @@ public class FileClearDialog extends BaseDialog {
             for (int i = 0; i < len; i++) {
                 SelectableFile file = dirs.get(i);
                 if (file.isSelect) {
-                    if (UnixFile.deleteEmptyDir0(file.getAbsPath())) {
+                    if (new File(file.getAbsPath()).delete()) {
                         isDelete = true;
-
                     } else {
                         isSuccess = false;
                     }

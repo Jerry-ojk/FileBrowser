@@ -22,7 +22,7 @@ import android.content.pm.ProviderInfo;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 
-public class IconUtils {
+public class IconUtil {
     public static Drawable loadPackageIcon(Context context, String authority, int icon) {
         if (icon != 0) {
             if (authority != null) {

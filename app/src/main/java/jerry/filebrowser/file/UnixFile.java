@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import jerry.filebrowser.setting.FileSetting;
+import jerry.filebrowser.util.NativeUtil;
 
 /**
  * Created by Jerry on 2018/1/16
@@ -59,13 +60,6 @@ public class UnixFile extends BaseFile {
      * #define S_IXOTH 00001 0000000000001
      */
 
-    public UnixFile(String name, int type, long length, long time) {
-        super(name);
-        super.length = length;
-        super.time = time;
-        super.type = type;
-    }
-
     public UnixFile(String name, long length, long time, int type) {
         super(name);
         super.length = length;
@@ -83,7 +77,7 @@ public class UnixFile extends BaseFile {
 //        files.size();
         long b = System.currentTimeMillis();
 //        Log.i("666", "listFiles(java):" + (b - a) + "ms");
-        final UnixFile[] list = listFiles0(path, FileSetting.OPTION);
+        final UnixFile[] list = NativeUtil.ListFiles(path, FileSetting.OPTION);
 //        ArrayList<UnixFile> files1 = new ArrayList<>(list.length);
 //        for (UnixFile file : list) {
 //            file.parent = path;
@@ -175,17 +169,4 @@ public class UnixFile extends BaseFile {
         }
         return file.delete();
     }
-
-
-    // native函数--------------------------------------------------------
-
-    private static native UnixFile[] listFiles0(String path, int option);
-
-    public static native boolean deleteEmptyDir0(String path);
-
-    public static native int getFileType0(String path);
-
-    public static native FileAttribute getFileAttribute0(String path);
-
-    public static native int getDisplay0();
 }

@@ -50,6 +50,10 @@ public class FileClearListAdapter extends RecyclerView.Adapter<FileClearListAdap
     }
 
     public void setDir(ArrayList<BaseFile> dirs) {
+        if (dirs == null || dirs.isEmpty()) {
+            this.dirs.clear();
+            return;
+        }
         this.dirs = new ArrayList<>();
         for (BaseFile item : dirs) {
             this.dirs.add(new SelectableFile(item));

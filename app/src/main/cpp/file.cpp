@@ -16,7 +16,6 @@
 using namespace std;
 
 jboolean delete_dir(const char *path, struct stat64 *bu) {
-
     jboolean result = JNI_TRUE;
     DIR *dir = opendir(path);
 
@@ -26,7 +25,7 @@ jboolean delete_dir(const char *path, struct stat64 *bu) {
 
     char a[PATH_MAX];
     if (getcwd(a, PATH_MAX) != nullptr) {
-        __android_log_print(ANDROID_LOG_INFO, "delete_dir", "当前的目录:%s", a);
+        __android_log_print(ANDROID_LOG_DEBUG, "delete_dir", "当前的目录:%s", a);
     } else {
         closedir(dir);
         return JNI_FALSE;
@@ -38,7 +37,7 @@ jboolean delete_dir(const char *path, struct stat64 *bu) {
     }
 
     if (getcwd(a, PATH_MAX) != nullptr) {
-        __android_log_print(ANDROID_LOG_INFO, "delete_dir", "切换到目录:%s", a);
+        __android_log_print(ANDROID_LOG_DEBUG, "delete_dir", "切换到目录:%s", a);
     } else {
         chdir("..");
         closedir(dir);
@@ -54,19 +53,19 @@ jboolean delete_dir(const char *path, struct stat64 *bu) {
         }
         if (ptr->d_type != DT_DIR) {
             if (unlink(ptr->d_name) == 0) {
-                __android_log_print(ANDROID_LOG_INFO, "delete_dir", "删除文件:%s成功", ptr->d_name);
+                __android_log_print(ANDROID_LOG_DEBUG, "delete_dir", "删除文件:%s成功", ptr->d_name);
             } else {
-                __android_log_print(ANDROID_LOG_INFO, "delete_dir", "删除文件:%s失败", ptr->d_name);
+                __android_log_print(ANDROID_LOG_ERROR, "delete_dir", "删除文件:%s失败", ptr->d_name);
             }
         } else {
-            __android_log_print(ANDROID_LOG_INFO, "delete_dir", "开始删除目录:%s", ptr->d_name);
+            __android_log_print(ANDROID_LOG_DEBUG, "delete_dir", "开始删除目录:%s", ptr->d_name);
             delete_dir(ptr->d_name, bu);
         }
     }
     closedir(dir);
     chdir("..");
     getcwd(a, PATH_MAX);
-    __android_log_print(ANDROID_LOG_INFO, "delete_dir", "返回上级到目录:%s", a);
+    __android_log_print(ANDROID_LOG_DEBUG, "delete_dir", "返回上级到目录:%s", a);
 
     rmdir(path);
 
@@ -74,9 +73,9 @@ jboolean delete_dir(const char *path, struct stat64 *bu) {
 }
 
 JNIEXPORT jboolean JNICALL
-delete0(JNIEnv *env, jclass type, jstring path_) {
+deleteFile0(JNIEnv *env, jclass type, jstring path_) {
     const char *path = env->GetStringUTFChars(path_, nullptr);
-    struct stat64 bu;
+    struct stat64 bu = {};
 
     jboolean result = JNI_FALSE;
 
@@ -86,11 +85,11 @@ delete0(JNIEnv *env, jclass type, jstring path_) {
     }
 
     if ((bu.st_mode & S_IFMT) == S_IFDIR) {
-        __android_log_print(ANDROID_LOG_INFO, "delete0", "开始删除目录:%s", path);
+        __android_log_print(ANDROID_LOG_DEBUG, "deleteFile0", "开始删除目录:%s", path);
         delete_dir(path, &bu);
     } else {
         if (unlink(path) == 0) {
-            __android_log_print(ANDROID_LOG_INFO, "delete0", "删除文件:%s成功", path);
+            __android_log_print(ANDROID_LOG_DEBUG, "deleteFile0", "删除文件:%s成功", path);
             result = JNI_TRUE;
         }
     }
@@ -140,24 +139,24 @@ isExist0(JNIEnv *env, jclass type, jstring path_) {
 }
 
 JNIEXPORT jboolean JNICALL
-rename0(JNIEnv *env, jclass type, jstring oldPath_, jstring newPath_) {
-    const char *oldPath = env->GetStringUTFChars(oldPath_, nullptr);
-    const char *newPath = env->GetStringUTFChars(newPath_, nullptr);
+rename0(JNIEnv *env, jclass type, jstring from, jstring to) {
+    const char *oldPath = env->GetStringUTFChars(from, nullptr);
+    const char *newPath = env->GetStringUTFChars(to, nullptr);
     jboolean result = JNI_FALSE;
-    __android_log_write(ANDROID_LOG_INFO, "rename0", oldPath);
-    __android_log_write(ANDROID_LOG_INFO, "rename0", newPath);
+//    __android_log_write(ANDROID_LOG_INFO, "rename0", oldPath);
+//    __android_log_write(ANDROID_LOG_INFO, "rename0", newPath);
     if (rename(oldPath, newPath) == 0) {
         result = JNI_TRUE;
     }
-    env->ReleaseStringUTFChars(oldPath_, oldPath);
-    env->ReleaseStringUTFChars(newPath_, newPath);
+    env->ReleaseStringUTFChars(from, oldPath);
+    env->ReleaseStringUTFChars(to, newPath);
     return result;
 }
 
 JNIEXPORT jint JNICALL
 getFileType0(JNIEnv *env, jclass type, jstring path_) {
     const char *path = env->GetStringUTFChars(path_, nullptr);
-    struct stat64 bu;
+    struct stat64 bu = {};
     if (stat64(path, &bu) != 0) {
         return -1;
     }
@@ -168,7 +167,7 @@ getFileType0(JNIEnv *env, jclass type, jstring path_) {
 JNIEXPORT jobject JNICALL
 getFileAttribute0(JNIEnv *env, jclass type, jstring path_) {
     const char *path = env->GetStringUTFChars(path_, nullptr);
-    struct stat64 bu;
+    struct stat64 bu = {};
     if (stat64(path, &bu) != 0) {
         return nullptr;
     }
@@ -181,11 +180,11 @@ getFileAttribute0(JNIEnv *env, jclass type, jstring path_) {
     group *g = getgrgid(bu.st_gid);
 
     jobject item = env->NewObject(classType, conId,
-                                  path_,//path
-                                  bu.st_size,//length(long)
-                                  bu.st_mode,
-                                  bu.st_uid,
-                                  bu.st_gid,
+                                  path_,// path
+                                  bu.st_size,// length(long)
+                                  static_cast<jint>(bu.st_mode), // unsigned int
+                                  static_cast<jint>(bu.st_uid), // uid_t unsigned int
+                                  static_cast<jint>(bu.st_gid), // gid_t unsigned int
                                   env->NewStringUTF(p->pw_name),
                                   env->NewStringUTF(g->gr_name),
                                   (jlong) (bu.st_atim.tv_sec) * 1000,
@@ -210,7 +209,7 @@ exec(JNIEnv *env, jclass type, jstring path_, jstring argv_) {
     //char *argv[] = {"-a", nullptr};
     int code = fork();
     if (code == 0) {
-        execl(path, "ls", "-al", "/etc");
+        execl(path, "ls", "-al", "/etc", nullptr);
         perror("execl错误");
     } else if (code > 0) {
         return 0;
@@ -262,17 +261,17 @@ bool compare(struct dirent64 &a, struct dirent64 &b) {
 }
 
 JNIEXPORT jobjectArray JNICALL
-listFiles0(JNIEnv *env, jclass file_class, jstring path_) {
+listFiles0(JNIEnv *env, jclass clazz, jstring path_, jint option) {
     clock_t start = clock();
 
     const char *path = env->GetStringUTFChars(path_, nullptr);
     DIR *dir = opendir(path);
     if (dir == nullptr || chdir(path) != 0) {
-        __android_log_print(ANDROID_LOG_INFO, "listFile(path)", "打开%s失败", path);
+        __android_log_print(ANDROID_LOG_ERROR, "listFile(path)", "打开%s失败", path);
         return nullptr;
     }
-
-    jmethodID conId = env->GetMethodID(file_class, "<init>", "(Ljava/lang/String;IJJ)V");
+    jclass file_class = env->FindClass("jerry/filebrowser/file/UnixFile");
+    jmethodID conId = env->GetMethodID(file_class, "<init>", "(Ljava/lang/String;JJI)V");
 
     vector<dirent64> dirs;
     vector<dirent64> files;
@@ -293,29 +292,28 @@ listFiles0(JNIEnv *env, jclass file_class, jstring path_) {
         }
     }
     seconds = ((double) (clock() - start) * 1000) / CLOCKS_PER_SEC;
-    __android_log_print(ANDROID_LOG_INFO, "listFile(path)", "获取完耗时%lfms", seconds);
+    __android_log_print(ANDROID_LOG_DEBUG, "listFile(path)", "获取完耗时%lfms", seconds);
 
     size_t len_dir = dirs.size();
     size_t len_file = files.size();
 
     jobjectArray fileArray = env->NewObjectArray(jsize(len_dir + len_file), file_class, nullptr);
-    struct stat64 bu;
+    struct stat64 bu = {};
 
     if (len_dir > 0) {
         sort(dirs.begin(), dirs.end(), compare);
         for (size_t i = 0; i < len_dir; ++i) {
             if (stat64(dirs[i].d_name, &bu) != 0) {
-                __android_log_print(ANDROID_LOG_INFO, "listFile", "获取文件信息错误%s", files[i].d_name);
+                __android_log_print(ANDROID_LOG_ERROR, "listFile", "获取文件信息错误%s", files[i].d_name);
                 continue;
             }
             jstring str = env->NewStringUTF(dirs[i].d_name);
             jlong time = (jlong) (bu.st_mtim.tv_sec) * 1000;
             jobject item = env->NewObject(file_class, conId,
-                                          str,//name(String)
-                                          4,//type(int)
-                                          bu.st_size,//length(long)
-                                          time);//time(long)
-
+                                          str,// name(String)
+                                          bu.st_size,// length(long)
+                                          time,// time(long)
+                                          4);// type(int))
             env->SetObjectArrayElement(fileArray, (jsize) i, item);
             env->DeleteLocalRef(str);
             env->DeleteLocalRef(item);
@@ -330,17 +328,17 @@ listFiles0(JNIEnv *env, jclass file_class, jstring path_) {
             if (stat64(files[i].d_name, &bu) == 0) {
                 jlong time = (jlong) (bu.st_mtim.tv_sec) * 1000;
                 item = env->NewObject(file_class, conId,
-                                      str,//name(String)
-                                      files[i].d_type,//type(int)
-                                      bu.st_size,//length(long)
-                                      time);//time(long)
+                                      str, // name(String)
+                                      bu.st_size, // length(long)
+                                      time, // time(long)
+                                      files[i].d_type);//type(int)
             } else {
-                __android_log_print(ANDROID_LOG_INFO, "listFile", "获取文件信息错误%s", files[i].d_name);
+                __android_log_print(ANDROID_LOG_ERROR, "listFile", "获取文件信息错误%s", files[i].d_name);
                 item = env->NewObject(file_class, conId,
-                                      str,//name(String)
-                                      files[i].d_type,//type(int)
-                                      -1l,//length(long)
-                                      -1l);//time(long)
+                                      str, // name(String)
+                                      -1l, // length(long)
+                                      -1l, // time(long)
+                                      files[i].d_type); // type(int))
             }
             env->SetObjectArrayElement(fileArray, (jsize) (len_dir + i), item);
             env->DeleteLocalRef(item);
@@ -358,7 +356,7 @@ listFiles0(JNIEnv *env, jclass file_class, jstring path_) {
     //__android_log_print(ANDROID_LOG_INFO, "listFile(path)", "创建数组耗时完耗时%lfms", seconds);
     closedir(dir);
     seconds = ((double) (clock() - start) * 1000) / CLOCKS_PER_SEC;
-    __android_log_print(ANDROID_LOG_INFO, "listFile(path)", "函数共耗时%lfms", seconds);
+    __android_log_print(ANDROID_LOG_DEBUG, "listFile(path)", "函数共耗时%lfms", seconds);
 
     return fileArray;
 }
@@ -369,22 +367,22 @@ JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
         __android_log_print(ANDROID_LOG_INFO, "linux-tool", "onLoad失败");
         return JNI_ERR;
     }
-    jclass UnixFile = env->FindClass("jerry/filebrowser/file/UnixFile");
+    jclass UnixFile = env->FindClass("jerry/filebrowser/util/NativeUtil");
 
     JNINativeMethod methods[] = {
-            {"isExist",          "(Ljava/lang/String;)Z",                                 reinterpret_cast<void *>(isExist0)},
-            {"listFiles",        "(Ljava/lang/String;)[Ljerry/filebrowser/file/UnixFile;",reinterpret_cast<void *>(listFiles0)},
-            {"rename",           "(Ljava/lang/String;Ljava/lang/String;)Z",               reinterpret_cast<void *>(rename0)},
-            {"delete",           "(Ljava/lang/String;)Z",                                 reinterpret_cast<void *>(delete0)},
-            {"createFile",       "(Ljava/lang/String;)Z",                                 reinterpret_cast<void *>(createFile0)},
-            {"createDir",        "(Ljava/lang/String;)Z",                                 reinterpret_cast<void *>(createDirectory0)},
-            {"getFileType",      "(Ljava/lang/String;)I",                                 reinterpret_cast<void *>(getFileType0)},
-            {"getFileAttribute", "(Ljava/lang/String;)Ljerry/filebrowser/file/FileAttribute;", reinterpret_cast<void *>(getFileAttribute0)},
-            {"getDisplay",       "()I",                                                   reinterpret_cast<void *>(getDisplay)}
+            {"CreateFile",       "(Ljava/lang/String;)Z",                                      reinterpret_cast<void *>(createFile0)},
+            {"CreateDir",        "(Ljava/lang/String;)Z",                                      reinterpret_cast<void *>(createDirectory0)},
+            {"ListFiles",        "(Ljava/lang/String;I)[Ljerry/filebrowser/file/UnixFile;",    reinterpret_cast<void *>(listFiles0)},
+            {"IsFileExist",      "(Ljava/lang/String;)Z",                                      reinterpret_cast<void *>(isExist0)},
+            {"RenameFile",       "(Ljava/lang/String;Ljava/lang/String;)Z",                    reinterpret_cast<void *>(rename0)},
+            {"DeleteFile",       "(Ljava/lang/String;)Z",                                      reinterpret_cast<void *>(deleteFile0)},
+            {"GetFileType",      "(Ljava/lang/String;)I",                                      reinterpret_cast<void *>(getFileType0)},
+            {"GetFileAttribute", "(Ljava/lang/String;)Ljerry/filebrowser/file/FileAttribute;", reinterpret_cast<void *>(getFileAttribute0)},
+            {"GetDisplay",       "()I",                                                        reinterpret_cast<void *>(getDisplay)}
     };
 
     if (env->RegisterNatives(UnixFile, methods, 9) != JNI_OK) {
-        __android_log_print(ANDROID_LOG_INFO, "JNI_OnLoad", "动态注册失败");
+        __android_log_print(ANDROID_LOG_ERROR, "JNI_OnLoad", "动态注册失败");
     }
 
     return JNI_VERSION_1_6;
@@ -393,11 +391,11 @@ JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
 JNIEXPORT void JNI_OnUnload(JavaVM *vm, void *reserved) {
     JNIEnv *env = nullptr;
     if (vm->GetEnv((void **) &env, JNI_VERSION_1_6) == JNI_OK) {
-        __android_log_print(ANDROID_LOG_INFO, "JNI_OnUnload", "unLoad成功");
+        __android_log_print(ANDROID_LOG_DEBUG, "JNI_OnUnload", "unLoad成功");
         jclass UnixFile = env->FindClass("jerry/filebrowser/file/UnixFile");
         env->UnregisterNatives(UnixFile);
     } else {
-        __android_log_print(ANDROID_LOG_INFO, "JNI_OnUnload", "unLoad失败");
+        __android_log_print(ANDROID_LOG_ERROR, "JNI_OnUnload", "unLoad失败");
     }
     //__android_log_write(ANDROID_LOG_INFO, "JNI_OnUnload", android::base::GetProperty("ro.sf.lcd_density", "666").c_str());
 }

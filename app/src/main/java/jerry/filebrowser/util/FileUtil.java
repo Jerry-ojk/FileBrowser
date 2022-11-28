@@ -48,7 +48,7 @@ import java.util.zip.CheckedInputStream;
 /**
  * Tools for managing files.  Not for public consumption.
  */
-public class FileUtils {
+public class FileUtil {
     private static final String TAG = "FileUtils";
 
     public static final int S_IRWXU = 00700;

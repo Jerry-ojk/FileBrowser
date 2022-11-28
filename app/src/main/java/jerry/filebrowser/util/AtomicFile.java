@@ -72,9 +72,9 @@ public final class AtomicFile {
             if (!parent.mkdir()) {
                 throw new IOException("Couldn't create directory " + mBaseName);
             }
-            FileUtils.setPermissions(
+            FileUtil.setPermissions(
                 parent.getPath(),
-                FileUtils.S_IRWXU|FileUtils.S_IRWXG|FileUtils.S_IXOTH,
+                FileUtil.S_IRWXU| FileUtil.S_IRWXG| FileUtil.S_IXOTH,
                 -1, -1);
             try {
                 str = new FileOutputStream(mBaseName);
@@ -87,7 +87,7 @@ public final class AtomicFile {
     
     public void finishWrite(FileOutputStream str) {
         if (str != null) {
-            FileUtils.sync(str);
+            FileUtil.sync(str);
             try {
                 str.close();
                 mBackupName.delete();
@@ -99,7 +99,7 @@ public final class AtomicFile {
     
     public void failWrite(FileOutputStream str) {
         if (str != null) {
-            FileUtils.sync(str);
+            FileUtil.sync(str);
             try {
                 str.close();
                 mBaseName.delete();
@@ -121,7 +121,7 @@ public final class AtomicFile {
     public void truncate() throws IOException {
         try {
             FileOutputStream fos = new FileOutputStream(mBaseName);
-            FileUtils.sync(fos);
+            FileUtil.sync(fos);
             fos.close();
         } catch (FileNotFoundException e) {
             throw new IOException("Couldn't append " + mBaseName);
