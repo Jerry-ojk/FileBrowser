@@ -2,7 +2,7 @@ package jerry.filebrowser.file;
 
 import java.util.ArrayList;
 
-public class Select {
+public class SelectHelper {
 
     private ArrayList<BaseFile> fileList;
     private boolean[] selectArray;

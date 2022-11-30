@@ -20,7 +20,7 @@ object SettingManager {
     val FTP_DOWNLOAD_DIR = "$CONFIG_ROOT/FTP"
 
     @JvmField
-    var SETTING_DATA: SettingData? = null
+    var SETTING_DATA: SettingData = SettingData()
 
     @JvmField
     var FTP_SETTING_DATA: FTPSettingData? = null
@@ -43,25 +43,22 @@ object SettingManager {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
+                return false
             }
         }
-        if (SETTING_DATA == null) {
-            SETTING_DATA = SettingData()
-            return false
-        }
-        FileSetting.OPTION = SETTING_DATA!!.option
-        if (SETTING_DATA!!.apiMode in 1..3) {
-            FileSetting.API_MODE = SETTING_DATA!!.apiMode
+        FileSetting.OPTION = SETTING_DATA.option
+        if (SETTING_DATA.apiMode in 1..3) {
+            FileSetting.API_MODE = SETTING_DATA.apiMode
         }
         return true
     }
 
     @JvmStatic
     fun save(list: ArrayList<ExpandView>?) {
-        SETTING_DATA!!.option = FileSetting.OPTION
-        SETTING_DATA!!.apiMode = FileSetting.API_MODE
+        SETTING_DATA.option = FileSetting.OPTION
+        SETTING_DATA.apiMode = FileSetting.API_MODE
         if (list != null) {
-            getDrawerSettings(list, SETTING_DATA!!.triggerList)
+            getDrawerSettings(list, SETTING_DATA.triggerList)
         }
         saveJson(SETTING_PATH, SETTING_DATA)
     }

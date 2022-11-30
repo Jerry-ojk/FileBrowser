@@ -37,7 +37,7 @@ import jerry.filebrowser.dialog.OpenWayDialog;
 import jerry.filebrowser.file.BaseFile;
 import jerry.filebrowser.file.Clipboard;
 import jerry.filebrowser.file.FileType;
-import jerry.filebrowser.file.Select;
+import jerry.filebrowser.file.SelectHelper;
 import jerry.filebrowser.file.UnixFile;
 import jerry.filebrowser.image.ImageLoadTask;
 import jerry.filebrowser.image.ImageManager;
@@ -71,7 +71,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
 
     // data
     public ArrayList<BaseFile> fileList;
-    private final Select select = new Select();
+    private final SelectHelper selectHelper = new SelectHelper();
 
     // view
     private final RecyclerView recyclerView;
@@ -177,26 +177,26 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
                         break;
                     case 10:// 多选
                         intoMultipleSelectMode();
-                        select.add(position);
+                        selectHelper.add(position);
                         notifyItemChanged(position, NOTIFY_SELECT_CHANGE);
                         break;
                 }
             } else {
                 switch (id) {//长按菜单
                     case 1://复制
-                        Clipboard.copy(FileSetting.getCurrentPath(), select.getSelectList());
+                        Clipboard.copy(FileSetting.getCurrentPath(), selectHelper.getSelectList());
                         activity.onPerformCopy();
                         break;
                     case 2://剪切
-                        Clipboard.cut(FileSetting.getCurrentPath(), select.getSelectList());
+                        Clipboard.cut(FileSetting.getCurrentPath(), selectHelper.getSelectList());
                         activity.onPerformCopy();
                         break;
                     case 4://删除
-                        ArrayList<BaseFile> list = select.getSelectList();
+                        ArrayList<BaseFile> list = selectHelper.getSelectList();
                         if (list.size() == 1) {
                             dialogManager.showDeleteDialog(list.get(0));
                         } else if (list.size() > 1) {
-                            dialogManager.showDeleteDialog(select.getSelectList());
+                            dialogManager.showDeleteDialog(selectHelper.getSelectList());
                         }
                         break;
                     case 7://属性
@@ -239,17 +239,17 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                 switch (item.getItemId()) {
                     case 1: // 全选
-                        if (select.isSelectedAll()) {
-                            select.clearSelect();
+                        if (selectHelper.isSelectedAll()) {
+                            selectHelper.clearSelect();
                         } else {
-                            select.selectAll();
+                            selectHelper.selectAll();
                         }
                         notifyDataSetChanged();
-                        actionMode.setSubtitle("选中数：" + select.getSelectCount());
+                        actionMode.setSubtitle("选中数：" + selectHelper.getSelectCount());
                         break;
                     case 2: // 反选
-                        select.selectReverse();
-                        actionMode.setSubtitle("选中数：" + select.getSelectCount());
+                        selectHelper.selectReverse();
+                        actionMode.setSubtitle("选中数：" + selectHelper.getSelectCount());
                         notifyDataSetChanged();
                         break;
                     // case 3:
@@ -291,7 +291,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
                     //holder.itemView.setBackground(selectedColor);
                     // holder.itemView.setBackground(drawable.mutate());
                     // holder.itemView.setBackground(drawable);
-                    holder.itemView.setSelected(isMultipleSelectMode && select.isSelect(position));
+                    holder.itemView.setSelected(isMultipleSelectMode && selectHelper.isSelect(position));
                 }
             }
         }
@@ -326,7 +326,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         if (!isImgType) {
             itemView.setIconPaddingToDefault();
         }
-        holder.itemView.setSelected(isMultipleSelectMode && select.isSelect(position));
+        holder.itemView.setSelected(isMultipleSelectMode && selectHelper.isSelect(position));
     }
 
     @Override
@@ -349,18 +349,19 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         final int position = recyclerView.getChildAdapterPosition(view);
         if (position == RecyclerView.NO_POSITION) return;
         if (isMultipleSelectMode) {
-            if (select.isSelect(position)) {
-                select.remove(position);
+            if (selectHelper.isSelect(position)) {
+                selectHelper.remove(position);
                 notifyItemChanged(position, NOTIFY_SELECT_CHANGE);
-                if (select.getSelectCount() == 0) {
+                if (selectHelper.getSelectCount() == 0) {
                     quitMultipleSelectMode();
                 }
             } else {
-                select.add(position);
+                selectHelper.add(position);
                 notifyItemChanged(position, NOTIFY_SELECT_CHANGE);
             }
             // 再次判断是否在多选模式中
-            if (isMultipleSelectMode) actionMode.setSubtitle("选中数：" + select.getSelectCount());
+            if (isMultipleSelectMode)
+                actionMode.setSubtitle("选中数：" + selectHelper.getSelectCount());
         } else {
             final BaseFile file = fileList.get(position);
             if (!file.isExist()) {
@@ -415,7 +416,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         if (isAnimator || isLoading) return false;
         final int pos = recyclerView.getChildAdapterPosition(view);
         if (isMultipleSelectMode) {
-            if (!select.isSelect(pos)) return false;
+            if (!selectHelper.isSelect(pos)) return false;
             final Menu menu = popupMenu.getMenu();
             menu.findItem(3).setVisible(false);// 重命名
             menu.findItem(7).setVisible(false);// 属性
@@ -576,17 +577,18 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
     private void toParentDirectory() {
         final String currentPath = FileSetting.getCurrentPath();
         if (FileSetting.DEFAULT_USER_ROOT.equals(currentPath)) {
-            activity.showToast("已到达根目录");
             return;
         }
         String parent = PathUtil.getPathParent(currentPath);
         onNavDirectory(parent, TYPE_TO_PARENT);
     }
 
+    // 是否在多选模式
     public boolean isMultipleSelectMode() {
         return isMultipleSelectMode;
     }
 
+    // 进入多选模式
     public void intoMultipleSelectMode() {
         if (!isMultipleSelectMode) {
             isMultipleSelectMode = true;
@@ -594,19 +596,20 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
             actionMode = activity.startSupportActionMode(callback);
             if (actionMode == null) return;
 
-            select.onIntoMultipleSelectMode(fileList);
+            selectHelper.onIntoMultipleSelectMode(fileList);
 
             actionMode.setTitle("多选模式");
-            actionMode.setSubtitle("选中数：" + select.getSelectCount());
+            actionMode.setSubtitle("选中数：" + selectHelper.getSelectCount());
             activity.onIntoMultipleSelectMode();
         }
     }
 
+    // 退出多选模式
     public void quitMultipleSelectMode() {
         if (isMultipleSelectMode) {
             isMultipleSelectMode = false;
 
-            select.onQuitMultipleSelectMode();
+            selectHelper.onQuitMultipleSelectMode();
             activity.onQuitMultipleSelectMode();
 
             if (actionMode != null) actionMode.finish();
@@ -614,6 +617,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         }
     }
 
+    // 刷新
     public void refresh() {
         if (isMultipleSelectMode) {
             quitMultipleSelectMode();
@@ -621,6 +625,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         onNavDirectory(FileSetting.getCurrentPath(), TYPE_REFRESH);
     }
 
+    // 返回事件
     public boolean onBackKey() {
         if (isMultipleSelectMode) {
             quitMultipleSelectMode();
@@ -641,7 +646,9 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
     }
 
     public void switchRoot(String path) {
-        quitMultipleSelectMode();
+        if (isMultipleSelectMode) {
+            quitMultipleSelectMode();
+        }
         FileSetting.setCurrentPath(path);
         FileSetting.DEFAULT_USER_ROOT = path;
         onNavDirectory(path, TYPE_JUMP);

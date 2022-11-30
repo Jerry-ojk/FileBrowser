@@ -61,7 +61,8 @@ public class TypeUtil {
         icon_file = ContextCompat.getDrawable(context, R.drawable.ic_type_file);
         icon_folder = ContextCompat.getDrawable(context, R.drawable.ic_type_folder);
         Drawable icon_txt = ContextCompat.getDrawable(context, R.drawable.ic_type_txt1);
-        Drawable icon_code = ContextCompat.getDrawable(context, R.drawable.ic_type_code2);
+        // Drawable icon_code = ContextCompat.getDrawable(context, R.drawable.ic_type_code2);
+        Drawable icon_code = ContextCompat.getDrawable(context, R.drawable.ic_code);
         Drawable icon_pdf = ContextCompat.getDrawable(context, R.drawable.ic_type_pdf3);
         Drawable icon_ttf = ContextCompat.getDrawable(context, R.drawable.ic_type_ttf);
         Drawable icon_image = ContextCompat.getDrawable(context, R.drawable.ic_type_image);

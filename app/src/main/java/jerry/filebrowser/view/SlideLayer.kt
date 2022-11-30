@@ -56,12 +56,12 @@ class SlideLayer @JvmOverloads constructor(
 
     override fun onFinishInflate() {
         super.onFinishInflate()
-//        if (childCount >= 1) {
-//            setContentView(getChildAt(0))
-//        }
-//        if (childCount >= 2) {
-//            setSlideView(getChildAt(1))
-//        }
+        if (childCount >= 1) {
+            contentView = getChildAt(0)
+        }
+        if (childCount >= 2) {
+            slideView = getChildAt(1)
+        }
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

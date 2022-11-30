@@ -15,7 +15,7 @@ public abstract class BaseDialog extends AppCompatDialog {
         setContentView(getLayoutId());
         WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
         Point point = new Point();
-        ((AppCompatActivity) context).getWindowManager().getDefaultDisplay().getSize(point);
+        ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getSize(point);
         layoutParams.width = (int) (point.x * 0.9f);
     }
 

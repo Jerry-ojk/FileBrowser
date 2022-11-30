@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import jerry.filebrowser.R;
 import jerry.filebrowser.file.UnixFile;
@@ -46,15 +47,11 @@ public class FilePermissionDialog extends BaseDialog {
     protected BaseFile file;
 
     private boolean isMask = false;
-    protected ToastInterface toastInterface;
     protected PermissionChangeCallback permissionChangeCallback;
 
 
     public FilePermissionDialog(Context context) {
         super(context);
-        if (context instanceof ToastInterface) {
-            toastInterface = (ToastInterface) context;
-        }
 
         tv_owner_mode = findViewById(R.id.tv_owner_mode);
         tv_group_mode = findViewById(R.id.tv_group_mode);
@@ -200,7 +197,6 @@ public class FilePermissionDialog extends BaseDialog {
         return permissions;
     }
 
-
     public void refresh(int permission) {
         owner_mode = 0;
         group_mode = 0;
@@ -231,27 +227,34 @@ public class FilePermissionDialog extends BaseDialog {
 
     public void onSureClick(View view) {
         final int permission = buildPermissions();
-        if (permission != oldPermission) {
-            StructStat stat = null;
-            try {
-                Os.chmod(file.getAbsPath(), permission);
-                stat = Os.stat(file.getAbsPath());
-            } catch (ErrnoException e) {
-                e.printStackTrace();
-            }
-            if (stat == null) {
-                toastInterface.showToast("修改失败");
-                return;
-            }
-            // 和原来不一样就是成功了
-            if ((stat.st_mode & UnixFile.MASK_SETID_AND_PERMISSION) != oldPermission) {
-                toastInterface.showToast("修改成功");
-                permissionChangeCallback.onPermissionChange(stat.st_mode & UnixFile.MASK_SETID_AND_PERMISSION);
-                dismiss();
-            } else {
-                toastInterface.showToast("修改失败");
-            }
+        if (permission == oldPermission) {
+            dismiss();
+            return;
         }
+        StructStat stat = null;
+        try {
+            Os.chmod(file.getAbsPath(), permission);
+            stat = Os.stat(file.getAbsPath());
+        } catch (ErrnoException e) {
+            e.printStackTrace();
+        }
+        if (stat == null) {
+            showToast("修改失败");
+            return;
+        }
+        // 和原来不一样就是成功了
+        int a = UnixFile.MASK_SETID_AND_PERMISSION;
+        if ((stat.st_mode & a) != oldPermission) {
+            showToast("修改成功");
+            permissionChangeCallback.onPermissionChange(stat.st_mode & UnixFile.MASK_SETID_AND_PERMISSION);
+            dismiss();
+        } else {
+            showToast("修改失败");
+        }
+    }
+
+    protected void showToast(String msg) {
+        Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
     }
 
     public static interface PermissionChangeCallback {

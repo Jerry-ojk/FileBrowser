@@ -242,31 +242,19 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <jerry.filebrowser.view.SlideLayer
+                    <jerry.filebrowser.view.TagView
+                        android:id="@+id/tag_clear_null"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <jerry.filebrowser.view.TagView
-                            android:id="@+id/tag_clear_null"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            app:icon="@drawable/ic_delete_dark"
-                            app:message="删除当前目录中的空文件夹"
-                            app:title="清理空文件夹" />
-
-                        <TextView
-                            android:layout_width="80dp"
-                            android:layout_height="match_parent"
-                            android:background="@color/error"
-                            android:gravity="center"
-                            android:text="删除" />
-                    </jerry.filebrowser.view.SlideLayer>
+                        android:layout_height="wrap_content"
+                        app:icon="@drawable/ic_delete_dark"
+                        app:message="删除当前目录中的空文件夹"
+                        app:title="清理空文件夹" />
 
                     <jerry.filebrowser.view.TagView
                         android:id="@+id/tag_dart_mode"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:icon="@drawable/ic_delete_dark"
+                        app:icon="@drawable/ic_action_convert"
                         app:message="暗黑/白天主题切换"
                         app:title="主题切换" />
 

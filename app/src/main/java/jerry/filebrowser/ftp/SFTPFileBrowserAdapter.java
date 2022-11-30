@@ -26,8 +26,7 @@ import jerry.filebrowser.R;
 import jerry.filebrowser.util.Util;
 import jerry.filebrowser.adapter.FileBrowserAdapter;
 import jerry.filebrowser.adapter.LruCache;
-import jerry.filebrowser.adapter.PathNavAdapter;
-import jerry.filebrowser.file.Select;
+import jerry.filebrowser.file.SelectHelper;
 import jerry.filebrowser.dialog.DataPopupMenu;
 import jerry.filebrowser.file.BaseFile;
 import jerry.filebrowser.file.SFTPAttrs;
@@ -54,7 +53,7 @@ public class SFTPFileBrowserAdapter extends RecyclerView.Adapter<SFTPFileBrowser
     private static final int TYPE_RELOAD = 3;
     private SFTPActivity activity;
     // private DialogManager dialogManager;
-    private Select select;
+    private SelectHelper selectHelper;
 
     //view
     private RecyclerView recyclerView;
@@ -94,7 +93,7 @@ public class SFTPFileBrowserAdapter extends RecyclerView.Adapter<SFTPFileBrowser
     public SFTPFileBrowserAdapter(SFTPActivity activity, String root, RecyclerView recyclerView) {
         this.activity = activity;
         this.recyclerView = recyclerView;
-        select = new Select();
+        selectHelper = new SelectHelper();
         layoutManager = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(this);
@@ -388,7 +387,7 @@ public class SFTPFileBrowserAdapter extends RecyclerView.Adapter<SFTPFileBrowser
     }
 
     public void onFileDelete() {
-        select.clear();
+        selectHelper.clear();
     }
 
 

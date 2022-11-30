@@ -3,6 +3,7 @@ package jerry.filebrowser.ftp.dialog;
 import android.content.Context;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import jerry.filebrowser.util.Util;
 import jerry.filebrowser.dialog.FilePermissionDialog;
@@ -29,17 +30,17 @@ public class FTPPermissionDialog extends FilePermissionDialog {
     @Override
     public void onSureClick(View view) {
         final int permission = buildPermissions();
-        Log.i("666", "oldPermission=" + Util.permission(oldPermission));
-        Log.i("666", "permission=" + Util.permission(permission));
+        Log.d("FTPPermissionDialog", "oldPermission=" + Util.permission(oldPermission));
+        Log.d("FTPPermissionDialog", "permission=" + Util.permission(permission));
         if (oldPermission != permission) {
             task = new SFTPActionTask(file.getAbsPath(), SSHConnectManager.getChannelSftp(), new FTPActionCallback() {
                 @Override
                 public void onResult(SFTPActionResult result) {
                     if (result.code == SSHResult.CODE_SUCCESS) {
-                        toastInterface.showToast("修改成功");
+                        showToast("修改成功");
                         dismiss();
                     } else {
-                        toastInterface.showToast("修改失败");
+                        showToast("修改失败");
                     }
                 }
             });

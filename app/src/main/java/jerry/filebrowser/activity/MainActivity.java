@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -355,6 +356,7 @@ public class MainActivity extends AppCompatActivity implements ToastInterface, P
                 break;
             case R.id.action_setting:
                 startActivity(new Intent(this, SettingActivity.class));
+                break;
 //            case R.id.action_upload:
 //                new FileSelectDialog(this, new FileSelectCallback() {
 //                    @Override
@@ -446,9 +448,6 @@ public class MainActivity extends AppCompatActivity implements ToastInterface, P
     }
 
     private void collectionPath(String path) {
-        if (SETTING_DATA.colList == null) {
-            SETTING_DATA.colList = new ArrayList<>();
-        }
         if (SETTING_DATA.colList.contains(path)) {
             showToast("已经收藏过该目录了");
             return;
@@ -533,7 +532,6 @@ public class MainActivity extends AppCompatActivity implements ToastInterface, P
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-//        showToast("内存不足，自动清空缓存");
         if (dialogManager != null) dialogManager.clear();
         ImageManager.clear();
     }
@@ -546,7 +544,7 @@ public class MainActivity extends AppCompatActivity implements ToastInterface, P
         }
         final List<Boolean> triggerList = data.triggerList;
         int len = expendViewList.size();
-        if (triggerList != null && triggerList.size() == len) {
+        if (triggerList.size() == len) {
             for (int i = 0; i < len; i++) {
                 expendViewList.get(i).setOpen(triggerList.get(i));
             }
@@ -576,6 +574,9 @@ public class MainActivity extends AppCompatActivity implements ToastInterface, P
         filter = new IntentFilter();
         filter.addAction(Intent.ACTION_MEDIA_MOUNTED);
         filter.addAction(Intent.ACTION_MEDIA_REMOVED);
+        filter.addAction(Intent.ACTION_MEDIA_EJECT);
+        filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
+        filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
         filter.addDataScheme("file");
         registerReceiver(otgReceiver, filter, Manifest.permission.READ_EXTERNAL_STORAGE, null);
     }
@@ -627,7 +628,8 @@ public class MainActivity extends AppCompatActivity implements ToastInterface, P
     private class OTGReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            showToast("U盘事件");
+            showToast("U盘事件: " + intent.toString());
+            Log.d("OTGReceiver", intent.toString());
             refreshFileRoot();
         }
     }
