@@ -11,10 +11,10 @@ import jerry.filebrowser.file.UnixFile;
 
 
 public class Util {
-    public static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
-    public static Date date = new Date();
-    public static DecimalFormat decimalFormat = new DecimalFormat("0.00");
-//    public static StringBuilder builder = new StringBuilder();
+    private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
+    private static final Date date = new Date();
+    private static final DecimalFormat decimalFormat = new DecimalFormat("0.00");
+    private static StringBuilder builder = new StringBuilder();
 
 
     public static String size(long size) {
@@ -38,6 +38,48 @@ public class Util {
         if (time <= 0) return "未知";
         date.setTime(time);
         return format.format(date);
+    }
+
+    public static String during(int time) {
+        if (time <= 0) return "-1";
+        int s = time % 60;
+        int d = time / (60 * 60 * 24);
+        time -= d * (60 * 60 * 24);
+        int h = time / (60 * 60);
+        time -= h * (60 * 60);
+        int m = time / 60;
+
+        builder.setLength(0);
+        if (d > 0) {
+            builder.append(d).append("天");
+        }
+        if (h >= 10) {
+            builder.append(h);
+        } else if (h > 0) {
+            builder.append('0');
+            builder.append(h);
+        } else {
+            builder.append("00");
+        }
+        builder.append(":");
+        if (m >= 10) {
+            builder.append(m);
+        } else if (m > 0) {
+            builder.append('0');
+            builder.append(m);
+        } else {
+            builder.append("00");
+        }
+        builder.append(":");
+        if (s >= 10) {
+            builder.append(s);
+        } else if (s > 0) {
+            builder.append('0');
+            builder.append(s);
+        } else {
+            builder.append("00");
+        }
+        return builder.toString();
     }
 
     /**

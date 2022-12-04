@@ -13,6 +13,9 @@
 #include <grp.h>
 #include <cerrno>
 
+#include "common.h"
+#include "video.h"
+
 using namespace std;
 
 jboolean delete_dir(const char *path, struct stat64 *bu) {
@@ -75,12 +78,13 @@ jboolean delete_dir(const char *path, struct stat64 *bu) {
 JNIEXPORT jboolean JNICALL
 deleteFile0(JNIEnv *env, jclass type, jstring path_) {
     const char *path = env->GetStringUTFChars(path_, nullptr);
+    AutoReleaseString _(env, &path_, path);
+
     struct stat64 bu = {};
 
     jboolean result = JNI_FALSE;
 
     if (lstat64(path, &bu) != 0) {
-        env->ReleaseStringUTFChars(path_, path);
         return JNI_FALSE;
     }
 
@@ -97,7 +101,6 @@ deleteFile0(JNIEnv *env, jclass type, jstring path_) {
         result = JNI_TRUE;
     }
 
-    env->ReleaseStringUTFChars(path_, path);
     return result;
 }
 
@@ -167,11 +170,12 @@ getFileType0(JNIEnv *env, jclass type, jstring path_) {
 JNIEXPORT jobject JNICALL
 getFileAttribute0(JNIEnv *env, jclass type, jstring path_) {
     const char *path = env->GetStringUTFChars(path_, nullptr);
+    AutoReleaseString _(env, &path_, path);
+
     struct stat64 bu = {};
     if (stat64(path, &bu) != 0) {
         return nullptr;
     }
-
 
     jclass classType = env->FindClass("jerry/filebrowser/file/FileAttribute");
     jmethodID conId = env->GetMethodID(classType, "<init>",
@@ -205,6 +209,8 @@ getDisplay(JNIEnv *env, jclass type) {
 JNIEXPORT jint JNICALL
 exec(JNIEnv *env, jclass type, jstring path_, jstring argv_) {
     const char *path = env->GetStringUTFChars(path_, nullptr);
+    AutoReleaseString _(env, &path_, path);
+
     //const char **argv = env->GetStringUTFChars(argv_, nullptr);
     //char *argv[] = {"-a", nullptr};
     int code = fork();
@@ -265,13 +271,15 @@ listFiles0(JNIEnv *env, jclass clazz, jstring path_, jint option) {
     clock_t start = clock();
 
     const char *path = env->GetStringUTFChars(path_, nullptr);
+    AutoReleaseString _(env, &path_, path);
+
     DIR *dir = opendir(path);
     if (dir == nullptr || chdir(path) != 0) {
         __android_log_print(ANDROID_LOG_ERROR, "listFile(path)", "打开%s失败", path);
         return nullptr;
     }
-    jclass file_class = env->FindClass("jerry/filebrowser/file/UnixFile");
-    jmethodID conId = env->GetMethodID(file_class, "<init>", "(Ljava/lang/String;JJI)V");
+    jclass fileClass = env->FindClass("jerry/filebrowser/file/UnixFile");
+    jmethodID conId = env->GetMethodID(fileClass, "<init>", "(Ljava/lang/String;JJI)V");
 
     vector<dirent64> dirs;
     vector<dirent64> files;
@@ -297,7 +305,7 @@ listFiles0(JNIEnv *env, jclass clazz, jstring path_, jint option) {
     size_t len_dir = dirs.size();
     size_t len_file = files.size();
 
-    jobjectArray fileArray = env->NewObjectArray(jsize(len_dir + len_file), file_class, nullptr);
+    jobjectArray fileArray = env->NewObjectArray(jsize(len_dir + len_file), fileClass, nullptr);
     struct stat64 bu = {};
 
     if (len_dir > 0) {
@@ -309,7 +317,7 @@ listFiles0(JNIEnv *env, jclass clazz, jstring path_, jint option) {
             }
             jstring str = env->NewStringUTF(dirs[i].d_name);
             jlong time = (jlong) (bu.st_mtim.tv_sec) * 1000;
-            jobject item = env->NewObject(file_class, conId,
+            jobject item = env->NewObject(fileClass, conId,
                                           str,// name(String)
                                           bu.st_size,// length(long)
                                           time,// time(long)
@@ -327,14 +335,14 @@ listFiles0(JNIEnv *env, jclass clazz, jstring path_, jint option) {
             jobject item;
             if (stat64(files[i].d_name, &bu) == 0) {
                 jlong time = (jlong) (bu.st_mtim.tv_sec) * 1000;
-                item = env->NewObject(file_class, conId,
+                item = env->NewObject(fileClass, conId,
                                       str, // name(String)
                                       bu.st_size, // length(long)
                                       time, // time(long)
                                       files[i].d_type);//type(int)
             } else {
                 __android_log_print(ANDROID_LOG_ERROR, "listFile", "获取文件信息错误%s", files[i].d_name);
-                item = env->NewObject(file_class, conId,
+                item = env->NewObject(fileClass, conId,
                                       str, // name(String)
                                       -1l, // length(long)
                                       -1l, // time(long)
@@ -345,8 +353,6 @@ listFiles0(JNIEnv *env, jclass clazz, jstring path_, jint option) {
             env->DeleteLocalRef(str);
         }
     }
-
-
 
     //__android_log_print(ANDROID_LOG_INFO, "listFile(path)", "排序耗时%lfms", seconds);
     //start = clock();
@@ -364,12 +370,13 @@ listFiles0(JNIEnv *env, jclass clazz, jstring path_, jint option) {
 JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     JNIEnv *env = nullptr;
     if (vm->GetEnv((void **) &env, JNI_VERSION_1_6) != JNI_OK) {
-        __android_log_print(ANDROID_LOG_INFO, "linux-tool", "onLoad失败");
+        __android_log_print(ANDROID_LOG_ERROR, "libfile", "onLoad失败");
         return JNI_ERR;
     }
-    jclass UnixFile = env->FindClass("jerry/filebrowser/util/NativeUtil");
+    jclass nativeClazz = env->FindClass("jerry/filebrowser/util/NativeUtil");
+    jclass videoClazz = env->FindClass("jerry/filebrowser/util/VideoUtil");
 
-    JNINativeMethod methods[] = {
+    JNINativeMethod nativeMethods[] = {
             {"CreateFile",       "(Ljava/lang/String;)Z",                                      reinterpret_cast<void *>(createFile0)},
             {"CreateDir",        "(Ljava/lang/String;)Z",                                      reinterpret_cast<void *>(createDirectory0)},
             {"ListFiles",        "(Ljava/lang/String;I)[Ljerry/filebrowser/file/UnixFile;",    reinterpret_cast<void *>(listFiles0)},
@@ -378,11 +385,21 @@ JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
             {"DeleteFile",       "(Ljava/lang/String;)Z",                                      reinterpret_cast<void *>(deleteFile0)},
             {"GetFileType",      "(Ljava/lang/String;)I",                                      reinterpret_cast<void *>(getFileType0)},
             {"GetFileAttribute", "(Ljava/lang/String;)Ljerry/filebrowser/file/FileAttribute;", reinterpret_cast<void *>(getFileAttribute0)},
-            {"GetDisplay",       "()I",                                                        reinterpret_cast<void *>(getDisplay)}
+            {"GetDisplay",       "()I",                                                        reinterpret_cast<void *>(getDisplay)},
     };
 
-    if (env->RegisterNatives(UnixFile, methods, 9) != JNI_OK) {
-        __android_log_print(ANDROID_LOG_ERROR, "JNI_OnLoad", "动态注册失败");
+    JNINativeMethod videoMethods[] = {
+            {"getFFmpegVersion", "()[I", reinterpret_cast<void *>(getFFmpegVersion)},
+            {"getVideoInfo", "(Ljava/lang/String;)Ljerry/filebrowser/vedio/VideoInfo;", reinterpret_cast<void *>(getVideoInfo)},
+    };
+
+    if (env->RegisterNatives(nativeClazz, nativeMethods,
+                             sizeof(nativeMethods) / sizeof(nativeMethods[0])) != JNI_OK) {
+        __android_log_print(ANDROID_LOG_ERROR, "JNI_OnLoad", "NativeUtil动态注册失败");
+    }
+    if (env->RegisterNatives(videoClazz, videoMethods,
+                             sizeof(videoMethods) / sizeof(videoMethods[0])) != JNI_OK) {
+        __android_log_print(ANDROID_LOG_ERROR, "JNI_OnLoad", "VideoUtil动态注册失败");
     }
 
     return JNI_VERSION_1_6;

@@ -50,9 +50,4 @@ public class IconUtil {
         context.getTheme().resolveAttribute(tintAttrId, outValue, true);
         return applyTintColor(context, drawableId, outValue.resourceId);
     }
-
-//    public static Drawable getIcon(String suffix, int len) {
-//        suffix.getChars();
-//
-//    }
 }

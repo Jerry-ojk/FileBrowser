@@ -1,5 +1,6 @@
 package jerry.filebrowser.adapter;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -20,17 +22,17 @@ import jerry.filebrowser.file.UnixFile;
 public class FileSearchListAdapter extends RecyclerView.Adapter<FileSearchListAdapter.ViewHolder> {
     private ArrayList<BaseFile> list;
 
-    private MainActivity activity;
+    private Context context;
     //view
     private RecyclerView recyclerView;
 
     private Drawable icon_folder;
     private View.OnClickListener listener;
 
-    public FileSearchListAdapter(MainActivity activity, RecyclerView recyclerView) {
-        this.activity = activity;
+    public FileSearchListAdapter(Context context, RecyclerView recyclerView) {
+        this.context = context;
         this.recyclerView = recyclerView;
-        icon_folder = activity.getDrawable(R.drawable.ic_type_folder);
+        icon_folder = ContextCompat.getDrawable(context, R.drawable.ic_type_folder);
     }
 
     public void setItemClickListener(View.OnClickListener listener) {

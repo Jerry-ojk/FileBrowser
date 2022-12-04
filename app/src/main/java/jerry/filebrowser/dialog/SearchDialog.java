@@ -5,6 +5,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -21,7 +22,6 @@ import jerry.filebrowser.task.FileListResult;
 import jerry.filebrowser.task.FileSearchTask;
 
 public class SearchDialog extends BaseDialog implements FileListCallback {
-    private MainActivity activity;
     private TextInputLayout til_path;
     private TextInputLayout til_name;
     private EditText ed_path;
@@ -37,8 +37,7 @@ public class SearchDialog extends BaseDialog implements FileListCallback {
     public SearchDialog(Context context) {
         super(context);
         manager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-
-        activity = (MainActivity) context;
+        
         til_path = findViewById(R.id.til_path);
         til_name = findViewById(R.id.til_name);
         ed_path = findViewById(R.id.ed_path);
@@ -88,9 +87,9 @@ public class SearchDialog extends BaseDialog implements FileListCallback {
         bu_sure.setEnabled(true);
         final ArrayList<BaseFile> list = result.list;
         if (list == null || list.isEmpty()) {
-            activity.showToast("搜索结果为空");
+            Toast.makeText(getContext(), "搜索结果为空", Toast.LENGTH_SHORT).show();
         } else {
-            new SearchResultDialog(activity).show(list);
+            new SearchResultDialog(getContext()).show(list);
             dismiss();
         }
     }

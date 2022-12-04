@@ -17,7 +17,6 @@ import jerry.filebrowser.file.BaseFile;
 import jerry.filebrowser.file.UnixFile;
 
 public class SearchResultDialog extends BaseDialog implements View.OnClickListener {
-    private MainActivity activity;
     private Button bu_sure;
     private ArrayList<BaseFile> list;
     private RecyclerView recyclerView;
@@ -25,13 +24,12 @@ public class SearchResultDialog extends BaseDialog implements View.OnClickListen
 
     public SearchResultDialog(@NonNull Context context) {
         super(context);
-        activity = (MainActivity) context;
         recyclerView = findViewById(R.id.dialog_rev);
         recyclerView.setHasFixedSize(true);
-        adapter = new FileSearchListAdapter(activity, recyclerView);
+        adapter = new FileSearchListAdapter(getContext(), recyclerView);
         adapter.setItemClickListener(this);
         recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(activity, RecyclerView.VERTICAL, false));
+        recyclerView.setLayoutManager(new LinearLayoutManager(context, RecyclerView.VERTICAL, false));
 
 
         findViewById(R.id.bu_cancel).setOnClickListener(v -> dismiss());
@@ -58,9 +56,9 @@ public class SearchResultDialog extends BaseDialog implements View.OnClickListen
         if (position == RecyclerView.NO_POSITION) return;
         final BaseFile file = list.get(position);
         if (file.isDir()) {
-            MainActivity.sendNavigation(activity, file.getAbsPath());
+            MainActivity.sendNavigation(getContext(), file.getAbsPath());
         } else {
-            MainActivity.sendNavigation(activity, file.getParentPath());
+            MainActivity.sendNavigation(getContext(), file.getParentPath());
         }
         dismiss();
     }

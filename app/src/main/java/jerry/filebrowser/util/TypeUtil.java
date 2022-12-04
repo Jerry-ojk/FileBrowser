@@ -122,6 +122,21 @@ public class TypeUtil {
         TYPE_TRIE.put("zip", new FileType(FileType.TYPE_UNKNOWN, icon_compress));
     }
 
+    public int getType(String name) {
+        final int dot = name.lastIndexOf('.') + 1;
+        if (dot != 0) {
+            final int extensionLen = name.length() - dot;
+            if (extensionLen > 0 && extensionLen <= 4) {
+                String extension = name.substring(dot).toLowerCase();
+                FileType fileType = TYPE_TRIE.get(extension);
+                if (fileType != null) {
+                    return fileType.type;
+                }
+            }
+        }
+        return FileType.TYPE_UNKNOWN;
+    }
+
     public int fillIcon(ImageView imageView, String name) {
         final int dot = name.lastIndexOf('.') + 1;
         if (dot != 0) {

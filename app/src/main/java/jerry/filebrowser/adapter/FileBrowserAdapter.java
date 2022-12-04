@@ -34,6 +34,7 @@ import jerry.filebrowser.app.AppUtil;
 import jerry.filebrowser.dialog.DataPopupMenu;
 import jerry.filebrowser.dialog.DialogManager;
 import jerry.filebrowser.dialog.OpenWayDialog;
+import jerry.filebrowser.dialog.VideoAttributeDialog;
 import jerry.filebrowser.file.BaseFile;
 import jerry.filebrowser.file.Clipboard;
 import jerry.filebrowser.file.FileType;
@@ -162,7 +163,11 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
                     case 6:
                         break;
                     case 7:// 属性
-                        dialogManager.showAttributeDialog(file);
+                        if (typeUtil.getType(file.name) == FileType.TYPE_VIDEO) {
+                            new VideoAttributeDialog(activity).show(file);
+                        } else {
+                            dialogManager.showAttributeDialog(file);
+                        }
                         break;
                     case 8:// 分享
                         final Intent intent = new Intent(Intent.ACTION_SEND);

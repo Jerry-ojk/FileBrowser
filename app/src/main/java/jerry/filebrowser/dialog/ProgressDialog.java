@@ -9,10 +9,10 @@ import jerry.filebrowser.R;
 import jerry.filebrowser.view.LineProcess1;
 
 public class ProgressDialog extends BaseDialog {
-    private TextView tv_title;
-    private TextView tv_message;
-    private TextView tv_sub;
-    private LineProcess1 lineProcess;
+    private final TextView tv_title;
+    private final TextView tv_message;
+    private final TextView tv_sub;
+    private final LineProcess1 lineProcess;
 
     public ProgressDialog(@NonNull Context context) {
         super(context);

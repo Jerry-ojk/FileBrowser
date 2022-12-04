@@ -17,6 +17,7 @@ import jerry.filebrowser.activity.MainActivity;
 
 public class FileAttributeDialog extends BaseDialog {
     private FileAttribute attribute;
+    private BaseFile file;
     private final TextView tv_name;
     private final TextView tv_path;
     private final TextView tv_type;
@@ -27,11 +28,9 @@ public class FileAttributeDialog extends BaseDialog {
     private final TextView tv_atime;
     private final TextView tv_mtime;
     private final TextView tv_ctime;
-    private BaseFile file;
 
     public FileAttributeDialog(@NonNull Context context) {
         super(context);
-        setContentView(R.layout.dialog_attribute);
         tv_name = findViewById(R.id.dialog_name_content);
         tv_path = findViewById(R.id.dialog_path_content);
         tv_type = findViewById(R.id.dialog_type_content);
