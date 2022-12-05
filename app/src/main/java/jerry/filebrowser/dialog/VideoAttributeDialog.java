@@ -27,6 +27,7 @@ public class VideoAttributeDialog extends BaseDialog {
     private final TextView tv_mtime;
     private final TextView tv_resolution;
     private final TextView tv_fps;
+    private final TextView tv_rate;
     private final TextView tv_coding;
     private final TextView tv_during;
 
@@ -39,6 +40,7 @@ public class VideoAttributeDialog extends BaseDialog {
         tv_mtime = findViewById(R.id.dialog_mtime_content);
         tv_resolution = findViewById(R.id.dialog_resolution_content);
         tv_fps = findViewById(R.id.dialog_fps_content);
+        tv_rate = findViewById(R.id.dialog_rate_content);
         tv_coding = findViewById(R.id.dialog_coding_content);
         tv_during = findViewById(R.id.dialog_during_content);
     }
@@ -70,19 +72,21 @@ public class VideoAttributeDialog extends BaseDialog {
             tv_name.setText(attribute.name);
             tv_path.setText(attribute.path);
             tv_type.setText(Util.type(attribute.mode));
-            tv_size.setText(builder.append(Util.size(attribute.size)).append('(').append(attribute.size).append(')').toString());
-            builder.setLength(0);
+            tv_size.setText(Util.size(attribute.size));
             tv_mtime.setText(Util.time(attribute.ctime));
         }
         if (videoInfo == null) return;
         builder.setLength(0);
         builder.append(videoInfo.height).append(" X ").append(videoInfo.width);
-        tv_resolution.setText(builder.toString());
+        tv_resolution.setText(builder);
         builder.setLength(0);
-        builder.append(videoInfo.fps);
-        tv_fps.setText(builder.toString());
+        builder.append(Util.float2(videoInfo.fps)).append("fps");
+        tv_fps.setText(builder);
         builder.setLength(0);
+        builder.append(Util.size(videoInfo.bitRate)).append("/s");
+        tv_rate.setText(builder);
         tv_coding.setText(videoInfo.codec);
+        builder.setLength(0);
         builder.append(videoInfo.during);
         tv_during.setText(Util.during((int) videoInfo.during));
     }

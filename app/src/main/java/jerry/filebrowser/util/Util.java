@@ -11,14 +11,15 @@ import jerry.filebrowser.file.UnixFile;
 
 
 public class Util {
-    private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
+    private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
     private static final Date date = new Date();
     private static final DecimalFormat decimalFormat = new DecimalFormat("0.00");
-    private static StringBuilder builder = new StringBuilder();
+    private static final StringBuilder builder = new StringBuilder();
 
 
+    // 字节数转String
     public static String size(long size) {
-        if (size < 0L) return "未知：（" + size + ")";
+        if (size < 0L) return "未知(" + size + "B)";
         String result;
         if (size < 1024L) {
             result = size + "B";
@@ -42,12 +43,12 @@ public class Util {
 
     public static String during(int time) {
         if (time <= 0) return "-1";
-        int s = time % 60;
         int d = time / (60 * 60 * 24);
-        time -= d * (60 * 60 * 24);
+        time %= (60 * 60 * 24);
         int h = time / (60 * 60);
-        time -= h * (60 * 60);
+        time %= (60 * 60);
         int m = time / 60;
+        int s = time % 60;
 
         builder.setLength(0);
         if (d > 0) {
@@ -80,6 +81,10 @@ public class Util {
             builder.append("00");
         }
         return builder.toString();
+    }
+
+    public static String float2(float num) {
+        return decimalFormat.format(num);
     }
 
     /**

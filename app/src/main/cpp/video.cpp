@@ -1,5 +1,5 @@
 #include <jni.h>
-#include "common.h"
+#include <android/log.h>
 
 extern "C" {
 #include <libavcodec/version.h>
@@ -13,6 +13,9 @@ extern "C" {
 #include <libavformat/avformat.h>
 #include <libavcodec/avcodec.h>
 }
+
+#include "common.h"
+
 
 JNIEXPORT jintArray JNICALL
 getFFmpegVersion(JNIEnv *env, jclass) {
@@ -37,15 +40,13 @@ getVideoInfo(JNIEnv *env, jclass, jstring path_) {
     AutoReleaseString _(env, &path_, in_path);
 
     jclass videoIndoClass = env->FindClass("jerry/filebrowser/vedio/VideoInfo");
-    jmethodID conId = env->GetMethodID(videoIndoClass, "<init>", "(IIFFLjava/lang/String;)V");
+    jmethodID conId = env->GetMethodID(videoIndoClass, "<init>", "(IIFFJLjava/lang/String;)V");
 
     AVFormatContext *fmt_ctx = nullptr;
     if (avformat_open_input(&fmt_ctx, in_path, nullptr, nullptr) != 0) return nullptr;
 
     jfloat fps = -1;
     jstring codecName;
-    jint width = -1;
-    jint height = -1;
     // 单位为秒
     jfloat during = static_cast<jfloat>(fmt_ctx->duration) / AV_TIME_BASE;
 
@@ -71,21 +72,42 @@ getVideoInfo(JNIEnv *env, jclass, jstring path_) {
     codecName = env->NewStringUTF(name);
 
     const AVCodec *codec = avcodec_find_decoder(streams->codecpar->codec_id);
-    if (codec) {
-        //分配AVCodecContext空间
-        AVCodecContext *cd_ctx = avcodec_alloc_context3(codec);
-        //填充数据
-        avcodec_parameters_to_context(cd_ctx, streams->codecpar);
-        // 视频尺寸
-        width = streams->codecpar->width;
-        height = streams->codecpar->height;
-
-        avcodec_free_context(&cd_ctx);
+    if (!codec) {
+        avformat_close_input(&fmt_ctx);
+        return nullptr;
     }
 
-    jobject res = env->NewObject(videoIndoClass, conId,
-                                 width, height, during, fps, codecName);
+    //分配AVCodecContext空间
+    AVCodecContext *cd_ctx = avcodec_alloc_context3(codec);
+    //填充数据
+    if (avcodec_parameters_to_context(cd_ctx, streams->codecpar) < 0) {
+        avcodec_free_context(&cd_ctx);
+        avformat_close_input(&fmt_ctx);
+        return nullptr;
+    }
+    // 视频尺寸
+    jint width = streams->codecpar->width;
+    jint height = streams->codecpar->height;
+    jlong bit_rate = streams->codecpar->bit_rate / 8;
+//    int format = streams->codecpar->format;
 
+    avcodec_free_context(&cd_ctx);
     avformat_close_input(&fmt_ctx);
+
+    jobject res = env->NewObject(videoIndoClass, conId,
+                                 width, height, during, fps, bit_rate, codecName);
     return res;
+}
+
+void JNI_OnLoad_video(JNIEnv *env) {
+    jclass videoClazz = env->FindClass("jerry/filebrowser/util/VideoUtil");
+
+    JNINativeMethod videoMethods[] = {
+            {"getFFmpegVersion", "()[I",                                                    reinterpret_cast<void *>(getFFmpegVersion)},
+            {"getVideoInfo",     "(Ljava/lang/String;)Ljerry/filebrowser/vedio/VideoInfo;", reinterpret_cast<void *>(getVideoInfo)},
+    };
+    if (env->RegisterNatives(videoClazz, videoMethods,
+                             sizeof(videoMethods) / sizeof(videoMethods[0])) != JNI_OK) {
+        __android_log_print(ANDROID_LOG_ERROR, "JNI_OnLoad", "VideoUtil动态注册失败");
+    }
 }

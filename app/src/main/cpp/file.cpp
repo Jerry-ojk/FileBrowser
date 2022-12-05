@@ -374,7 +374,6 @@ JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
         return JNI_ERR;
     }
     jclass nativeClazz = env->FindClass("jerry/filebrowser/util/NativeUtil");
-    jclass videoClazz = env->FindClass("jerry/filebrowser/util/VideoUtil");
 
     JNINativeMethod nativeMethods[] = {
             {"CreateFile",       "(Ljava/lang/String;)Z",                                      reinterpret_cast<void *>(createFile0)},
@@ -388,19 +387,12 @@ JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
             {"GetDisplay",       "()I",                                                        reinterpret_cast<void *>(getDisplay)},
     };
 
-    JNINativeMethod videoMethods[] = {
-            {"getFFmpegVersion", "()[I", reinterpret_cast<void *>(getFFmpegVersion)},
-            {"getVideoInfo", "(Ljava/lang/String;)Ljerry/filebrowser/vedio/VideoInfo;", reinterpret_cast<void *>(getVideoInfo)},
-    };
-
     if (env->RegisterNatives(nativeClazz, nativeMethods,
                              sizeof(nativeMethods) / sizeof(nativeMethods[0])) != JNI_OK) {
         __android_log_print(ANDROID_LOG_ERROR, "JNI_OnLoad", "NativeUtil动态注册失败");
     }
-    if (env->RegisterNatives(videoClazz, videoMethods,
-                             sizeof(videoMethods) / sizeof(videoMethods[0])) != JNI_OK) {
-        __android_log_print(ANDROID_LOG_ERROR, "JNI_OnLoad", "VideoUtil动态注册失败");
-    }
+
+    JNI_OnLoad_video(env);
 
     return JNI_VERSION_1_6;
 }

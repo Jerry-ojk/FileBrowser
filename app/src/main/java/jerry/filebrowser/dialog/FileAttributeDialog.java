@@ -72,8 +72,7 @@ public class FileAttributeDialog extends BaseDialog {
             tv_name.setText(attribute.name);
             tv_path.setText(attribute.path);
             tv_type.setText(Util.type(attribute.mode));
-            StringBuilder builder = new StringBuilder();
-            tv_size.setText(builder.append(Util.size(attribute.size)).append('(').append(attribute.size).append(')').toString());
+            tv_size.setText(Util.size(attribute.size));
             if ((attribute.mode) != -1) {
                 findViewById(R.id.dialog_change_mode).setOnClickListener(v -> {
                     FilePermissionDialog dialog = new FilePermissionDialog(getContext());
@@ -87,10 +86,10 @@ public class FileAttributeDialog extends BaseDialog {
                 findViewById(R.id.dialog_change_mode).setVisibility(View.INVISIBLE);
                 tv_mode.setText("未知");
             }
+            StringBuilder builder = new StringBuilder();
+            tv_author.setText(builder.append(attribute.uid).append('-').append(attribute.uname));
             builder.setLength(0);
-            tv_author.setText(builder.append(attribute.uid).append('-').append(attribute.uname).toString());
-            builder.setLength(0);
-            tv_group.setText(builder.append(attribute.gid).append('-').append(attribute.gname).toString());
+            tv_group.setText(builder.append(attribute.gid).append('-').append(attribute.gname));
             tv_atime.setText(Util.time(attribute.atime));
             tv_mtime.setText(Util.time(attribute.mtime));
             tv_ctime.setText(Util.time(attribute.ctime));

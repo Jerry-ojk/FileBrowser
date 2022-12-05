@@ -98,6 +98,17 @@
         app:layout_constraintTop_toBottomOf="@+id/dialog_resolution" />
 
     <TextView
+        android:id="@+id/dialog_rate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="码率"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_fps" />
+
+    <TextView
         android:id="@+id/dialog_coding"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -106,7 +117,7 @@
         android:text="编码"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dialog_fps" />
+        app:layout_constraintTop_toBottomOf="@+id/dialog_rate" />
 
     <TextView
         android:id="@+id/dialog_during"
@@ -150,7 +161,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/dialog_mtime"
         app:layout_constraintTop_toTopOf="@+id/tv_path"
-        tools:text="sfdadadadd" />
+        tools:text="hhh.gif" />
 
     <TextView
         android:id="@+id/dialog_type_content"
@@ -203,7 +214,17 @@
         android:textSize="16sp"
         app:layout_constraintStart_toEndOf="@+id/dialog_mtime"
         app:layout_constraintTop_toTopOf="@+id/dialog_fps"
-        tools:text="25.5" />
+        tools:text="25.5fps" />
+
+    <TextView
+        android:id="@+id/dialog_rate_content"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:textSize="16sp"
+        app:layout_constraintStart_toEndOf="@+id/dialog_mtime"
+        app:layout_constraintTop_toTopOf="@+id/dialog_rate"
+        tools:text="1021KB/s" />
 
     <TextView
         android:id="@+id/dialog_coding_content"

@@ -1,7 +1,3 @@
-//
-// Created by Jerry on 2022/12/3.
-//
-
 #ifndef FILEBROWSER_VIDEO_H
 #define FILEBROWSER_VIDEO_H
 
@@ -12,5 +8,7 @@ getFFmpegVersion(JNIEnv *env, jclass);
 
 JNIEXPORT jobject JNICALL
 getVideoInfo(JNIEnv *env, jclass, jstring path_);
+
+void JNI_OnLoad_video(JNIEnv *env);
 
 #endif //FILEBROWSER_VIDEO_H
