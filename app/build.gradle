@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId "jerry.filebrowser"
-        minSdk 29
+        minSdk 26
         targetSdk 32
         versionCode 1
         versionName "1.0"
