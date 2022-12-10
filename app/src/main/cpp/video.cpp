@@ -39,12 +39,12 @@ getVideoInfo(JNIEnv *env, jclass, jstring path_) {
     const char *in_path = env->GetStringUTFChars(path_, nullptr);
     AutoReleaseString _(env, &path_, in_path);
 
-    jclass videoIndoClass = env->FindClass("jerry/filebrowser/vedio/VideoInfo");
+    jclass videoIndoClass = env->FindClass("jerry/filebrowser/video/VideoInfo");
     jmethodID conId = env->GetMethodID(videoIndoClass, "<init>", "(IIFFJLjava/lang/String;)V");
 
     AVFormatContext *fmt_ctx = nullptr;
     if (avformat_open_input(&fmt_ctx, in_path, nullptr, nullptr) != 0) return nullptr;
-
+//    fmt_ctx->data_codec->name
     jfloat fps = -1;
     jstring codecName;
     // 单位为秒
@@ -78,20 +78,20 @@ getVideoInfo(JNIEnv *env, jclass, jstring path_) {
     }
 
     //分配AVCodecContext空间
-    AVCodecContext *cd_ctx = avcodec_alloc_context3(codec);
+//    AVCodecContext *cd_ctx = avcodec_alloc_context3(codec);
     //填充数据
-    if (avcodec_parameters_to_context(cd_ctx, streams->codecpar) < 0) {
-        avcodec_free_context(&cd_ctx);
-        avformat_close_input(&fmt_ctx);
-        return nullptr;
-    }
+//    if (avcodec_parameters_to_context(cd_ctx, streams->codecpar) < 0) {
+//        avcodec_free_context(&cd_ctx);
+//        avformat_close_input(&fmt_ctx);
+//        return nullptr;
+//    }
     // 视频尺寸
     jint width = streams->codecpar->width;
     jint height = streams->codecpar->height;
-    jlong bit_rate = streams->codecpar->bit_rate / 8;
+    jlong bit_rate = streams->codecpar->bit_rate;
 //    int format = streams->codecpar->format;
 
-    avcodec_free_context(&cd_ctx);
+//    avcodec_free_context(&cd_ctx);
     avformat_close_input(&fmt_ctx);
 
     jobject res = env->NewObject(videoIndoClass, conId,
@@ -104,7 +104,7 @@ void JNI_OnLoad_video(JNIEnv *env) {
 
     JNINativeMethod videoMethods[] = {
             {"getFFmpegVersion", "()[I",                                                    reinterpret_cast<void *>(getFFmpegVersion)},
-            {"getVideoInfo",     "(Ljava/lang/String;)Ljerry/filebrowser/vedio/VideoInfo;", reinterpret_cast<void *>(getVideoInfo)},
+            {"getVideoInfo",     "(Ljava/lang/String;)Ljerry/filebrowser/video/VideoInfo;", reinterpret_cast<void *>(getVideoInfo)},
     };
     if (env->RegisterNatives(videoClazz, videoMethods,
                              sizeof(videoMethods) / sizeof(videoMethods[0])) != JNI_OK) {

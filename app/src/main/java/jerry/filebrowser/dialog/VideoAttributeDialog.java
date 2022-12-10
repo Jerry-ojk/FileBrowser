@@ -2,7 +2,7 @@ package jerry.filebrowser.dialog;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.view.View;
+import android.util.Log;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,7 +13,7 @@ import jerry.filebrowser.file.FileAttribute;
 import jerry.filebrowser.util.NativeUtil;
 import jerry.filebrowser.util.Util;
 import jerry.filebrowser.util.VideoUtil;
-import jerry.filebrowser.vedio.VideoInfo;
+import jerry.filebrowser.video.VideoInfo;
 
 public class VideoAttributeDialog extends BaseDialog {
     private BaseFile file;
@@ -54,6 +54,10 @@ public class VideoAttributeDialog extends BaseDialog {
         this.file = file;
         this.attribute = NativeUtil.GetFileAttribute(file.getAbsPath());
         this.videoInfo = VideoUtil.getVideoInfo(file.getAbsPath());
+        if (this.videoInfo == null) {
+            this.videoInfo = VideoUtil.getVideoInfoJava(file.getAbsPath());
+        }
+        Log.d("VideoAttributeDialog", VideoUtil.getVideoInfoJava(file.getAbsPath()).toString());
         setAttribute(this.attribute, this.videoInfo);
         show();
     }
@@ -83,7 +87,7 @@ public class VideoAttributeDialog extends BaseDialog {
         builder.append(Util.float2(videoInfo.fps)).append("fps");
         tv_fps.setText(builder);
         builder.setLength(0);
-        builder.append(Util.size(videoInfo.bitRate)).append("/s");
+        builder.append(Util.size(videoInfo.bitRate / 8)).append("/s");
         tv_rate.setText(builder);
         tv_coding.setText(videoInfo.codec);
         builder.setLength(0);

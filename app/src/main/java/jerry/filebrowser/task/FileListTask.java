@@ -1,6 +1,7 @@
 package jerry.filebrowser.task;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,9 +30,31 @@ public class FileListTask extends AsyncTask<String, Object, ArrayList<BaseFile>>
         this.version = version;
     }
 
+    public FileListCallback getCallback() {
+        return callback;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = FileSetting.toRealPath(path);
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
     @Override
-    protected ArrayList<BaseFile> doInBackground(String... strings) {
-        path = FileSetting.toRealPath(strings[0]);
+    protected ArrayList<BaseFile> doInBackground(String... args) {
+        if (args.length > 0) {
+            path = FileSetting.toRealPath(args[0]);
+        }
         ArrayList<BaseFile> list = null;
         if (FileSetting.API_MODE == FileSetting.API_MODE_NATIVE) {
             UnixFile[] unixFiles = UnixFile.listFiles(path);
@@ -114,6 +137,7 @@ public class FileListTask extends AsyncTask<String, Object, ArrayList<BaseFile>>
 
     @Override
     protected void onCancelled(ArrayList<BaseFile> list) {
+        Log.d("FileListTask", "onCancelled");
         callback = null;
     }
 }

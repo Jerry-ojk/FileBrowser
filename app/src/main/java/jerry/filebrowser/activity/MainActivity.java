@@ -336,7 +336,11 @@ public class MainActivity extends AppCompatActivity implements ToastInterface, P
                 new SearchDialog(this).show(FileSetting.toShowPath(FileSetting.getCurrentPath()));
                 break;
             case R.id.action_refresh:
-                adapter.refresh();
+                if (adapter.isLoading()) {
+                    adapter.reLoading();
+                } else {
+                    adapter.refresh();
+                }
                 break;
             case R.id.action_sort:
                 new SortDialog(this).show();

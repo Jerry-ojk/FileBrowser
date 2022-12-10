@@ -350,7 +350,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
 
     // 分发文件点击事件
     private void dispatchOrInterruptItemClick(View view) {
-        if (isAnimator) return;
+        if (isAnimator || isLoading) return;
         final int position = recyclerView.getChildAdapterPosition(view);
         if (position == RecyclerView.NO_POSITION) return;
         if (isMultipleSelectMode) {
@@ -463,6 +463,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         //     return;
         // }
 
+        // TODO 不必要的判断
         if (loadResult != null && loadResult.list != null) {
             lastSuccessLoadResult = loadResult;
         }
@@ -484,7 +485,8 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         }
 
         isAnimator = true;
-        recyclerView.setEnabled(false);
+        recyclerView.setEnabled(false); // 无效
+        // recyclerView.setClickable(false);
         recyclerView.animate().alpha(0f).setDuration(DURING_ANIMATION_FADE).setInterpolator(new DecelerateInterpolator()).withEndAction(() -> {
             isAnimator = false;
             if (loadResult != null && loadResult.version == version) {
@@ -493,14 +495,15 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         }).start();
 
         loadTask = new FileListTask(this, type, ++version);
-        loadTask.execute(absolutePath);
+        loadTask.setPath(absolutePath);
+        loadTask.execute();
 
         activity.onStartLoadDir(FileSetting.toShowPath(absolutePath));
     }
 
     @Override
     public void onListResult(FileListResult result) {
-        loadTask = null;
+        loadTask = null; // TODO loadTask=null时，isLoading可能仍然为true
         if (result.version != version) return;
         if (isAnimator) { // 如果仍然在动画，就等动画执行完毕再调用该函数
             loadResult = result;
@@ -511,12 +514,14 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         if (result.list == null) {
             activity.showToast(PathUtil.getPathName(result.absolutePath) + " 打开失败");
             activity.onFinishLoadDir(lastSuccessLoadResult.dirs, lastSuccessLoadResult.files);
-
             recyclerView.setAlpha(1f);
+            isAnimator = false;
+            isLoading = false;
             return;
-        } else {
-            lastSuccessLoadResult = result;
         }
+
+        lastSuccessLoadResult = result;
+
         FileSetting.setCurrentPath(result.absolutePath);
         fileList = result.list;
 
@@ -548,14 +553,15 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
 //        })
                 .withEndAction(() -> {
                     isAnimator = false;
-                    isLoading = false;
+                    isLoading = false; // TODO loadTask=null时，isLoading可能仍然为true
                     recyclerView.setEnabled(true);
                 }).start();
     }
 
     // 取消加载
     public void cancelLoading() {
-        if (!isLoading) return;
+        // TODO loadTask=null时，isLoading可能仍然为true
+        if (!isLoading || loadTask == null) return;
 
         // 取消掉异步任务
         loadTask.cancel(true);
@@ -569,7 +575,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         // 恢复列表状态
         recyclerView.animate().cancel();
         recyclerView.setAlpha(1f);
-        recyclerView.setEnabled(true);
+        recyclerView.setEnabled(true); // 无效
 
         // 回调activity
         if (lastSuccessLoadResult != null) {
@@ -577,6 +583,22 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         } else {
             activity.onCancelLoadDir(-1, -1);
         }
+    }
+
+    // 重新加载当前正在加载的目录
+    public void reLoading() {
+        // TODO loadTask=null时，isLoading可能仍然为true
+        if (!isLoading || loadTask == null) return;
+
+        // 取消掉异步任务
+        loadTask.cancel(true);
+        // 更新加载版本号
+        ++version;
+
+        FileListTask newLoadTask = new FileListTask(loadTask.getCallback(), loadTask.getType(), version);
+        newLoadTask.setPath(loadTask.getPath());
+        newLoadTask.execute();
+        loadTask = newLoadTask;
     }
 
     private void toParentDirectory() {
@@ -620,6 +642,11 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
             if (actionMode != null) actionMode.finish();
             notifyDataSetChanged();
         }
+    }
+
+    // 是否正在加载
+    public boolean isLoading() {
+        return isLoading;
     }
 
     // 刷新

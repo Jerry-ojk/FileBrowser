@@ -18,10 +18,7 @@ import kotlin.math.roundToInt
  * 侧滑删除布局
  */
 class SlideLayer @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0,
-    defStyleRes: Int = 0
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0, defStyleRes: Int = 0
 ) : ViewGroup(context, attrs, defStyleAttr, defStyleRes) {
     private var contentView: View? = null
     private var slideView: View? = null
@@ -117,17 +114,14 @@ class SlideLayer @JvmOverloads constructor(
             val item = getChildAt(i)
             if (item.visibility == View.GONE) continue
             item.layout(
-                left,
-                0,
-                left + item.measuredWidth,
-                item.measuredHeight
+                left, 0, left + item.measuredWidth, item.measuredHeight
             )
             left += item.measuredWidth
         }
     }
 
     override fun onInterceptTouchEvent(event: MotionEvent?): Boolean {
-        Log.i("onInterceptTouchEvent", "${event?.toString()}")
+        Log.d("onInterceptTouchEvent", "${event?.toString()}")
 //        Log.i("onInterceptTouchEvent", "before $state")
         if (state == STATE_SLIDING) {
             parent.requestDisallowInterceptTouchEvent(true)
@@ -168,17 +162,19 @@ class SlideLayer @JvmOverloads constructor(
             }
         }
         if (state != STATE_OPENED) parent.requestDisallowInterceptTouchEvent(true)
-        Log.i("onInterceptTouchEvent", "${state != STATE_OPENED}, $state")
-        return state != STATE_OPENED
+        Log.d("onInterceptTouchEvent", "${state != STATE_OPENED}, state: $state")
+        return state != STATE_OPENED && state != STATE_CLOSED
     }
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        Log.i("onTouchEvent", "$event")
+        Log.d("onTouchEvent", "$event")
+//        if (super.onTouchEvent(event)) return true
         when (event?.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
                 downX = event.rawX
                 lastX = event.rawX
+                Log.d("onTouchEvent", "super.onTouchEvent")
                 if (state != STATE_OPENED) return true
             }
             MotionEvent.ACTION_MOVE -> {
@@ -232,7 +228,9 @@ class SlideLayer @JvmOverloads constructor(
             }
         }
 //        parent.requestDisallowInterceptTouchEvent(false)
-        return super.onTouchEvent(event)
+//        Log.d("onTouchEvent", "super.onTouchEvent")
+//        return super.onTouchEvent(event)
+        return false
     }
 
     override fun computeScroll() {
